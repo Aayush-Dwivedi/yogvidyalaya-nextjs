@@ -27,9 +27,16 @@ export async function POST(request: NextRequest) {
     await requireAdminSession(request);
 
     const body = await request.json();
-    const data = createMembershipPlanSchema.body.parse(body);
+    const parsed = createMembershipPlanSchema.body.safeParse(body);
+    if (!parsed.success) {
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+      const details = Object.entries(fieldErrors)
+        .map(([k, v]) => `${k}: ${v?.join(', ')}`)
+        .join('; ');
+      return ApiResponse.badRequest(`Validation failed: ${details}`, fieldErrors);
+    }
 
-    const created = await MembershipService.createMembershipPlan(data as any);
+    const created = await MembershipService.createMembershipPlan(parsed.data as any);
     return ApiResponse.created(created, 'Membership plan created successfully');
   } catch (error) {
     return handleRouteError(error);

@@ -281,7 +281,14 @@ export const AdminCoursesPage: React.FC = () => {
       await loadCourses();
     } catch (err: any) {
       console.error(err);
-      showToast(err.message || 'Failed to save course', 'error');
+      let errorMsg = err.message || 'Failed to save course';
+      if (err.errors && typeof err.errors === 'object') {
+        const details = Object.entries(err.errors)
+          .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+          .join('; ');
+        if (details) errorMsg = `Validation failed: ${details}`;
+      }
+      showToast(errorMsg, 'error');
     } finally {
       setSaving(false);
     }

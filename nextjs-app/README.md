@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kalptaru Yog Vidyalaya — Application Documentation
+
+This directory contains the production full-stack application built with **Next.js 16 (App Router)**, **React 19**, **TypeScript**, **Tailwind CSS**, and **MongoDB**.
+
+---
+
+## Architecture Overview
+
+```
+nextjs-app/
+├── app/                  # Next.js App Router (Pages, Layouts & Route Handlers)
+│   ├── (public)/         # Public marketing pages (courses, workshops, trainers, gallery)
+│   ├── admin/            # Role-protected Admin management dashboard
+│   ├── dashboard/        # Role-protected Student portal (profile, bookings)
+│   ├── api/              # Serverless REST API endpoints
+│   ├── layout.tsx        # Root application layout & global providers
+│   ├── page.tsx          # Homepage
+│   └── globals.css       # Core typography, design tokens, and Tailwind configuration
+├── components/           # Reusable UI component library
+│   ├── booking/          # Interactive booking modal & workflow components
+│   ├── common/           # Shared UI buttons, inputs, loaders, badges
+│   ├── layout/           # AdminLayout, StudentLayout, Header & Navigation
+│   └── ...
+├── context/              # Client-side React context (AuthContext, etc.)
+├── hooks/                # Custom React hooks (auth, media queries, async state)
+├── lib/                  # Server-side core utilities & domain layer
+│   ├── auth/             # JWT creation, verification & session handling
+│   ├── db/               # Cached Mongoose database connection
+│   ├── models/           # Mongoose schemas (User, Course, Workshop, Booking, Content, etc.)
+│   ├── services/         # Business logic layer & external service integrations
+│   ├── utils/            # Shared formatting, rate-limiting, and response builders
+│   └── validators/       # Zod validation schemas for requests
+├── public/               # Static assets, branding, and images
+├── sections/             # Modular section components used on public landing pages
+├── services/             # Client-side API client modules (Axios client, API calls)
+├── types/                # TypeScript interface and type declarations
+└── views/                # Full-page view containers separating logic from routing
+```
+
+---
+
+## Core Application Modules
+
+### 1. Public Portal
+- **Home (`/`)**: Hero carousel, courses preview, why yoga, videos, gallery highlight, testimonials.
+- **Courses (`/programs/courses`)**: Full curriculum catalog, eligibility, timing, fees, syllabus modal.
+- **Workshops (`/programs/workshops`)**: Upcoming specialized sessions and masterclasses.
+- **Trainers & Founders (`/programs/trainers`, `/founder`)**: Institute leadership, teacher credentials, and lineage.
+- **Gallery & Media (`/gallery`)**: Categorized photo and video gallery.
+- **Contact & Enquiry (`/contact`, `/enquiry`)**: Direct enquiry submission with WhatsApp routing.
+
+### 2. Student Portal (`/dashboard`)
+- **Overview**: Active courses, scheduled sessions, notifications.
+- **My Bookings (`/dashboard/bookings`)**: Enrollment history, payment verification status, course schedules.
+- **Profile (`/dashboard/profile`)**: Personal details, health info, emergency contacts.
+
+### 3. Admin Portal (`/admin`)
+- **Dashboard (`/admin`)**: Analytics, recent bookings, quick stats.
+- **Bookings Management (`/admin/bookings`)**: Approve, verify payments, cancel, or filter student bookings.
+- **Courses & Workshops Management (`/admin/courses`, `/admin/workshops`)**: Manage course offerings, schedules, and pricing.
+- **Website Content Management (`/admin/content/...`)**: Dynamic content editing for hero slides, benefits, founders, gallery, and institute details.
+
+---
+
+## API Endpoints Reference
+
+| Route | Methods | Description | Access |
+|---|---|---|---|
+| `/api/auth/register` | `POST` | Register a new student account | Public |
+| `/api/auth/login` | `POST` | Authenticate user & issue JWT cookies | Public |
+| `/api/auth/me` | `GET` | Retrieve authenticated user session | Authenticated |
+| `/api/auth/logout` | `POST` | Clear auth cookies & terminate session | Authenticated |
+| `/api/courses` | `GET`, `POST` | List courses or create new course | Public / Admin |
+| `/api/courses/[id]` | `GET`, `PUT`, `DELETE` | Course details and updates | Public / Admin |
+| `/api/workshops` | `GET`, `POST` | List workshops or create workshop | Public / Admin |
+| `/api/bookings` | `GET`, `POST` | User enrollment and creation | Authenticated |
+| `/api/admin/bookings` | `GET` | Filter, search and paginate all bookings | Admin |
+| `/api/admin/bookings/[id]/status` | `PATCH` | Update booking status (confirmed/rejected) | Admin |
+| `/api/student/dashboard` | `GET` | Student dashboard statistics & enrollments | Student |
+| `/api/media/upload` | `POST` | Upload media asset to cloud storage | Admin |
+| `/api/hero-slides` | `GET`, `POST` | Hero section slide content | Public / Admin |
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
+### 1. Install Dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Environment Variables
+Create `.env.local` using `.env.local.example`:
+```bash
+cp .env.local.example .env.local
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Required environment variables:
+- `MONGODB_URI` — Connection URI for MongoDB
+- `JWT_SECRET` — Secret string (min 32 characters) for signing access tokens
+- `JWT_REFRESH_SECRET` — Secret string for refresh tokens
+- `SUPABASE_URL` — Supabase project API URL (for media asset uploads)
+- `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role secret key
+- `NEXT_PUBLIC_APP_URL` — Base client application URL (e.g., `http://localhost:3000`)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Run Development Server
+```bash
+npm run dev
+```
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Visit [http://localhost:3000](http://localhost:3000) in your browser.

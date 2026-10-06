@@ -276,3 +276,35 @@ export interface CmsWorkshop {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface CmsMembershipBatch {
+  name: string;
+  timing: string;
+  days: string;
+}
+
+export interface CmsMembershipPrice {
+  amount: number;
+  currency: string;
+  discountPercentage?: number;
+  originalAmount?: number;
+}
+
+export interface CmsMembershipPlan {
+  _id?: string;
+  id?: string;
+  title: string;
+  slug: string;
+  billingCycle: 'monthly' | 'quarterly' | 'half-yearly' | 'annual';
+  price: CmsMembershipPrice;
+  description: string;
+  batches: CmsMembershipBatch[];
+  features: string[];
+  popular?: boolean;
+  order?: number;
+  status: 'draft' | 'published' | 'archived';
+  termsAndConditions?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+

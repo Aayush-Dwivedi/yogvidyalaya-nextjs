@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
@@ -8,6 +10,7 @@ import { LotusMotif, CornerFlourish } from '../components/Motifs';
 import { CmsService } from '../services/cmsService';
 import { CmsFounder } from '../types/cms';
 import { LoadingState } from '../components/LoadingState';
+import { Modal } from '../components/Modal';
 import {
   Users,
   Award,
@@ -18,12 +21,17 @@ import {
   ArrowRight,
   Star,
   CheckCircle2,
+  BookOpen,
+  Quote,
+  X,
 } from 'lucide-react';
 
-export const TrainersPage: React.FC = () => {
+const TrainersContent: React.FC = () => {
+  const searchParams = useSearchParams();
   const [trainers, setTrainers] = useState<CmsFounder[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTrainer, setSelectedTrainer] = useState<CmsFounder | null>(null);
 
   const fetchTrainers = async () => {
     try {
@@ -52,6 +60,23 @@ export const TrainersPage: React.FC = () => {
       window.removeEventListener('storage', handleUpdate);
     };
   }, []);
+
+  // Handle URL deep-linking (?trainer=... or ?id=...)
+  useEffect(() => {
+    if (!trainers.length) return;
+    const trainerParam = searchParams.get('trainer') || searchParams.get('id');
+    if (trainerParam) {
+      const match = trainers.find(
+        (t) =>
+          (t._id || t.id) === trainerParam ||
+          t.slug === trainerParam ||
+          t.name.toLowerCase().includes(trainerParam.toLowerCase())
+      );
+      if (match) {
+        setSelectedTrainer(match);
+      }
+    }
+  }, [trainers, searchParams]);
 
   const filteredTrainers = trainers.filter((t) => {
     const q = searchQuery.toLowerCase();
@@ -132,7 +157,10 @@ export const TrainersPage: React.FC = () => {
                   >
                     <div>
                       {/* Card Media Header */}
-                      <div className="relative aspect-[4/3] bg-plum-950 overflow-hidden">
+                      <div
+                        onClick={() => setSelectedTrainer(trainer)}
+                        className="relative aspect-[4/3] bg-plum-950 overflow-hidden cursor-pointer"
+                      >
                         <img
                           src={photoUrl}
                           alt={trainer.name}
@@ -151,7 +179,7 @@ export const TrainersPage: React.FC = () => {
                         )}
 
                         <div className="absolute bottom-3 left-4 right-4 text-white">
-                          <h3 className="font-editorial text-2xl font-bold leading-snug drop-shadow-sm">
+                          <h3 className="font-editorial text-2xl font-bold leading-snug drop-shadow-sm group-hover:text-gold-300 transition-colors">
                             {trainer.name}
                           </h3>
                           <p className="text-xs text-gold-300 font-sans font-medium mt-0.5">
@@ -187,7 +215,7 @@ export const TrainersPage: React.FC = () => {
                               <span>Credentials &amp; Certifications</span>
                             </span>
                             <div className="flex flex-wrap gap-1.5">
-                              {trainer.qualifications.map((q, idx) => (
+                              {trainer.qualifications.slice(0, 3).map((q, idx) => (
                                 <span
                                   key={idx}
                                   className="px-2 py-0.5 rounded bg-plum-50 text-[11px] text-plum-900 border border-plum-200"
@@ -195,6 +223,11 @@ export const TrainersPage: React.FC = () => {
                                   {q}
                                 </span>
                               ))}
+                              {trainer.qualifications.length > 3 && (
+                                <span className="text-[10px] font-mono text-gold-800 self-center">
+                                  +{trainer.qualifications.length - 3} more
+                                </span>
+                              )}
                             </div>
                           </div>
                         )}
@@ -206,7 +239,7 @@ export const TrainersPage: React.FC = () => {
                               Specialization Areas
                             </span>
                             <div className="flex flex-wrap gap-1.5">
-                              {trainer.specializations.map((spec, sIdx) => (
+                              {trainer.specializations.slice(0, 3).map((spec, sIdx) => (
                                 <span
                                   key={sIdx}
                                   className="px-2 py-0.5 rounded bg-canvas-warm text-[11px] text-gold-900 border border-gold-300"
@@ -214,6 +247,11 @@ export const TrainersPage: React.FC = () => {
                                   {spec}
                                 </span>
                               ))}
+                              {trainer.specializations.length > 3 && (
+                                <span className="text-[10px] font-mono text-gold-800 self-center">
+                                  +{trainer.specializations.length - 3} more
+                                </span>
+                              )}
                             </div>
                           </div>
                         )}
@@ -222,26 +260,24 @@ export const TrainersPage: React.FC = () => {
 
                     {/* Card Actions Footer */}
                     <div className="p-4 bg-canvas border-t border-border flex items-center justify-between gap-3">
-                      <LinkButton
-                        to="/contact"
-                        variant="primary"
-                        size="sm"
-                        className="flex-1 justify-center text-xs py-2"
+                      <button
+                        type="button"
+                        onClick={() => setSelectedTrainer(trainer)}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-plum-900 text-gold-200 hover:bg-plum-800 transition-colors shadow-soft"
                       >
-                        <MessageCircle className="w-3.5 h-3.5 mr-1.5 text-gold-300" />
-                        <span>Consult via WhatsApp</span>
-                      </LinkButton>
+                        <BookOpen className="w-3.5 h-3.5" />
+                        <span>View Trainer Details</span>
+                      </button>
 
-                      <LinkButton
-                        to="/courses"
-                        variant="secondary"
-                        size="sm"
-                        className="text-xs py-2 px-3"
-                        title="Explore courses taught by our faculty"
+                      <a
+                        href="https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg border border-border bg-white text-emerald-700 hover:bg-emerald-50 transition-colors"
+                        title="Inquire via WhatsApp"
                       >
-                        <span>Courses</span>
-                        <ArrowRight className="w-3 h-3 ml-1" />
-                      </LinkButton>
+                        <MessageCircle className="w-4 h-4" />
+                      </a>
                     </div>
                   </div>
                 );
@@ -251,7 +287,179 @@ export const TrainersPage: React.FC = () => {
         </Container>
       </section>
 
-      {/* 3. Bottom Philosophy & Contact Strip */}
+      {/* 3. Detailed Trainer Profile Modal */}
+      {selectedTrainer && (
+        <Modal
+          isOpen={!!selectedTrainer}
+          onClose={() => setSelectedTrainer(null)}
+          title={selectedTrainer.name}
+          size="lg"
+        >
+          <div className="space-y-6 font-sans text-sm">
+            {/* Header Identity Hero */}
+            <div className="flex flex-col sm:flex-row gap-5 items-center sm:items-start bg-canvas-warm p-5 rounded-xl border border-border">
+              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-plum-950 shrink-0 border border-gold-400/40 shadow-card">
+                <img
+                  src={
+                    (typeof selectedTrainer.image === 'string'
+                      ? selectedTrainer.image
+                      : selectedTrainer.image?.url) ||
+                    'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80'
+                  }
+                  alt={selectedTrainer.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="flex-1 text-center sm:text-left space-y-2">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                  <Badge variant="gold" size="sm">
+                    {selectedTrainer.experienceYears ? `${selectedTrainer.experienceYears}+ Years Experience` : 'Senior Acharya'}
+                  </Badge>
+                  {selectedTrainer.featured && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-gold-500 text-plum-950">
+                      <Star className="w-3 h-3 fill-plum-950" />
+                      <span>Featured Lead</span>
+                    </span>
+                  )}
+                  <span className="text-[11px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-semibold inline-flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    Verified Faculty
+                  </span>
+                </div>
+
+                <h3 className="text-2xl font-editorial font-bold text-plum-900">
+                  {selectedTrainer.name}
+                </h3>
+
+                <p className="text-xs sm:text-sm text-gold-800 font-semibold">
+                  {selectedTrainer.designation || selectedTrainer.title}
+                </p>
+
+                {selectedTrainer.lineage && (
+                  <p className="text-xs text-ink-muted italic">
+                    Lineage: {selectedTrainer.lineage}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Quote / Message */}
+            {(selectedTrainer.quote || selectedTrainer.message) && (
+              <div className="p-4 rounded-xl bg-plum-950 text-gold-200 border border-gold-500/30 flex items-start gap-3">
+                <Quote className="w-5 h-5 text-gold-400 shrink-0 mt-0.5" />
+                <p className="text-xs sm:text-sm italic font-editorial leading-relaxed text-ivory">
+                  "{selectedTrainer.quote || selectedTrainer.message}"
+                </p>
+              </div>
+            )}
+
+            {/* Complete Bio */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-mono uppercase tracking-wider text-plum-900 font-bold">
+                Biography &amp; Teaching Philosophy
+              </h4>
+              <p className="text-xs sm:text-sm text-ink-muted leading-relaxed whitespace-pre-line font-sans">
+                {selectedTrainer.biography || selectedTrainer.bio}
+              </p>
+            </div>
+
+            {/* Qualifications & Certifications */}
+            {selectedTrainer.qualifications && selectedTrainer.qualifications.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-mono uppercase tracking-wider text-plum-900 font-bold flex items-center gap-1.5">
+                  <GraduationCap className="w-4 h-4 text-gold-600" />
+                  <span>Qualifications &amp; Certifications</span>
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedTrainer.qualifications.map((q, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2.5 py-1 rounded bg-plum-50 text-xs text-plum-900 border border-plum-200 font-medium"
+                    >
+                      {q}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Specializations */}
+            {selectedTrainer.specializations && selectedTrainer.specializations.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-mono uppercase tracking-wider text-plum-900 font-bold flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-gold-600" />
+                  <span>Specializations &amp; Therapeutic Expertise</span>
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedTrainer.specializations.map((spec, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2.5 py-1 rounded bg-canvas-warm text-xs text-gold-900 border border-gold-300 font-medium"
+                    >
+                      {spec}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Key Achievements */}
+            {selectedTrainer.achievements && selectedTrainer.achievements.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-mono uppercase tracking-wider text-plum-900 font-bold flex items-center gap-1.5">
+                  <Award className="w-4 h-4 text-gold-600" />
+                  <span>Distinguished Achievements</span>
+                </h4>
+                <ul className="space-y-1.5">
+                  {selectedTrainer.achievements.map((ach, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-xs text-ink-muted">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gold-600 mt-1.5 shrink-0" />
+                      <span>{ach}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Modal Action Buttons */}
+            <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
+              {(selectedTrainer.name.toLowerCase().includes('shuchi') || selectedTrainer.title.toLowerCase().includes('founder')) ? (
+                <Link
+                  href="/about/founder"
+                  className="text-xs font-semibold text-plum-900 hover:text-gold-700 underline font-sans"
+                >
+                  Read Full Founder Stewardship Story →
+                </Link>
+              ) : (
+                <span className="text-xs text-ink-muted">
+                  Faculty Member at Kalptaru Yog Vidyalaya
+                </span>
+              )}
+
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <LinkButton
+                  to="/contact"
+                  variant="primary"
+                  size="sm"
+                  className="flex-1 sm:flex-initial text-xs py-2"
+                >
+                  Inquire for Classes
+                </LinkButton>
+                <button
+                  type="button"
+                  onClick={() => setSelectedTrainer(null)}
+                  className="px-4 py-2 rounded-lg text-xs border border-border bg-white text-ink-muted hover:text-ink shadow-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* 4. Bottom Philosophy Strip */}
       <section className="py-14 bg-white border-t border-border">
         <Container size="wide" className="text-center space-y-4 max-w-2xl mx-auto">
           <LotusMotif size={24} className="text-gold-600 mx-auto" />
@@ -269,6 +477,14 @@ export const TrainersPage: React.FC = () => {
         </Container>
       </section>
     </div>
+  );
+};
+
+export const TrainersPage: React.FC = () => {
+  return (
+    <Suspense fallback={<LoadingState message="Loading trainers directory..." />}>
+      <TrainersContent />
+    </Suspense>
   );
 };
 

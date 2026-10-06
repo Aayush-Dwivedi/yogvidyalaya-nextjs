@@ -29,7 +29,6 @@ export const AdminTrainersPage: React.FC = () => {
   const [trainers, setTrainers] = useState<CmsFounder[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [confirming, setConfirming] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Modal State
@@ -65,17 +64,6 @@ export const AdminTrainersPage: React.FC = () => {
     }, 4500);
   };
 
-  const handleConfirmChanges = async () => {
-    try {
-      setConfirming(true);
-      await CmsService.confirmAllChanges();
-      showToast('All trainer changes confirmed and published to the live website!', 'success');
-    } catch (err: any) {
-      showToast(err.message || 'Failed to confirm changes', 'error');
-    } finally {
-      setConfirming(false);
-    }
-  };
 
   const handleOpenModal = (trainer?: CmsFounder) => {
     if (trainer) {
@@ -350,19 +338,6 @@ export const AdminTrainersPage: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <button
-            onClick={handleConfirmChanges}
-            disabled={confirming}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-sans text-plum-950 bg-gold-500 hover:bg-gold-400 font-bold transition-all shadow-sm hover:scale-[1.02]"
-            title="Publish all trainer updates to the live website"
-          >
-            {confirming ? (
-              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Sparkles className="w-3.5 h-3.5 text-plum-950" />
-            )}
-            <span>{confirming ? 'Publishing...' : 'Confirm Changes'}</span>
-          </button>
 
           <button
             onClick={() => handleOpenModal()}

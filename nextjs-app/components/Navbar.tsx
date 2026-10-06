@@ -35,23 +35,17 @@ const NAV_ITEMS: NavItem[] = [
       { label: 'Workshops', href: '/programs/workshops', description: 'Immersive weekend intensives and masterclasses' },
       { label: 'Corporate', href: '/programs/corporate', description: 'Workplace wellness and executive mindfulness' },
       { label: 'Membership', href: '/programs/membership', description: 'Ongoing daily practice and ashram access' },
-      { label: 'Trainers', href: '/programs#trainers', description: 'Our qualified faculty and instructors' },
+      { label: 'Trainers', href: '/trainers', description: 'Our qualified faculty and instructors' },
       { label: 'Videos', href: '/videos', description: 'Discourses, guided sadhanas, and lectures' },
     ],
   },
   {
     label: 'Gallery',
-    children: [
-      { label: 'Latest', href: '/gallery', description: 'Moments of sadhana, campus life, and celebrations' },
-      { label: 'Events', href: '/gallery/events', description: 'Conferences, international yoga day, and retreats' },
-    ],
+    href: '/gallery',
   },
   {
     label: 'Contact',
-    children: [
-      { label: 'Get in Touch', href: '/contact', description: 'Campus location, direct email, and timings' },
-      { label: 'Course Enquiry', href: '/contact/enquiry', description: 'Guidance on curriculum eligibility and admissions' },
-    ],
+    href: '/contact',
   },
 ];
 
@@ -252,9 +246,8 @@ export const Navbar: React.FC = () => {
             {isAuthenticated && (user?.role === 'admin' || user?.role === 'super_admin') ? (
               <Link
                 href="/admin"
-                className="inline-flex items-center gap-2 text-xs uppercase tracking-wide-editorial text-plum-900 font-semibold px-3 py-2 border border-gold-500/70 rounded bg-gold-50/60 hover:bg-gold-50 transition-colors shadow-soft"
+                className="inline-flex items-center text-xs uppercase tracking-wide-editorial text-plum-900 font-semibold px-3 py-2 border border-gold-500/70 rounded bg-gold-50/60 hover:bg-gold-50 transition-colors shadow-soft"
               >
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 Admin Dashboard
               </Link>
             ) : (

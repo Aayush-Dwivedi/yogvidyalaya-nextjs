@@ -37,7 +37,9 @@ const processQueue = (error: unknown = null) => {
 
 // Response interceptor
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => response.data,
+  (response: AxiosResponse) => {
+    return response.data;
+  },
   async (error: AxiosError<{ success?: boolean; message?: string }>) => {
     const originalRequest = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
 

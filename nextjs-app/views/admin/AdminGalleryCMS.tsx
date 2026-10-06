@@ -36,6 +36,8 @@ export const AdminGalleryCMS: React.FC = () => {
   // Category Modal
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [categoryToDelete, setCategoryToDelete] = useState<CmsGalleryCategory | null>(null);
+  const [deleteCategoryModalOpen, setDeleteCategoryModalOpen] = useState(false);
 
   // Delete Modal
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -229,6 +231,26 @@ export const AdminGalleryCMS: React.FC = () => {
     }
   };
 
+  const confirmDeleteCategory = async () => {
+    if (!categoryToDelete) return;
+    const catId = (categoryToDelete._id || categoryToDelete.id) as string;
+    try {
+      setSaving(true);
+      await CmsService.deleteGalleryCategory(catId);
+      setCategories((prev) => prev.filter((c) => (c._id || c.id) !== catId));
+      if (selectedCategory === catId || selectedCategory === categoryToDelete.slug) {
+        setSelectedCategory('all');
+      }
+      showToast(`Category "${categoryToDelete.name}" deleted successfully.`);
+      setDeleteCategoryModalOpen(false);
+      setCategoryToDelete(null);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to delete category', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const filteredImages = images.filter((img) => {
     if (selectedCategory === 'all') return true;
     if (selectedCategory === 'featured') return img.featured;
@@ -289,10 +311,10 @@ export const AdminGalleryCMS: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setCategoryModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-sans text-plum-900 bg-white border border-border hover:bg-canvas transition-colors shadow-xs"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans font-medium text-plum-900 bg-white border border-border hover:bg-canvas transition-colors shadow-xs"
           >
             <FolderPlus className="w-3.5 h-3.5 text-gold-600" />
-            <span>New Category</span>
+            <span>Manage &amp; Delete Categories</span>
           </button>
           <button
             onClick={loadData}
@@ -345,17 +367,31 @@ export const AdminGalleryCMS: React.FC = () => {
           }).length;
 
           return (
-            <button
-              key={catId}
-              onClick={() => setSelectedCategory(catId)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-sans transition-colors ${
-                selectedCategory === catId
-                  ? 'bg-plum-900 text-gold-300 font-semibold shadow-xs'
-                  : 'text-ink-muted hover:text-plum-900 bg-canvas border border-border'
-              }`}
-            >
-              {cat.name} ({count})
-            </button>
+            <div key={catId} className="inline-flex items-center rounded-lg border border-border overflow-hidden shadow-xs">
+              <button
+                onClick={() => setSelectedCategory(catId)}
+                className={`px-3 py-1.5 text-xs font-sans transition-colors ${
+                  selectedCategory === catId
+                    ? 'bg-plum-900 text-gold-300 font-semibold'
+                    : 'text-ink-muted hover:text-plum-900 bg-canvas hover:bg-white'
+                }`}
+              >
+                {cat.name} ({count})
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCategoryToDelete(cat);
+                  setDeleteCategoryModalOpen(true);
+                }}
+                title={`Delete category "${cat.name}"`}
+                aria-label={`Delete category ${cat.name}`}
+                className="px-2 py-1.5 text-xs transition-colors border-l border-border bg-rose-50 text-rose-600 hover:text-white hover:bg-rose-600 flex items-center justify-center"
+              >
+                <Trash2 className="w-3 h-3" />
+              </button>
+            </div>
           );
         })}
       </div>
@@ -633,45 +669,130 @@ export const AdminGalleryCMS: React.FC = () => {
         </form>
       </Modal>
 
-      {/* New Category Modal */}
+      {/* Manage / New Category Modal */}
       <Modal
         isOpen={categoryModalOpen}
         onClose={() => setCategoryModalOpen(false)}
-        title="Create New Gallery Category"
-        size="sm"
+        title="Manage Gallery Categories"
+        size="md"
       >
-        <form onSubmit={handleCreateCategory} className="space-y-4 font-sans text-sm">
-          <div>
-            <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
-              Category Name *
-            </label>
-            <input
-              type="text"
-              required
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
-              placeholder="e.g. Asana Lab, Vedic Havans, Nature Retreats"
-              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
-            />
+        <div className="space-y-6 font-sans text-sm">
+          {/* Add Category Form */}
+          <form onSubmit={handleCreateCategory} className="space-y-3 pb-5 border-b border-border">
+            <h4 className="text-xs font-sans text-plum-900 font-bold uppercase tracking-wider">
+              Create New Category
+            </h4>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                required
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="e.g. Asana Lab, Vedic Havans, Nature Retreats"
+                className="flex-1 bg-white border border-border rounded-lg px-3.5 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs text-xs"
+              />
+              <button
+                type="submit"
+                disabled={saving}
+                className="px-4 py-2 rounded-lg text-xs bg-plum-900 text-gold-300 hover:bg-plum-800 font-medium transition-colors shadow-soft disabled:opacity-50 whitespace-nowrap"
+              >
+                {saving ? 'Adding...' : 'Add Category'}
+              </button>
+            </div>
+          </form>
+
+          {/* Existing Categories List */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-sans text-plum-900 font-bold uppercase tracking-wider">
+              Existing Categories ({categories.length})
+            </h4>
+
+            {categories.length === 0 ? (
+              <p className="text-xs text-ink-muted italic">No custom categories created yet.</p>
+            ) : (
+              <div className="max-h-60 overflow-y-auto divide-y divide-border/60 border border-border rounded-lg">
+                {categories.map((cat) => {
+                  const catId = (cat._id || cat.id) as string;
+                  const count = images.filter((img) => {
+                    const id = typeof img.category === 'object' && img.category !== null ? (img.category as any)._id : img.category;
+                    return id === catId || img.categorySlug === cat.slug;
+                  }).length;
+
+                  return (
+                    <div
+                      key={catId}
+                      className="p-3 flex items-center justify-between hover:bg-canvas transition-colors"
+                    >
+                      <div>
+                        <p className="text-xs font-semibold text-plum-900">{cat.name}</p>
+                        <p className="text-[10px] text-ink-muted font-mono">{cat.slug} • {count} photos</p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCategoryToDelete(cat);
+                          setDeleteCategoryModalOpen(true);
+                        }}
+                        title={`Delete category "${cat.name}"`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-medium text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-600 hover:text-white transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Delete Category</span>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end pt-2">
             <button
               type="button"
               onClick={() => setCategoryModalOpen(false)}
               className="px-4 py-2 rounded-lg text-xs text-ink-muted hover:text-ink border border-border bg-white shadow-xs"
             >
+              Close
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete Category Confirmation Modal */}
+      <Modal
+        isOpen={deleteCategoryModalOpen}
+        onClose={() => setDeleteCategoryModalOpen(false)}
+        title="Confirm Category Deletion"
+        size="sm"
+      >
+        <div className="space-y-4 font-sans text-sm">
+          <p className="text-ink">
+            Are you sure you want to permanently delete the category{' '}
+            <strong className="text-plum-900 font-bold">"{categoryToDelete?.name}"</strong>?
+          </p>
+          <p className="text-xs text-ink-muted">
+            Photos in this category will not be deleted, but they will be categorized under All/General.
+          </p>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setDeleteCategoryModalOpen(false)}
+              className="px-4 py-2 rounded-lg text-xs text-ink-muted hover:text-ink border border-border bg-white shadow-xs"
+            >
               Cancel
             </button>
             <button
-              type="submit"
+              type="button"
               disabled={saving}
-              className="px-4 py-2 rounded-lg text-xs bg-plum-900 text-gold-300 hover:bg-plum-800 font-medium transition-colors shadow-soft disabled:opacity-50"
+              onClick={confirmDeleteCategory}
+              className="px-4 py-2 rounded-lg text-xs bg-rose-600 hover:bg-rose-700 text-white font-medium shadow-sm disabled:opacity-50"
             >
-              {saving ? 'Creating...' : 'Create Category'}
+              {saving ? 'Deleting...' : 'Yes, Delete Category'}
             </button>
           </div>
-        </form>
+        </div>
       </Modal>
 
       {/* Delete Confirmation Modal */}

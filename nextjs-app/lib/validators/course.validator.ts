@@ -10,23 +10,29 @@ import {
 } from './common.validator';
 
 const curriculumModuleSchema = z.object({
-  moduleNumber: z.number().int().positive(),
+  moduleNumber: z.coerce.number().int().default(1),
   title: z.string().trim().min(1, 'Module title is required'),
   description: z.string().trim().optional(),
   topics: z.array(z.string().trim()).default([]),
 });
 
-const courseInstructorSchema = z.object({
-  name: z.string().trim().min(2, 'Instructor name is required'),
-  title: z.string().trim().optional(),
-  bio: z.string().trim().optional(),
-  image: storageImageSchema.optional(),
-  founderRef: objectIdSchema.optional(),
-});
+const courseInstructorSchema = z
+  .object({
+    name: z.string().trim().min(1).default('Mrs. Shuchi Mohan'),
+    title: z.string().trim().optional(),
+    bio: z.string().trim().optional(),
+    image: storageImageSchema.optional(),
+    founderRef: z
+      .string()
+      .trim()
+      .optional()
+      .transform((val) => (val && val.length === 24 ? val : undefined)),
+  })
+  .default({ name: 'Mrs. Shuchi Mohan', founderRef: undefined });
 
 const courseCapacitySchema = z.object({
-  total: z.number().int().positive().default(30),
-  enrolled: z.number().int().nonnegative().default(0),
+  total: z.coerce.number().int().positive().default(30),
+  enrolled: z.coerce.number().int().nonnegative().default(0),
 });
 
 export const getCoursesSchema = {
@@ -43,13 +49,20 @@ export const getCourseByIdOrSlugSchema = {
 export const createCourseSchema = {
   body: z
     .object({
-      title: z.string().trim().min(3, 'Course title must have at least 3 characters'),
+      title: z.string().trim().min(2, 'Course title must have at least 2 characters'),
       slug: z
         .string()
         .trim()
-        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase alphanumeric with hyphens')
-        .optional(),
-      description: z.string().trim().min(10, 'Description must have at least 10 characters'),
+        .optional()
+        .transform((val) => {
+          if (!val || val.trim().length === 0) return undefined;
+          return val
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)/g, '');
+        }),
+      description: z.string().trim().min(5, 'Description must have at least 5 characters'),
       shortDescription: z.string().trim().optional(),
       coverImage: storageImageSchema.optional(),
       image: storageImageSchema.optional(),
@@ -57,7 +70,7 @@ export const createCourseSchema = {
       duration: z.string().trim().min(1, 'Duration is required'),
       level: z.enum(['beginner', 'intermediate', 'advanced', 'all-levels']).default('all-levels'),
       mode: z.enum(['residential', 'in-person', 'online', 'hybrid']).default('in-person'),
-      price: priceSchema,
+      price: priceSchema.default({ amount: 0, currency: 'INR', isFree: false }),
       features: z.array(z.string().trim()).default([]),
       benefits: z.array(z.string().trim()).default([]),
       curriculum: z.array(curriculumModuleSchema).default([]),
@@ -66,7 +79,7 @@ export const createCourseSchema = {
       eligibility: z.string().trim().optional(),
       schedule: z.string().trim().optional(),
       capacity: courseCapacitySchema.optional(),
-      order: z.number().int().optional().default(0),
+      order: z.coerce.number().int().optional().default(0),
       status: z.enum(['draft', 'published', 'archived']).default('published'),
       featured: z.boolean().default(false),
       seo: seoSchema.optional(),
@@ -92,13 +105,20 @@ export const updateCourseSchema = {
   params: idParamSchema,
   body: z
     .object({
-      title: z.string().trim().min(3).optional(),
+      title: z.string().trim().min(2).optional(),
       slug: z
         .string()
         .trim()
-        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
-        .optional(),
-      description: z.string().trim().min(10).optional(),
+        .optional()
+        .transform((val) => {
+          if (!val || val.trim().length === 0) return undefined;
+          return val
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)/g, '');
+        }),
+      description: z.string().trim().min(5).optional(),
       shortDescription: z.string().trim().optional(),
       coverImage: storageImageSchema.optional(),
       image: storageImageSchema.optional(),
@@ -115,7 +135,7 @@ export const updateCourseSchema = {
       eligibility: z.string().trim().optional(),
       schedule: z.string().trim().optional(),
       capacity: courseCapacitySchema.optional(),
-      order: z.number().int().optional(),
+      order: z.coerce.number().int().optional(),
       status: z.enum(['draft', 'published', 'archived']).optional(),
       featured: z.boolean().optional(),
       seo: seoSchema.optional(),

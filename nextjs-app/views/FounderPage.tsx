@@ -223,7 +223,7 @@ export const FounderPage: React.FC = () => {
                   <span>Connect with Mrs. Shuchi Mohan</span>
                 </LinkButton>
 
-                <LinkButton to="/programs/trainers" variant="secondary" size="md">
+                <LinkButton to="/trainers" variant="secondary" size="md">
                   <span>View All Faculty Members</span>
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </LinkButton>

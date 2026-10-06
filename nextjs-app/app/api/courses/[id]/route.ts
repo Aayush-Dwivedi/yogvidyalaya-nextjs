@@ -35,7 +35,11 @@ export async function PATCH(
     const body = await request.json();
     const parsed = updateCourseSchema.body.safeParse(body);
     if (!parsed.success) {
-      return ApiResponse.badRequest('Validation failed', parsed.error.flatten().fieldErrors);
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+      const details = Object.entries(fieldErrors)
+        .map(([k, v]) => `${k}: ${v?.join(', ')}`)
+        .join('; ');
+      return ApiResponse.badRequest(`Validation failed: ${details}`, fieldErrors);
     }
 
     const course = await CourseService.updateCourse(id, parsed.data as any);

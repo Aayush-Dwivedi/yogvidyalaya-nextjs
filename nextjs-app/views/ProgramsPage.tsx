@@ -7,10 +7,17 @@ import { ProgramsSection } from '../sections/home/ProgramsSection';
 
 export const ProgramsPage: React.FC = () => {
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.hash) {
-      const el = document.getElementById(window.location.hash.replace('#', ''));
-      if (el) {
-        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
+    if (typeof window !== 'undefined') {
+      // If someone arrived via an old bookmark or link with #trainers, redirect directly to /trainers
+      if (window.location.hash.toLowerCase().includes('trainer')) {
+        window.location.replace('/trainers');
+        return;
+      }
+      if (window.location.hash) {
+        const el = document.getElementById(window.location.hash.replace('#', ''));
+        if (el) {
+          setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
+        }
       }
     }
   }, []);
@@ -30,8 +37,8 @@ export const ProgramsPage: React.FC = () => {
         </Container>
       </div>
 
-      {/* Main Programs & Trainers Section */}
-      <ProgramsSection />
+      {/* Main Programs Section (Trainers has its own dedicated page at /trainers) */}
+      <ProgramsSection showTrainers={false} />
     </div>
   );
 };

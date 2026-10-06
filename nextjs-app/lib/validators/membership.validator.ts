@@ -12,10 +12,10 @@ const membershipBatchSchema = z.object({
 });
 
 const membershipPriceSchema = z.object({
-  amount: z.number().min(0, 'Price cannot be negative'),
+  amount: z.coerce.number().min(0, 'Price cannot be negative').default(0),
   currency: z.string().default('INR'),
-  discountPercentage: z.number().min(0).max(100).default(0),
-  originalAmount: z.number().optional(),
+  discountPercentage: z.coerce.number().min(0).max(100).default(0),
+  originalAmount: z.coerce.number().optional(),
 });
 
 export const getMembershipPlansSchema = {
@@ -30,19 +30,26 @@ export const getMembershipPlanByIdOrSlugSchema = {
 
 export const createMembershipPlanSchema = {
   body: z.object({
-    title: z.string().trim().min(3, 'Title is required'),
+    title: z.string().trim().min(2, 'Title is required'),
     slug: z
       .string()
       .trim()
-      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase alphanumeric with hyphens')
-      .optional(),
-    billingCycle: z.enum(['monthly', 'quarterly', 'half-yearly', 'annual']),
-    price: membershipPriceSchema,
-    description: z.string().trim().min(5, 'Description is required'),
+      .optional()
+      .transform((val) => {
+        if (!val || val.trim().length === 0) return undefined;
+        return val
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+      }),
+    billingCycle: z.enum(['monthly', 'quarterly', 'half-yearly', 'annual']).default('monthly'),
+    price: membershipPriceSchema.default({ amount: 0, currency: 'INR', discountPercentage: 0 }),
+    description: z.string().trim().min(3, 'Description is required'),
     batches: z.array(membershipBatchSchema).default([]),
-    features: z.array(z.string().trim()).min(1, 'At least one feature is required'),
+    features: z.array(z.string().trim()).default([]),
     popular: z.boolean().default(false),
-    order: z.number().int().default(0),
+    order: z.coerce.number().int().default(0),
     status: z.enum(['draft', 'published', 'archived']).default('published'),
     termsAndConditions: z.array(z.string().trim()).default([]),
   }),

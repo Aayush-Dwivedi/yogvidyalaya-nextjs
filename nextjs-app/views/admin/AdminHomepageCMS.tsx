@@ -87,7 +87,7 @@ export const AdminHomepageCMS: React.FC = () => {
       setVideos(fetchedVideos || []);
     } catch (err: any) {
       console.error('Failed to load homepage CMS data', err);
-      setStatusMessage({ type: 'error', text: err.message || 'Failed to load homepage CMS content' });
+      setStatusMessage({ type: 'error', text: err.message || 'Failed to load homepage content' });
     } finally {
       setLoading(false);
     }
@@ -97,19 +97,6 @@ export const AdminHomepageCMS: React.FC = () => {
     loadData();
   }, []);
 
-  const [confirming, setConfirming] = useState(false);
-
-  const handleConfirmChanges = async () => {
-    try {
-      setConfirming(true);
-      await CmsService.confirmAllChanges();
-      showToast('All changes confirmed and published to live website!', 'success');
-    } catch (err: any) {
-      showToast(err.message || 'Failed to confirm changes', 'error');
-    } finally {
-      setConfirming(false);
-    }
-  };
 
   const showToast = (text: string, type: 'success' | 'error' = 'success') => {
     setStatusMessage({ type, text });
@@ -378,19 +365,6 @@ export const AdminHomepageCMS: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2.5">
-          <button
-            onClick={handleConfirmChanges}
-            disabled={confirming}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-sans text-plum-950 bg-gold-500 hover:bg-gold-400 font-bold transition-all shadow-sm hover:scale-[1.02]"
-            title="Purge cache and publish all changes to the public website immediately"
-          >
-            {confirming ? (
-              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Sparkles className="w-3.5 h-3.5 text-plum-950" />
-            )}
-            <span>{confirming ? 'Publishing...' : 'Confirm Changes'}</span>
-          </button>
           <button
             onClick={loadData}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-ink hover:text-plum-900 bg-white border border-border hover:bg-surface-subtle transition-colors shadow-xs font-medium"

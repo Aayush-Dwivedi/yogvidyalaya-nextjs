@@ -11,6 +11,7 @@ import {
   CmsHomepageCta,
   CmsCourse,
   CmsWorkshop,
+  CmsMembershipPlan,
 } from '../types/cms';
 
 export class CmsService {
@@ -65,7 +66,9 @@ export class CmsService {
   static async confirmAllChanges(): Promise<any> {
     const res = (await apiClient.post('/admin/revalidate')) as unknown as ApiResponse<any>;
     if (typeof window !== 'undefined') {
+      localStorage.removeItem('kalptaru_unconfirmed_changes');
       localStorage.setItem('kalptaru_last_sync', Date.now().toString());
+      window.dispatchEvent(new CustomEvent('kalptaru-unconfirmed-changed', { detail: { hasChanges: false } }));
       window.dispatchEvent(new CustomEvent('kalptaru-cms-updated', { detail: { timestamp: Date.now() } }));
     }
     return res.data;
@@ -238,6 +241,10 @@ export class CmsService {
     return res.data;
   }
 
+  static async deleteGalleryCategory(id: string): Promise<void> {
+    await apiClient.delete(`/gallery/categories/${id}`);
+  }
+
   static async getGalleryImages(status: string = 'all'): Promise<CmsGalleryImage[]> {
     const res = (await apiClient.get('/gallery', {
       params: { status, limit: 100 },
@@ -282,5 +289,35 @@ export class CmsService {
 
   static async deleteVideo(id: string): Promise<void> {
     await apiClient.delete(`/videos/${id}`);
+  }
+
+  // ==========================================
+  // MEMBERSHIP PLANS (CRUD, STATUS)
+  // ==========================================
+
+  static async getMembershipPlans(status: string = 'all', query?: Record<string, any>): Promise<CmsMembershipPlan[]> {
+    const res = (await apiClient.get('/membership-plans', {
+      params: { status, limit: 50, ...query },
+    })) as unknown as ApiResponse<CmsMembershipPlan[]>;
+    return res.data;
+  }
+
+  static async getMembershipPlanByIdOrSlug(idOrSlug: string): Promise<CmsMembershipPlan> {
+    const res = (await apiClient.get(`/membership-plans/${idOrSlug}`)) as unknown as ApiResponse<CmsMembershipPlan>;
+    return res.data;
+  }
+
+  static async createMembershipPlan(data: Partial<CmsMembershipPlan>): Promise<CmsMembershipPlan> {
+    const res = (await apiClient.post('/membership-plans', data)) as unknown as ApiResponse<CmsMembershipPlan>;
+    return res.data;
+  }
+
+  static async updateMembershipPlan(id: string, data: Partial<CmsMembershipPlan>): Promise<CmsMembershipPlan> {
+    const res = (await apiClient.patch(`/membership-plans/${id}`, data)) as unknown as ApiResponse<CmsMembershipPlan>;
+    return res.data;
+  }
+
+  static async deleteMembershipPlan(id: string): Promise<void> {
+    await apiClient.delete(`/membership-plans/${id}`);
   }
 }

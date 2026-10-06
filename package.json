@@ -1,0 +1,23 @@
+{
+  "name": "kalptaru-yog-vidyalaya",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-stack Next.js web platform for Kalptaru Yog Vidyalaya",
+  "scripts": {
+    "dev": "npm --prefix nextjs-app run dev",
+    "build": "npm --prefix nextjs-app run build",
+    "start": "npm --prefix nextjs-app run start",
+    "lint": "npm --prefix nextjs-app run lint",
+    "install:app": "npm --prefix nextjs-app install"
+  },
+  "keywords": [
+    "yoga",
+    "nextjs",
+    "react",
+    "typescript",
+    "mongoose",
+    "mongodb"
+  ],
+  "author": "Aayush Dwivedi",
+  "license": "ISC"
+}

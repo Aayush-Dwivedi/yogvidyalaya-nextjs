@@ -42,7 +42,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = createCourseSchema.body.safeParse(body);
     if (!parsed.success) {
-      return ApiResponse.badRequest('Validation failed', parsed.error.flatten().fieldErrors);
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+      const details = Object.entries(fieldErrors)
+        .map(([k, v]) => `${k}: ${v?.join(', ')}`)
+        .join('; ');
+      return ApiResponse.badRequest(`Validation failed: ${details}`, fieldErrors);
     }
 
     const course = await CourseService.createCourse(parsed.data as any);

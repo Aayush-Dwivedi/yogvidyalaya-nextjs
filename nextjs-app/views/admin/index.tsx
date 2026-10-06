@@ -11,6 +11,7 @@ import { AdminCoursesPage } from './AdminCoursesPage';
 import { AdminWorkshopsPage } from './AdminWorkshopsPage';
 import { AdminTrainersPage } from './AdminTrainersPage';
 import { AdminBookingsPage } from './AdminBookingsPage';
+import { AdminMembershipPage } from './AdminMembershipPage';
 
 export {
   AdminDashboardPage,
@@ -25,6 +26,7 @@ export {
   AdminWorkshopsPage,
   AdminTrainersPage,
   AdminBookingsPage,
+  AdminMembershipPage,
 };
 
 // Content Sub-Modules
@@ -48,15 +50,7 @@ export const AdminProgramsCorporate: React.FC = () => (
   />
 );
 
-export const AdminProgramsMembership: React.FC = () => (
-  <AdminModulePlaceholder
-    moduleName="Membership Plans & Shala Passes"
-    category="Programs"
-    description="Configure daily sadhana shala tiers, billing cycles, batch schedules, and member privileges."
-    sampleColumns={['Plan Name', 'Billing Cycle', 'Price', 'Batch Timings', 'Active Members', 'Status']}
-    sampleCount={3}
-  />
-);
+export const AdminProgramsMembership: React.FC = () => <AdminMembershipPage />;
 
 // Media Sub-Modules
 export const AdminMediaGallery: React.FC = () => <AdminGalleryCMS />;
