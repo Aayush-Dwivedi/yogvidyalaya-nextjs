@@ -124,10 +124,10 @@ export const AdminVideosCMS: React.FC = () => {
           alt: res.alt || file.name,
         },
       }));
-      showToast('Custom thumbnail uploaded to Supabase Storage!');
+      showToast('Custom thumbnail uploaded successfully!');
     } catch (err: any) {
       console.error(err);
-      showToast(err.message || 'Failed to upload thumbnail to Supabase Storage', 'error');
+      showToast(err.message || 'Failed to upload thumbnail', 'error');
     } finally {
       setUploadingThumb(false);
     }
@@ -237,35 +237,34 @@ export const AdminVideosCMS: React.FC = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft">
         <div>
           <div className="flex items-center gap-2.5 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-sans tracking-widest uppercase bg-gold-500/10 text-gold-400 border border-gold-500/30">
-              Video & Audio Archives
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-sans tracking-widest uppercase bg-gold-50 text-gold-700 border border-gold-200">
+              Media
             </span>
-            <span className="text-xs text-ivory/50">• Public Website Live Sync</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-editorial font-normal text-ivory tracking-wide">
-            Videos Management
+          <h1 className="text-2xl sm:text-3xl font-editorial font-bold text-plum-900 tracking-wide">
+            Videos
           </h1>
-          <p className="text-xs sm:text-sm text-ivory/70 font-sans mt-1">
-            Manage YouTube discourses, guided sadhanas, custom Supabase Storage thumbnails, categories, and homepage feature status.
+          <p className="text-xs sm:text-sm text-ink-muted font-sans mt-1">
+            Manage discourses, guided sadhanas, custom thumbnails, categories, and homepage feature status.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <button
             onClick={loadVideos}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-gold-300 bg-plum-900/60 border border-gold-500/30 hover:bg-plum-900 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-plum-900 bg-white border border-border hover:bg-canvas transition-colors shadow-xs"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <RefreshCw className="w-3.5 h-3.5 text-gold-600" />
             <span>Sync</span>
           </button>
           <button
             onClick={() => handleOpenModal()}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium bg-plum-900 hover:bg-plum-800 text-gold-300 transition-colors shadow-soft"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 text-gold-400" />
             <span>Add Video</span>
           </button>
         </div>
@@ -274,9 +273,9 @@ export const AdminVideosCMS: React.FC = () => {
       {/* Video Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {videos.length === 0 ? (
-          <div className="col-span-full py-16 text-center bg-plum-950/20 border border-gold-500/10 rounded-xl">
-            <VideoIcon className="w-10 h-10 text-gold-500/30 mx-auto mb-2" />
-            <p className="text-sm text-ivory/60 font-sans">No videos in archive.</p>
+          <div className="col-span-full py-16 text-center bg-white border border-border rounded-xl shadow-soft">
+            <VideoIcon className="w-10 h-10 text-ink-faint mx-auto mb-2" />
+            <p className="text-sm text-ink-muted font-sans">No videos in archive.</p>
           </div>
         ) : (
           videos.map((vid, index) => {
@@ -290,10 +289,10 @@ export const AdminVideosCMS: React.FC = () => {
             return (
               <div
                 key={vidId || index}
-                className="group bg-plum-950/40 border border-gold-500/20 rounded-xl overflow-hidden backdrop-blur-sm shadow-card flex flex-col justify-between hover:border-gold-500/40 transition-all"
+                className="group bg-white border border-border rounded-xl overflow-hidden shadow-soft flex flex-col justify-between hover:border-gold-300 hover:shadow-card transition-all"
               >
                 <div>
-                  <div className="relative aspect-video bg-plum-900 overflow-hidden">
+                  <div className="relative aspect-video bg-canvas overflow-hidden">
                     {thumbUrl ? (
                       <img
                         src={thumbUrl}
@@ -301,20 +300,20 @@ export const AdminVideosCMS: React.FC = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gold-400/30">
+                      <div className="w-full h-full flex items-center justify-center text-ink-faint">
                         <VideoIcon className="w-8 h-8" />
                       </div>
                     )}
 
                     {/* Order badge */}
-                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-plum-950/80 text-[10px] text-gold-300 font-mono border border-gold-500/20">
+                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-white/90 text-[10px] text-plum-900 font-mono border border-border shadow-xs">
                       Order #{vid.order}
                     </span>
 
                     {/* Duration badge */}
                     {vid.duration && (
-                      <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-plum-950/90 text-[11px] text-ivory font-mono flex items-center gap-1 border border-white/10">
-                        <Clock className="w-3 h-3 text-gold-400" />
+                      <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-white/90 text-[11px] text-ink font-mono flex items-center gap-1 border border-border shadow-xs">
+                        <Clock className="w-3 h-3 text-gold-600" />
                         <span>{vid.duration}</span>
                       </span>
                     )}
@@ -324,47 +323,47 @@ export const AdminVideosCMS: React.FC = () => {
                       onClick={() => handleToggleFeatured(vid)}
                       className={`absolute top-2 right-2 p-1.5 rounded-full transition-all ${
                         vid.featured
-                          ? 'bg-gold-500 text-plum-950 shadow-sm'
-                          : 'bg-plum-950/70 text-ivory/50 hover:text-gold-300'
+                          ? 'bg-gold-50 text-gold-700 border border-gold-300 shadow-xs'
+                          : 'bg-white/80 text-ink-faint hover:text-gold-600 border border-border'
                       }`}
                       title={vid.featured ? 'Featured on Homepage' : 'Click to feature on Homepage'}
                     >
-                      <Star className="w-3.5 h-3.5 fill-current" />
+                      <Star className={`w-3.5 h-3.5 ${vid.featured ? 'fill-gold-500 text-gold-500' : ''}`} />
                     </button>
                   </div>
 
                   <div className="p-4 space-y-2 font-sans">
                     <div className="flex items-center justify-between gap-2">
-                      <Badge variant="dark" size="sm">
+                      <Badge variant="neutral" size="sm">
                         {vid.category || 'Discourse'}
                       </Badge>
                       {vid.featured && <Badge variant="gold" size="sm">★ Home Featured</Badge>}
                     </div>
 
-                    <h3 className="font-editorial text-base text-ivory font-medium line-clamp-2 leading-snug">
+                    <h3 className="font-editorial text-base text-plum-900 font-bold line-clamp-2 leading-snug">
                       {vid.title}
                     </h3>
 
                     {vid.speaker && (
-                      <div className="flex items-center gap-1.5 text-xs text-gold-300/80">
-                        <User className="w-3.5 h-3.5 text-gold-400" />
+                      <div className="flex items-center gap-1.5 text-xs text-gold-700 font-medium">
+                        <User className="w-3.5 h-3.5 text-gold-600" />
                         <span>{vid.speaker}</span>
                       </div>
                     )}
 
                     {vid.description && (
-                      <p className="text-xs text-ivory/60 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-ink-muted line-clamp-2 leading-relaxed">
                         {vid.description}
                       </p>
                     )}
 
-                    <div className="pt-1 flex items-center justify-between text-[11px] text-ivory/40 font-mono">
+                    <div className="pt-1 flex items-center justify-between text-[11px] text-ink-faint font-mono">
                       <span>ID: {vid.youtubeVideoId || 'N/A'}</span>
                       <a
                         href={vid.youtubeUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gold-400 hover:text-gold-300 flex items-center gap-1"
+                        className="text-gold-700 hover:text-gold-800 flex items-center gap-1 font-semibold"
                       >
                         <span>YouTube</span>
                         <ExternalLink className="w-3 h-3" />
@@ -374,27 +373,27 @@ export const AdminVideosCMS: React.FC = () => {
                 </div>
 
                 {/* Card footer controls */}
-                <div className="p-3 border-t border-gold-500/10 bg-plum-900/30 flex items-center justify-between">
-                  <span className="text-[11px] text-ivory/50 font-sans capitalize">
+                <div className="p-3 border-t border-border bg-canvas/40 flex items-center justify-between">
+                  <span className="text-[11px] text-ink-muted font-sans capitalize">
                     Status: {vid.status}
                   </span>
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => handleOpenModal(vid)}
-                      className="p-1.5 text-gold-300 hover:text-gold-200 bg-plum-900/60 hover:bg-plum-900 border border-gold-500/20 rounded transition-colors"
+                      className="p-1.5 text-plum-900 hover:text-plum-950 bg-white hover:bg-gold-50 border border-border rounded transition-colors shadow-xs"
                       title="Edit video"
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
+                      <Edit2 className="w-3.5 h-3.5 text-gold-700" />
                     </button>
                     <button
                       onClick={() => {
                         setVideoToDelete(vid);
                         setDeleteModalOpen(true);
                       }}
-                      className="p-1.5 text-rose-300 hover:text-rose-200 bg-rose-950/40 hover:bg-rose-950 border border-rose-500/20 rounded transition-colors"
+                      className="p-1.5 text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded transition-colors shadow-xs"
                       title="Delete video"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-3.5 h-3.5 text-rose-600" />
                     </button>
                   </div>
                 </div>
@@ -416,7 +415,7 @@ export const AdminVideosCMS: React.FC = () => {
       >
         <form onSubmit={handleSaveVideo} className="space-y-4 font-sans text-xs sm:text-sm">
           <div>
-            <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
               YouTube URL *
             </label>
             <input
@@ -425,17 +424,17 @@ export const AdminVideosCMS: React.FC = () => {
               value={editingVideo?.youtubeUrl || ''}
               onChange={(e) => handleUrlChange(e.target.value)}
               placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-              className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400 font-mono"
+              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 font-mono shadow-xs"
             />
             {editingVideo?.youtubeVideoId && (
-              <p className="text-[11px] text-emerald-400 mt-1 font-mono">
+              <p className="text-[11px] text-emerald-700 mt-1 font-mono font-medium">
                 Detected YouTube Video ID: {editingVideo.youtubeVideoId}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
               Video Title *
             </label>
             <input
@@ -444,19 +443,19 @@ export const AdminVideosCMS: React.FC = () => {
               value={editingVideo?.title || ''}
               onChange={(e) => setEditingVideo({ ...editingVideo, title: e.target.value })}
               placeholder="e.g. The Essence of Classical Yoga: Beyond Asana Physicality"
-              className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Category
               </label>
               <select
                 value={editingVideo?.category || 'Discourse'}
                 onChange={(e) => setEditingVideo({ ...editingVideo, category: e.target.value })}
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink focus:outline-none focus:border-gold-500 shadow-xs"
               >
                 <option value="Discourse">Philosophy Discourse</option>
                 <option value="Guided Practice">Guided Practice</option>
@@ -467,7 +466,7 @@ export const AdminVideosCMS: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Speaker / Teacher
               </label>
               <input
@@ -475,14 +474,14 @@ export const AdminVideosCMS: React.FC = () => {
                 value={editingVideo?.speaker || ''}
                 onChange={(e) => setEditingVideo({ ...editingVideo, speaker: e.target.value })}
                 placeholder="Mrs. Shuchi Mohan"
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Duration (MM:SS)
               </label>
               <input
@@ -490,12 +489,12 @@ export const AdminVideosCMS: React.FC = () => {
                 value={editingVideo?.duration || ''}
                 onChange={(e) => setEditingVideo({ ...editingVideo, duration: e.target.value })}
                 placeholder="28:45"
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400 font-mono"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Display Order
               </label>
               <input
@@ -504,13 +503,13 @@ export const AdminVideosCMS: React.FC = () => {
                 onChange={(e) =>
                   setEditingVideo({ ...editingVideo, order: Number(e.target.value) })
                 }
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400 font-mono"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
               Description / Summary
             </label>
             <textarea
@@ -518,17 +517,17 @@ export const AdminVideosCMS: React.FC = () => {
               value={editingVideo?.description || ''}
               onChange={(e) => setEditingVideo({ ...editingVideo, description: e.target.value })}
               placeholder="Summary of the discourse, scriptural citations, or practice guidelines..."
-              className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
             />
           </div>
 
-          {/* Thumbnail Section (Supabase Storage Option) */}
-          <div className="p-3 bg-plum-900/30 border border-gold-500/20 rounded-lg space-y-2">
+          {/* Thumbnail Section */}
+          <div className="p-3 bg-canvas border border-border rounded-lg space-y-2 shadow-xs">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-gold-300 uppercase tracking-wider">
-                Video Thumbnail (Supabase Storage)
+              <label className="text-xs font-semibold text-plum-900 uppercase tracking-wider">
+                Video Thumbnail
               </label>
-              <span className="text-[10px] text-ivory/50">Optional Custom Cover</span>
+              <span className="text-[10px] text-ink-muted">Optional Custom Cover</span>
             </div>
 
             {editingVideo?.thumbnail?.url ? (
@@ -536,10 +535,10 @@ export const AdminVideosCMS: React.FC = () => {
                 <img
                   src={editingVideo.thumbnail.url}
                   alt="Thumbnail"
-                  className="w-24 h-16 object-cover rounded border border-gold-500/30"
+                  className="w-24 h-16 object-cover rounded border border-border shadow-xs"
                 />
                 <div className="space-y-1">
-                  <label className="cursor-pointer px-3 py-1 bg-gold-500 text-plum-950 rounded text-xs font-medium hover:bg-gold-400">
+                  <label className="cursor-pointer px-3 py-1 bg-plum-900 text-gold-300 rounded text-xs font-medium hover:bg-plum-800 shadow-soft">
                     Replace Thumbnail
                     <input
                       type="file"
@@ -549,18 +548,13 @@ export const AdminVideosCMS: React.FC = () => {
                       className="hidden"
                     />
                   </label>
-                  {editingVideo.thumbnail.path && (
-                    <p className="text-[10px] font-mono text-gold-400/60 truncate max-w-xs">
-                      {editingVideo.thumbnail.path}
-                    </p>
-                  )}
                 </div>
               </div>
             ) : (
-              <label className="flex items-center gap-2 p-3 border border-dashed border-gold-500/30 rounded cursor-pointer bg-plum-950/40 hover:bg-plum-900/40">
-                <Upload className="w-4 h-4 text-gold-400" />
-                <span className="text-xs text-ivory">
-                  {uploadingThumb ? 'Uploading...' : 'Upload custom thumbnail to Supabase Storage'}
+              <label className="flex items-center gap-2 p-3 border border-dashed border-border rounded cursor-pointer bg-white hover:border-gold-400 shadow-xs">
+                <Upload className="w-4 h-4 text-gold-600" />
+                <span className="text-xs text-ink font-medium">
+                  {uploadingThumb ? 'Uploading...' : 'Upload custom thumbnail'}
                 </span>
                 <input
                   type="file"
@@ -581,27 +575,27 @@ export const AdminVideosCMS: React.FC = () => {
                 onChange={(e) =>
                   setEditingVideo({ ...editingVideo, featured: e.target.checked })
                 }
-                className="rounded border-gold-500/30 bg-plum-900 text-gold-500 focus:ring-gold-400"
+                className="rounded border-border text-plum-900 focus:ring-gold-400"
               />
-              <span className="text-xs text-ivory">Feature in Homepage Video Spotlight</span>
+              <span className="text-xs text-ink font-medium">Feature in Homepage Video Spotlight</span>
             </label>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-gold-500/20">
+          <div className="flex justify-end gap-2 pt-4 border-t border-border">
             <button
               type="button"
               onClick={() => {
                 setModalOpen(false);
                 setEditingVideo(null);
               }}
-              className="px-4 py-2 rounded-lg text-xs font-sans text-ivory/70 hover:text-ivory border border-white/10"
+              className="px-4 py-2 rounded-lg text-xs font-sans text-ink-muted hover:text-ink border border-border bg-white shadow-xs"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving || uploadingThumb}
-              className="px-5 py-2 rounded-lg text-xs font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-sm disabled:opacity-50"
+              className="px-5 py-2 rounded-lg text-xs font-sans font-medium bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Video'}
             </button>
@@ -617,11 +611,11 @@ export const AdminVideosCMS: React.FC = () => {
         size="sm"
       >
         <div className="space-y-4 font-sans text-sm">
-          <p className="text-ivory/80">
+          <p className="text-ink">
             Are you sure you want to permanently delete{' '}
-            <strong className="text-gold-300">"{videoToDelete?.title}"</strong>?
+            <strong className="text-plum-900 font-bold">"{videoToDelete?.title}"</strong>?
           </p>
-          <p className="text-xs text-rose-300/80">
+          <p className="text-xs text-rose-600 font-medium">
             The video will be removed from archives and public homepage featured videos.
           </p>
 
@@ -629,7 +623,7 @@ export const AdminVideosCMS: React.FC = () => {
             <button
               type="button"
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 rounded-lg text-xs text-ivory/70 hover:text-ivory border border-white/10"
+              className="px-4 py-2 rounded-lg text-xs text-ink-muted hover:text-ink border border-border bg-white shadow-xs"
             >
               Cancel
             </button>
@@ -637,7 +631,7 @@ export const AdminVideosCMS: React.FC = () => {
               type="button"
               disabled={saving}
               onClick={confirmDelete}
-              className="px-4 py-2 rounded-lg text-xs bg-rose-600 hover:bg-rose-500 text-white font-medium shadow-sm disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-xs bg-rose-600 hover:bg-rose-700 text-white font-medium shadow-sm disabled:opacity-50"
             >
               {saving ? 'Deleting...' : 'Yes, Delete Video'}
             </button>

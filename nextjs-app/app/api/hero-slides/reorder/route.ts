@@ -6,7 +6,7 @@ import { requireAdminSession } from '@/lib/auth/session';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+async function handleReorder(request: NextRequest) {
   try {
     await connectDB();
     await requireAdminSession(request);
@@ -18,3 +18,12 @@ export async function POST(request: NextRequest) {
     return handleRouteError(error);
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  return handleReorder(request);
+}
+
+export async function POST(request: NextRequest) {
+  return handleReorder(request);
+}
+

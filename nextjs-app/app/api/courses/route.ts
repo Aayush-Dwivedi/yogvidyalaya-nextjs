@@ -6,6 +6,8 @@ import { ApiResponse, handleRouteError } from '@/lib/utils/apiResponse';
 import { requireAdminSession } from '@/lib/auth/session';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // GET /api/courses — public list
 export async function GET(request: NextRequest) {
@@ -23,7 +25,9 @@ export async function GET(request: NextRequest) {
       sort: searchParams.get('sort') || undefined,
     };
     const result = await CourseService.getCourses(query as any);
-    return ApiResponse.paginated(result.items, result.meta, 'Courses retrieved');
+    const res = ApiResponse.paginated(result.items, result.meta, 'Courses retrieved');
+    res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    return res;
   } catch (error) {
     return handleRouteError(error);
   }
@@ -33,7 +37,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
-    await requireAdminSession();
+    await requireAdminSession(request);
 
     const body = await request.json();
     const parsed = createCourseSchema.body.safeParse(body);

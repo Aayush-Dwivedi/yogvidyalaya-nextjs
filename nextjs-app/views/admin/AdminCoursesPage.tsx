@@ -138,7 +138,7 @@ export const AdminCoursesPage: React.FC = () => {
         coverImage: res,
         image: res,
       }));
-      showToast('Course cover image uploaded to Supabase Storage!');
+      showToast('Course cover image uploaded successfully!');
     } catch (err: any) {
       showToast(err.message || 'Failed to upload cover image', 'error');
     } finally {
@@ -157,7 +157,7 @@ export const AdminCoursesPage: React.FC = () => {
         ...prev,
         gallery: [...(prev?.gallery || []), res],
       }));
-      showToast('Gallery image added to Supabase Storage!');
+      showToast('Gallery image added successfully!');
     } catch (err: any) {
       showToast(err.message || 'Failed to upload gallery image', 'error');
     } finally {
@@ -405,18 +405,18 @@ export const AdminCoursesPage: React.FC = () => {
       )}
 
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft">
         <div>
           <div className="flex items-center gap-2.5 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-sans tracking-widest uppercase bg-gold-500/10 text-gold-400 border border-gold-500/30">
-              Academic Curriculums
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono tracking-widest uppercase bg-gold-50 text-gold-800 border border-gold-300 font-semibold">
+              Curriculum Management
             </span>
-            <span className="text-xs text-ivory/50">• Public Website Live Sync</span>
+            <span className="text-xs text-ink-muted">• Public Website Live Sync</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-editorial font-normal text-ivory tracking-wide">
+          <h1 className="text-2xl sm:text-3xl font-editorial font-bold text-plum-900 tracking-wide">
             Course Management
           </h1>
-          <p className="text-xs sm:text-sm text-ivory/70 font-sans mt-1">
+          <p className="text-xs sm:text-sm text-ink-muted font-sans mt-1">
             Create, edit, publish/unpublish, feature, reorder courses, curriculum modules, and SEO metadata.
           </p>
         </div>
@@ -424,14 +424,14 @@ export const AdminCoursesPage: React.FC = () => {
         <div className="flex items-center gap-2.5">
           <button
             onClick={loadCourses}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-gold-300 bg-plum-900/60 border border-gold-500/30 hover:bg-plum-900 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-ink hover:text-plum-900 bg-white border border-border hover:bg-canvas transition-colors shadow-xs font-medium"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <RefreshCw className="w-3.5 h-3.5 text-gold-600" />
             <span>Sync</span>
           </button>
           <button
             onClick={() => handleOpenModal()}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft"
           >
             <Plus className="w-4 h-4" />
             <span>Create New Course</span>
@@ -440,28 +440,28 @@ export const AdminCoursesPage: React.FC = () => {
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between bg-plum-950/30 border border-gold-500/15 p-3.5 rounded-xl font-sans text-xs">
-        <div className="flex items-center gap-2 flex-1 max-w-md bg-plum-900/50 border border-gold-500/20 rounded-lg px-3 py-1.5">
-          <Search className="w-4 h-4 text-gold-400/60 shrink-0" />
+      <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between bg-white border border-border p-3.5 rounded-xl font-sans text-xs shadow-soft">
+        <div className="flex items-center gap-2 flex-1 max-w-md bg-canvas border border-border rounded-lg px-3 py-1.5 shadow-xs">
+          <Search className="w-4 h-4 text-ink-muted shrink-0" />
           <input
             type="text"
             placeholder="Search by title, syllabus topic, slug..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent text-ivory placeholder-ivory/40 outline-none w-full text-xs"
+            className="bg-transparent text-ink placeholder-ink-faint outline-none w-full text-xs"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1.5 text-gold-300/80">
-            <Filter className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 text-ink-muted font-medium">
+            <Filter className="w-3.5 h-3.5 text-gold-600" />
             <span>Filters:</span>
           </div>
 
           <select
             value={filterLevel}
             onChange={(e) => setFilterLevel(e.target.value)}
-            className="bg-plum-900/60 border border-gold-500/20 text-ivory rounded px-2.5 py-1 text-xs outline-none"
+            className="bg-white border border-border text-ink rounded px-2.5 py-1 text-xs outline-none shadow-xs"
           >
             <option value="all">All Levels</option>
             <option value="beginner">Beginner</option>
@@ -473,7 +473,7 @@ export const AdminCoursesPage: React.FC = () => {
           <select
             value={filterMode}
             onChange={(e) => setFilterMode(e.target.value)}
-            className="bg-plum-900/60 border border-gold-500/20 text-ivory rounded px-2.5 py-1 text-xs outline-none"
+            className="bg-white border border-border text-ink rounded px-2.5 py-1 text-xs outline-none shadow-xs"
           >
             <option value="all">All Modes</option>
             <option value="residential">Residential</option>
@@ -485,7 +485,7 @@ export const AdminCoursesPage: React.FC = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="bg-plum-900/60 border border-gold-500/20 text-ivory rounded px-2.5 py-1 text-xs outline-none"
+            className="bg-white border border-border text-ink rounded px-2.5 py-1 text-xs outline-none shadow-xs"
           >
             <option value="all">All Statuses</option>
             <option value="published">Published</option>
@@ -496,26 +496,26 @@ export const AdminCoursesPage: React.FC = () => {
       </div>
 
       {/* Courses Table */}
-      <div className="bg-plum-950/40 border border-gold-500/20 rounded-xl overflow-hidden backdrop-blur-sm shadow-card">
+      <div className="bg-white border border-border rounded-xl overflow-hidden shadow-soft">
         <div className="overflow-x-auto">
           <table className="w-full text-left font-sans text-xs">
-            <thead className="bg-plum-900/60 border-b border-gold-500/20 text-gold-300">
+            <thead className="bg-canvas border-b border-border text-ink-muted font-mono uppercase tracking-wider text-[11px]">
               <tr>
-                <th className="px-3 py-3 font-semibold uppercase tracking-wider w-20 text-center">Order</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider w-16 text-center">Cover</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider">Course Details</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider">Level & Mode</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider">Tuition</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider text-center">Capacity</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider text-center">Featured</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider text-center">Status</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider text-right">Actions</th>
+                <th className="px-3 py-3 font-semibold w-20 text-center">Order</th>
+                <th className="px-4 py-3 font-semibold w-16 text-center">Cover</th>
+                <th className="px-4 py-3 font-semibold">Course Details</th>
+                <th className="px-4 py-3 font-semibold">Level &amp; Mode</th>
+                <th className="px-4 py-3 font-semibold">Tuition</th>
+                <th className="px-4 py-3 font-semibold text-center">Capacity</th>
+                <th className="px-4 py-3 font-semibold text-center">Featured</th>
+                <th className="px-4 py-3 font-semibold text-center">Status</th>
+                <th className="px-4 py-3 font-semibold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gold-500/10">
+            <tbody className="divide-y divide-border/70">
               {filteredCourses.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="text-center py-12 text-ivory/50">
+                  <td colSpan={9} className="text-center py-12 text-ink-muted">
                     No courses match your filter criteria. Click "Create New Course" above.
                   </td>
                 </tr>
@@ -528,8 +528,8 @@ export const AdminCoursesPage: React.FC = () => {
                   return (
                     <tr
                       key={courseId || index}
-                      className={`hover:bg-plum-900/30 transition-colors ${
-                        !isPublished ? 'opacity-60 bg-plum-950/20' : ''
+                      className={`hover:bg-canvas/50 transition-colors ${
+                        !isPublished ? 'opacity-70 bg-canvas/30' : ''
                       }`}
                     >
                       {/* Reorder Arrows */}
@@ -539,19 +539,19 @@ export const AdminCoursesPage: React.FC = () => {
                             type="button"
                             disabled={index === 0}
                             onClick={() => handleMoveOrder(index, 'up')}
-                            className="p-1 text-gold-400 hover:text-gold-200 disabled:opacity-20 hover:bg-plum-900 rounded"
+                            className="p-1 text-ink-muted hover:text-plum-900 disabled:opacity-20 hover:bg-canvas rounded transition-colors"
                             title="Move Up"
                           >
                             <ArrowUp className="w-3.5 h-3.5" />
                           </button>
-                          <span className="font-mono text-gold-400 font-semibold text-[11px] w-5">
+                          <span className="font-mono text-plum-900 font-bold text-[11px] w-5">
                             #{course.order !== undefined ? course.order : index + 1}
                           </span>
                           <button
                             type="button"
                             disabled={index === filteredCourses.length - 1}
                             onClick={() => handleMoveOrder(index, 'down')}
-                            className="p-1 text-gold-400 hover:text-gold-200 disabled:opacity-20 hover:bg-plum-900 rounded"
+                            className="p-1 text-ink-muted hover:text-plum-900 disabled:opacity-20 hover:bg-canvas rounded transition-colors"
                             title="Move Down"
                           >
                             <ArrowDown className="w-3.5 h-3.5" />
@@ -561,7 +561,7 @@ export const AdminCoursesPage: React.FC = () => {
 
                       {/* Cover Thumbnail */}
                       <td className="px-4 py-3 text-center">
-                        <div className="w-12 h-12 rounded-lg bg-plum-900/60 border border-gold-500/20 overflow-hidden flex items-center justify-center mx-auto">
+                        <div className="w-12 h-12 rounded-lg bg-canvas border border-border overflow-hidden flex items-center justify-center mx-auto shadow-xs">
                           {coverUrl ? (
                             <img
                               src={coverUrl}
@@ -569,20 +569,20 @@ export const AdminCoursesPage: React.FC = () => {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <GraduationCap className="w-5 h-5 text-gold-400/50" />
+                            <GraduationCap className="w-5 h-5 text-gold-600" />
                           )}
                         </div>
                       </td>
 
                       {/* Title & Slug */}
                       <td className="px-4 py-3">
-                        <div className="font-editorial text-sm text-ivory font-medium line-clamp-1">
+                        <div className="font-editorial text-sm text-plum-900 font-bold line-clamp-1">
                           {course.title}
                         </div>
-                        <div className="text-[11px] text-gold-400/80 font-mono">
+                        <div className="text-[11px] text-gold-700 font-mono">
                           /{course.slug}
                         </div>
-                        <div className="text-[10px] text-ivory/50 flex items-center gap-2 mt-0.5">
+                        <div className="text-[10px] text-ink-muted flex items-center gap-2 mt-0.5">
                           <span>{course.duration}</span>
                           <span>•</span>
                           <span>{course.curriculum?.length || 0} Modules</span>
@@ -597,7 +597,7 @@ export const AdminCoursesPage: React.FC = () => {
                           </Badge>
                         </div>
                         <div>
-                          <span className="text-[11px] text-ivory/70 capitalize">
+                          <span className="text-[11px] text-ink-muted capitalize">
                             {course.mode}
                           </span>
                         </div>
@@ -605,18 +605,18 @@ export const AdminCoursesPage: React.FC = () => {
 
                       {/* Tuition */}
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="font-editorial text-sm text-gold-300 font-semibold">
+                        <div className="font-editorial text-sm text-plum-900 font-bold">
                           {course.price?.displayPrice || `₹${course.price?.amount?.toLocaleString() || '0'}`}
                         </div>
-                        <div className="text-[10px] text-ivory/50">
+                        <div className="text-[10px] text-ink-muted">
                           {course.price?.isFree ? 'Free Admission' : course.price?.currency || 'INR'}
                         </div>
                       </td>
 
                       {/* Capacity */}
                       <td className="px-4 py-3 text-center whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1 text-[11px] text-ivory/80">
-                          <Users className="w-3 h-3 text-gold-400" />
+                        <div className="inline-flex items-center gap-1 text-[11px] text-ink font-medium">
+                          <Users className="w-3 h-3 text-gold-600" />
                           <span>{course.capacity?.enrolled || 0} / {course.capacity?.total || 30}</span>
                         </div>
                       </td>
@@ -626,14 +626,14 @@ export const AdminCoursesPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleToggleFeatured(course)}
-                          className={`p-1.5 rounded-lg border transition-all ${
+                          className={`p-1.5 rounded-lg border transition-all shadow-xs ${
                             course.featured
-                              ? 'bg-gold-500/20 border-gold-400 text-gold-300 hover:bg-gold-500/30'
-                              : 'bg-white/5 border-white/10 text-ivory/40 hover:text-ivory'
+                              ? 'bg-gold-50 border-gold-300 text-gold-800 hover:bg-gold-100'
+                              : 'bg-white border-border text-ink-muted hover:text-plum-900 hover:bg-canvas'
                           }`}
                           title={course.featured ? 'Featured on Homepage (Click to unfeature)' : 'Feature on Homepage'}
                         >
-                          <Star className={`w-4 h-4 ${course.featured ? 'fill-gold-400 text-gold-400' : ''}`} />
+                          <Star className={`w-4 h-4 ${course.featured ? 'fill-gold-500 text-gold-500' : ''}`} />
                         </button>
                       </td>
 
@@ -642,10 +642,10 @@ export const AdminCoursesPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleTogglePublish(course)}
-                          className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
+                          className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all shadow-xs ${
                             isPublished
-                              ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30'
-                              : 'bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30'
+                              ? 'bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100'
+                              : 'bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100'
                           }`}
                         >
                           {isPublished ? 'Published' : 'Draft'}
@@ -658,7 +658,7 @@ export const AdminCoursesPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleOpenModal(course)}
-                            className="p-1.5 text-gold-300 hover:text-gold-200 bg-plum-900/50 hover:bg-plum-900 border border-gold-500/20 rounded transition-colors"
+                            className="p-1.5 text-gold-700 hover:text-gold-900 bg-gold-50 hover:bg-gold-100 border border-gold-200 rounded transition-colors shadow-xs"
                             title="Edit Course"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
@@ -669,7 +669,7 @@ export const AdminCoursesPage: React.FC = () => {
                               setCourseToDelete(course);
                               setDeleteModalOpen(true);
                             }}
-                            className="p-1.5 text-rose-300 hover:text-rose-200 bg-rose-950/40 hover:bg-rose-950 border border-rose-500/20 rounded transition-colors"
+                            className="p-1.5 text-rose-700 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded transition-colors shadow-xs"
                             title="Delete Course"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -697,50 +697,50 @@ export const AdminCoursesPage: React.FC = () => {
       >
         <form onSubmit={handleSaveCourse} className="space-y-5 font-sans text-xs sm:text-sm">
           {/* Navigation Tabs */}
-          <div className="flex border-b border-gold-500/20 gap-4 text-xs font-sans">
+          <div className="flex border-b border-border gap-4 text-xs font-sans">
             <button
               type="button"
               onClick={() => setActiveTab('basics')}
-              className={`pb-2 font-medium border-b-2 transition-colors ${
+              className={`pb-2 font-semibold border-b-2 transition-colors ${
                 activeTab === 'basics'
-                  ? 'border-gold-400 text-gold-300'
-                  : 'border-transparent text-ivory/60 hover:text-ivory'
+                  ? 'border-plum-900 text-plum-900'
+                  : 'border-transparent text-ink-muted hover:text-plum-900'
               }`}
             >
-              1. General & Logistics
+              1. General &amp; Logistics
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('curriculum')}
-              className={`pb-2 font-medium border-b-2 transition-colors ${
+              className={`pb-2 font-semibold border-b-2 transition-colors ${
                 activeTab === 'curriculum'
-                  ? 'border-gold-400 text-gold-300'
-                  : 'border-transparent text-ivory/60 hover:text-ivory'
+                  ? 'border-plum-900 text-plum-900'
+                  : 'border-transparent text-ink-muted hover:text-plum-900'
               }`}
             >
-              2. Curriculum & Benefits
+              2. Curriculum &amp; Benefits
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('instructor')}
-              className={`pb-2 font-medium border-b-2 transition-colors ${
+              className={`pb-2 font-semibold border-b-2 transition-colors ${
                 activeTab === 'instructor'
-                  ? 'border-gold-400 text-gold-300'
-                  : 'border-transparent text-ivory/60 hover:text-ivory'
+                  ? 'border-plum-900 text-plum-900'
+                  : 'border-transparent text-ink-muted hover:text-plum-900'
               }`}
             >
-              3. Instructor & Media
+              3. Instructor &amp; Media
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('seo')}
-              className={`pb-2 font-medium border-b-2 transition-colors ${
+              className={`pb-2 font-semibold border-b-2 transition-colors ${
                 activeTab === 'seo'
-                  ? 'border-gold-400 text-gold-300'
-                  : 'border-transparent text-ivory/60 hover:text-ivory'
+                  ? 'border-plum-900 text-plum-900'
+                  : 'border-transparent text-ink-muted hover:text-plum-900'
               }`}
             >
-              4. SEO & Metadata
+              4. SEO &amp; Metadata
             </button>
           </div>
 
@@ -749,7 +749,7 @@ export const AdminCoursesPage: React.FC = () => {
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     Course Title *
                   </label>
                   <input
@@ -769,12 +769,12 @@ export const AdminCoursesPage: React.FC = () => {
                       }));
                     }}
                     placeholder="e.g. 200-Hour Yoga Teacher Training (TTC)"
-                    className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-sm placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs font-medium"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     URL Slug
                   </label>
                   <input
@@ -782,13 +782,13 @@ export const AdminCoursesPage: React.FC = () => {
                     value={editingCourse?.slug || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, slug: e.target.value })}
                     placeholder="e.g. 200-hour-yoga-teacher-training"
-                    className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 font-mono text-xs"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs placeholder:text-ink-faint focus:outline-none focus:border-gold-500 font-mono shadow-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                   Full Course Description *
                 </label>
                 <textarea
@@ -797,12 +797,12 @@ export const AdminCoursesPage: React.FC = () => {
                   value={editingCourse?.description || ''}
                   onChange={(e) => setEditingCourse({ ...editingCourse, description: e.target.value })}
                   placeholder="Comprehensive description of the certification program, philosophical lineage, and sadhana goals..."
-                  className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                  className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-sm placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs resize-y"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                   Short Description (Catalog cards)
                 </label>
                 <input
@@ -810,13 +810,13 @@ export const AdminCoursesPage: React.FC = () => {
                   value={editingCourse?.shortDescription || ''}
                   onChange={(e) => setEditingCourse({ ...editingCourse, shortDescription: e.target.value })}
                   placeholder="One sentence summary for public program cards..."
-                  className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 text-xs"
+                  className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     Duration *
                   </label>
                   <input
@@ -825,18 +825,18 @@ export const AdminCoursesPage: React.FC = () => {
                     value={editingCourse?.duration || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, duration: e.target.value })}
                     placeholder="e.g. 200 Hours / 4 Weeks"
-                    className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-sm placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     Level
                   </label>
                   <select
                     value={editingCourse?.level || 'all-levels'}
                     onChange={(e) => setEditingCourse({ ...editingCourse, level: e.target.value as any })}
-                    className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs"
                   >
                     <option value="beginner">Beginner</option>
                     <option value="intermediate">Intermediate</option>
@@ -846,13 +846,13 @@ export const AdminCoursesPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     Delivery Mode
                   </label>
                   <select
                     value={editingCourse?.mode || 'residential'}
                     onChange={(e) => setEditingCourse({ ...editingCourse, mode: e.target.value as any })}
-                    className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs"
                   >
                     <option value="residential">Residential (Gurukula)</option>
                     <option value="in-person">In-Person (Daily Shala)</option>
@@ -863,9 +863,9 @@ export const AdminCoursesPage: React.FC = () => {
               </div>
 
               {/* Pricing & Capacity */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-gold-500/20">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-border">
                 <div>
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     Tuition Amount (INR) *
                   </label>
                   <input
@@ -885,12 +885,12 @@ export const AdminCoursesPage: React.FC = () => {
                         },
                       });
                     }}
-                    className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 font-mono"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink font-mono text-sm focus:outline-none focus:border-gold-500 shadow-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     Seat Capacity Total
                   </label>
                   <input
@@ -906,12 +906,12 @@ export const AdminCoursesPage: React.FC = () => {
                         },
                       })
                     }
-                    className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 font-mono"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink font-mono text-sm focus:outline-none focus:border-gold-500 shadow-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     Enrolled Count
                   </label>
                   <input
@@ -927,7 +927,7 @@ export const AdminCoursesPage: React.FC = () => {
                         },
                       })
                     }
-                    className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 font-mono"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink font-mono text-sm focus:outline-none focus:border-gold-500 shadow-xs"
                   />
                 </div>
               </div>
@@ -935,7 +935,7 @@ export const AdminCoursesPage: React.FC = () => {
               {/* Schedule, Certification, Eligibility */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     Batch Schedule
                   </label>
                   <input
@@ -943,12 +943,12 @@ export const AdminCoursesPage: React.FC = () => {
                     value={editingCourse?.schedule || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, schedule: e.target.value })}
                     placeholder="e.g. Mon – Sat: 6:00 AM – 8:30 AM & 4:30 PM – 7:00 PM"
-                    className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 text-xs"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     Certification Granted
                   </label>
                   <input
@@ -956,26 +956,26 @@ export const AdminCoursesPage: React.FC = () => {
                     value={editingCourse?.certification || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, certification: e.target.value })}
                     placeholder="e.g. Yoga Alliance RYT 200 & AYUSH Certified"
-                    className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 text-xs"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
-                  Eligibility & Prerequisites
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                  Eligibility &amp; Prerequisites
                 </label>
                 <input
                   type="text"
                   value={editingCourse?.eligibility || ''}
                   onChange={(e) => setEditingCourse({ ...editingCourse, eligibility: e.target.value })}
                   placeholder="e.g. Open to sincere sadhakas with minimum 6 months regular practice."
-                  className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 text-xs"
+                  className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs"
                 />
               </div>
 
               {/* Status & Featured Flags */}
-              <div className="flex flex-wrap items-center gap-6 pt-2 border-t border-gold-500/20">
+              <div className="flex flex-wrap items-center gap-6 pt-2 border-t border-border">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -986,9 +986,9 @@ export const AdminCoursesPage: React.FC = () => {
                         status: e.target.checked ? 'published' : 'draft',
                       })
                     }
-                    className="rounded border-gold-500/30 bg-plum-900 text-gold-500 focus:ring-gold-400"
+                    className="rounded border-border text-gold-600 focus:ring-gold-500"
                   />
-                  <span className="text-xs text-ivory">Published & Visible on Public Site</span>
+                  <span className="text-xs text-ink font-medium">Published &amp; Visible on Public Site</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -1001,9 +1001,9 @@ export const AdminCoursesPage: React.FC = () => {
                         featured: e.target.checked,
                       })
                     }
-                    className="rounded border-gold-500/30 bg-plum-900 text-gold-500 focus:ring-gold-400"
+                    className="rounded border-border text-gold-600 focus:ring-gold-500"
                   />
-                  <span className="text-xs text-ivory">Feature on Homepage Catalog</span>
+                  <span className="text-xs text-ink font-medium">Feature on Homepage Catalog</span>
                 </label>
               </div>
             </div>
@@ -1014,8 +1014,8 @@ export const AdminCoursesPage: React.FC = () => {
             <div className="space-y-6">
               {/* Benefits Builder */}
               <div className="space-y-3">
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider">
-                  Key Course Benefits & Highlights
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider">
+                  Key Course Benefits &amp; Highlights
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -1029,12 +1029,12 @@ export const AdminCoursesPage: React.FC = () => {
                       }
                     }}
                     placeholder="e.g. Master authentic classical pranayama & mudras..."
-                    className="flex-1 bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 text-xs"
+                    className="flex-1 bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
                   />
                   <button
                     type="button"
                     onClick={handleAddBenefit}
-                    className="px-4 py-2 bg-gold-500 text-plum-950 font-medium rounded-lg text-xs hover:bg-gold-400"
+                    className="px-4 py-2 bg-plum-900 text-gold-300 font-semibold rounded-lg text-xs hover:bg-plum-800 shadow-soft"
                   >
                     Add Highlight
                   </button>
@@ -1045,34 +1045,34 @@ export const AdminCoursesPage: React.FC = () => {
                     editingCourse.benefits.map((b, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-2 px-3 py-1 bg-plum-900/60 border border-gold-500/30 rounded-md text-xs text-gold-200"
+                        className="inline-flex items-center gap-2 px-3 py-1 bg-gold-50 border border-gold-300 rounded-md text-xs text-gold-900 font-medium shadow-xs"
                       >
                         <span>{b}</span>
                         <button
                           type="button"
                           onClick={() => handleRemoveBenefit(idx)}
-                          className="text-rose-400 hover:text-rose-300 font-bold"
+                          className="text-rose-600 hover:text-rose-800 font-bold"
                         >
                           &times;
                         </button>
                       </span>
                     ))
                   ) : (
-                    <span className="text-xs text-ivory/50">No benefits added yet.</span>
+                    <span className="text-xs text-ink-muted">No benefits added yet.</span>
                   )}
                 </div>
               </div>
 
               {/* Curriculum Module Manager */}
-              <div className="space-y-3 pt-3 border-t border-gold-500/20">
+              <div className="space-y-3 pt-3 border-t border-border">
                 <div className="flex items-center justify-between">
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider">
                     Curriculum Modules (Syllabus)
                   </label>
                   <button
                     type="button"
                     onClick={handleAddModule}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-gold-500/20 text-gold-300 border border-gold-500/30 rounded text-xs hover:bg-gold-500/30"
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-plum-900 text-gold-300 rounded text-xs hover:bg-plum-800 font-semibold shadow-soft"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Module</span>
@@ -1088,8 +1088,8 @@ export const AdminCoursesPage: React.FC = () => {
                       onClick={() => setSelectedModuleIdx(idx)}
                       className={`px-3 py-1.5 rounded text-xs font-sans border transition-all ${
                         selectedModuleIdx === idx
-                          ? 'bg-gold-500/30 border-gold-400 text-gold-200 font-semibold'
-                          : 'bg-plum-900/40 border-gold-500/20 text-ivory/70 hover:text-ivory'
+                          ? 'bg-plum-900 border-plum-900 text-gold-300 font-semibold shadow-xs'
+                          : 'bg-white border-border text-ink hover:text-plum-900 hover:bg-canvas'
                       }`}
                     >
                       Module {idx + 1}
@@ -1099,16 +1099,16 @@ export const AdminCoursesPage: React.FC = () => {
 
                 {/* Selected Module Editor */}
                 {editingCourse?.curriculum && editingCourse.curriculum[selectedModuleIdx] && (
-                  <div className="p-4 bg-plum-900/30 border border-gold-500/20 rounded-xl space-y-3">
+                  <div className="p-4 bg-canvas border border-border rounded-xl space-y-3 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-mono text-gold-400 uppercase">
+                      <h4 className="text-xs font-mono text-plum-900 font-bold uppercase">
                         Editing Module {selectedModuleIdx + 1}
                       </h4>
                       {editingCourse.curriculum.length > 1 && (
                         <button
                           type="button"
                           onClick={() => handleRemoveModule(selectedModuleIdx)}
-                          className="text-xs text-rose-400 hover:text-rose-300"
+                          className="text-xs text-rose-600 hover:text-rose-800 font-medium"
                         >
                           Remove Module
                         </button>
@@ -1116,7 +1116,7 @@ export const AdminCoursesPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-[11px] text-ivory/70 mb-1">Module Title</label>
+                      <label className="block text-[11px] text-ink-muted mb-1 font-medium">Module Title</label>
                       <input
                         type="text"
                         value={editingCourse.curriculum[selectedModuleIdx].title}
@@ -1128,12 +1128,12 @@ export const AdminCoursesPage: React.FC = () => {
                             return { ...prev, curriculum: cur };
                           });
                         }}
-                        className="w-full bg-plum-900/60 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory focus:outline-none focus:border-gold-400"
+                        className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 shadow-xs font-medium"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] text-ivory/70 mb-1">Module Description</label>
+                      <label className="block text-[11px] text-ink-muted mb-1 font-medium">Module Description</label>
                       <input
                         type="text"
                         value={editingCourse.curriculum[selectedModuleIdx].description || ''}
@@ -1145,13 +1145,13 @@ export const AdminCoursesPage: React.FC = () => {
                             return { ...prev, curriculum: cur };
                           });
                         }}
-                        className="w-full bg-plum-900/60 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory focus:outline-none focus:border-gold-400"
+                        className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 shadow-xs"
                       />
                     </div>
 
                     {/* Topics Sub-list */}
                     <div>
-                      <label className="block text-[11px] text-ivory/70 mb-1">Topics & Practical Units</label>
+                      <label className="block text-[11px] text-ink-muted mb-1 font-medium">Topics &amp; Practical Units</label>
                       <div className="flex gap-2 mb-2">
                         <input
                           type="text"
@@ -1164,12 +1164,12 @@ export const AdminCoursesPage: React.FC = () => {
                             }
                           }}
                           placeholder="Add topic (e.g. Asana Alignment & Spine Biomechanics)..."
-                          className="flex-1 bg-plum-900/60 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory focus:outline-none focus:border-gold-400"
+                          className="flex-1 bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 shadow-xs"
                         />
                         <button
                           type="button"
                           onClick={handleAddTopicToModule}
-                          className="px-3 py-1.5 bg-gold-500 text-plum-950 font-medium rounded text-xs hover:bg-gold-400"
+                          className="px-3 py-1.5 bg-plum-900 text-gold-300 font-semibold rounded text-xs hover:bg-plum-800 shadow-soft"
                         >
                           Add Topic
                         </button>
@@ -1179,13 +1179,13 @@ export const AdminCoursesPage: React.FC = () => {
                         {editingCourse.curriculum[selectedModuleIdx].topics.map((top, tIdx) => (
                           <div
                             key={tIdx}
-                            className="flex items-center justify-between px-2.5 py-1 bg-plum-950/40 border border-gold-500/10 rounded text-xs text-ivory/90"
+                            className="flex items-center justify-between px-2.5 py-1 bg-white border border-border rounded text-xs text-ink shadow-xs"
                           >
                             <span>• {top}</span>
                             <button
                               type="button"
                               onClick={() => handleRemoveTopic(tIdx)}
-                              className="text-rose-400 hover:text-rose-300 text-sm font-bold"
+                              className="text-rose-600 hover:text-rose-800 text-sm font-bold"
                             >
                               &times;
                             </button>
@@ -1203,17 +1203,17 @@ export const AdminCoursesPage: React.FC = () => {
           {activeTab === 'instructor' && (
             <div className="space-y-5">
               {/* Cover Image Upload */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center p-4 bg-plum-900/30 border border-gold-500/20 rounded-xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center p-4 bg-canvas border border-border rounded-xl shadow-xs">
                 <div>
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     Course Cover Image
                   </label>
-                  <p className="text-[11px] text-ivory/60 mb-3">
-                    High-resolution photograph stored securely in Supabase Storage bucket 'kalptaru-media/courses'.
+                  <p className="text-[11px] text-ink-muted mb-3">
+                    High-resolution photograph (JPEG, PNG, or WebP. Max 5MB).
                   </p>
-                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gold-500 text-plum-950 rounded-lg text-xs font-semibold hover:bg-gold-400 transition-colors">
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-plum-900 text-gold-300 rounded-lg text-xs font-semibold hover:bg-plum-800 transition-colors shadow-soft">
                     <ImageIcon className="w-4 h-4" />
-                    <span>{uploadingImage ? 'Uploading to Supabase...' : 'Upload Cover Image'}</span>
+                    <span>{uploadingImage ? 'Uploading...' : 'Upload Cover Image'}</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -1224,7 +1224,7 @@ export const AdminCoursesPage: React.FC = () => {
                   </label>
                 </div>
 
-                <div className="aspect-video rounded-lg overflow-hidden border border-gold-500/30 bg-plum-900 flex items-center justify-center">
+                <div className="aspect-video rounded-lg overflow-hidden border border-border bg-white flex items-center justify-center shadow-xs">
                   {(editingCourse?.coverImage?.url || editingCourse?.image?.url) ? (
                     <img
                       src={editingCourse.coverImage?.url || editingCourse.image?.url}
@@ -1232,7 +1232,7 @@ export const AdminCoursesPage: React.FC = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-xs text-ivory/40">No cover image uploaded</span>
+                    <span className="text-xs text-ink-muted">No cover image uploaded</span>
                   )}
                 </div>
               </div>
@@ -1240,10 +1240,10 @@ export const AdminCoursesPage: React.FC = () => {
               {/* Gallery Images */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider">
+                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider">
                     Gallery Images ({editingCourse?.gallery?.length || 0})
                   </label>
-                  <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 bg-gold-500/20 text-gold-300 border border-gold-500/30 rounded text-xs hover:bg-gold-500/30">
+                  <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 bg-plum-900 text-gold-300 rounded text-xs hover:bg-plum-800 font-semibold shadow-soft">
                     <Plus className="w-3.5 h-3.5" />
                     <span>{uploadingGallery ? 'Uploading...' : 'Add Gallery Photo'}</span>
                     <input
@@ -1260,13 +1260,13 @@ export const AdminCoursesPage: React.FC = () => {
                   {editingCourse?.gallery?.map((img, idx) => (
                     <div
                       key={idx}
-                      className="relative group aspect-square rounded-lg overflow-hidden border border-gold-500/20 bg-plum-900"
+                      className="relative group aspect-square rounded-lg overflow-hidden border border-border bg-canvas shadow-xs"
                     >
                       <img src={img.url} alt="Gallery" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => handleRemoveGalleryImage(idx)}
-                        className="absolute top-1 right-1 p-1 bg-rose-950/80 hover:bg-rose-900 text-rose-300 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1 right-1 p-1 bg-rose-900/90 hover:bg-rose-800 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity"
                         title="Delete photo"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -1277,11 +1277,11 @@ export const AdminCoursesPage: React.FC = () => {
               </div>
 
               {/* Lead Instructor Details */}
-              <div className="p-4 bg-plum-900/30 border border-gold-500/20 rounded-xl space-y-3">
-                <h4 className="text-xs font-mono text-gold-400 uppercase">Lead Acharya / Instructor</h4>
+              <div className="p-4 bg-canvas border border-border rounded-xl space-y-3 shadow-xs">
+                <h4 className="text-xs font-mono text-plum-900 font-bold uppercase">Lead Acharya / Instructor</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[11px] text-ivory/70 mb-1">Instructor Name *</label>
+                    <label className="block text-[11px] text-ink-muted mb-1 font-medium">Instructor Name *</label>
                     <input
                       type="text"
                       required
@@ -1296,12 +1296,12 @@ export const AdminCoursesPage: React.FC = () => {
                         })
                       }
                       placeholder="e.g. Mrs. Shuchi Mohan"
-                      className="w-full bg-plum-900/60 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory focus:outline-none focus:border-gold-400"
+                      className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 shadow-xs"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] text-ivory/70 mb-1">Instructor Title</label>
+                    <label className="block text-[11px] text-ink-muted mb-1 font-medium">Instructor Title</label>
                     <input
                       type="text"
                       value={editingCourse?.instructor?.title || ''}
@@ -1316,13 +1316,13 @@ export const AdminCoursesPage: React.FC = () => {
                         })
                       }
                       placeholder="e.g. Founder & Lead Instructor"
-                      className="w-full bg-plum-900/60 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory focus:outline-none focus:border-gold-400"
+                      className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 shadow-xs"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] text-ivory/70 mb-1">Instructor Bio</label>
+                  <label className="block text-[11px] text-ink-muted mb-1 font-medium">Instructor Bio</label>
                   <textarea
                     rows={2}
                     value={editingCourse?.instructor?.bio || ''}
@@ -1337,7 +1337,7 @@ export const AdminCoursesPage: React.FC = () => {
                       })
                     }
                     placeholder="Brief background and lineage qualifications..."
-                    className="w-full bg-plum-900/60 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory focus:outline-none focus:border-gold-400"
+                    className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 shadow-xs resize-y"
                   />
                 </div>
               </div>
@@ -1348,7 +1348,7 @@ export const AdminCoursesPage: React.FC = () => {
           {activeTab === 'seo' && (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                   Meta Title
                 </label>
                 <input
@@ -1361,12 +1361,12 @@ export const AdminCoursesPage: React.FC = () => {
                     })
                   }
                   placeholder="e.g. 200-Hour Yoga Teacher Training | Kalptaru Yog Vidyalaya"
-                  className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 text-xs"
+                  className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                   Meta Description
                 </label>
                 <textarea
@@ -1379,12 +1379,12 @@ export const AdminCoursesPage: React.FC = () => {
                     })
                   }
                   placeholder="Compelling meta description for Google Search engines..."
-                  className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 text-xs"
+                  className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs resize-y"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                   Keywords (Comma separated)
                 </label>
                 <input
@@ -1400,21 +1400,21 @@ export const AdminCoursesPage: React.FC = () => {
                     })
                   }
                   placeholder="e.g. yoga teacher training, 200 hour ttc, rishikesh yoga, classical hatha"
-                  className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3 py-2 text-ivory focus:outline-none focus:border-gold-400 text-xs font-mono"
+                  className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink focus:outline-none focus:border-gold-500 text-xs font-mono shadow-xs"
                 />
               </div>
             </div>
           )}
 
           {/* Modal Footer Controls */}
-          <div className="flex justify-between items-center pt-4 border-t border-gold-500/20">
+          <div className="flex justify-between items-center pt-4 border-t border-border">
             <button
               type="button"
               onClick={() => {
                 setModalOpen(false);
                 setEditingCourse(null);
               }}
-              className="px-4 py-2 rounded-lg text-xs font-sans text-ivory/70 hover:text-ivory border border-white/10"
+              className="px-4 py-2 rounded-lg text-xs font-sans text-ink hover:text-plum-900 bg-white border border-border hover:bg-canvas shadow-xs font-medium"
             >
               Cancel
             </button>
@@ -1422,7 +1422,7 @@ export const AdminCoursesPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={saving || uploadingImage}
-                className="px-6 py-2 rounded-lg text-xs font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-sm disabled:opacity-50"
+                className="px-6 py-2 rounded-lg text-xs font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft disabled:opacity-50"
               >
                 {saving ? 'Saving Course...' : 'Save Course'}
               </button>
@@ -1439,19 +1439,19 @@ export const AdminCoursesPage: React.FC = () => {
         size="sm"
       >
         <div className="space-y-4 font-sans text-sm">
-          <p className="text-ivory/80">
+          <p className="text-ink">
             Are you sure you want to permanently delete the course{' '}
-            <strong className="text-gold-300">"{courseToDelete?.title}"</strong>?
+            <strong className="text-plum-900">"{courseToDelete?.title}"</strong>?
           </p>
-          <p className="text-xs text-rose-300/80">
+          <p className="text-xs text-rose-600">
             This will immediately remove this course syllabus and public card from the live catalog.
           </p>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-2 border-t border-border">
             <button
               type="button"
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 rounded-lg text-xs text-ivory/70 hover:text-ivory border border-white/10"
+              className="px-4 py-2 rounded-lg text-xs font-sans text-ink hover:text-plum-900 bg-white border border-border hover:bg-canvas shadow-xs font-medium"
             >
               Cancel
             </button>
@@ -1459,7 +1459,7 @@ export const AdminCoursesPage: React.FC = () => {
               type="button"
               disabled={saving}
               onClick={confirmDelete}
-              className="px-4 py-2 rounded-lg text-xs bg-rose-600 hover:bg-rose-500 text-white font-medium shadow-sm disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-xs bg-rose-600 hover:bg-rose-500 text-white font-semibold shadow-soft disabled:opacity-50"
             >
               {saving ? 'Deleting...' : 'Yes, Delete Course'}
             </button>

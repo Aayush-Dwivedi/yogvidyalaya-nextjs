@@ -1,4 +1,4 @@
-import { apiClient } from '../api/axios';
+import { apiClient } from '@/lib/api/axios';
 import { ApiResponse } from '../types';
 import {
   User,
@@ -11,29 +11,19 @@ import {
 export class AuthService {
   /**
    * Log in user (student or admin)
+   * Session is maintained via secure HttpOnly cookies set by the server.
    */
   static async login(credentials: LoginCredentials): Promise<AuthResponseData> {
     const res = (await apiClient.post('/auth/login', credentials)) as unknown as ApiResponse<AuthResponseData>;
-    if (res.data?.tokens?.accessToken) {
-      localStorage.setItem('kalptaru_auth_token', res.data.tokens.accessToken);
-      if (res.data.tokens.refreshToken) {
-        localStorage.setItem('kalptaru_refresh_token', res.data.tokens.refreshToken);
-      }
-    }
     return res.data;
   }
 
   /**
    * Register a new student
+   * Session is maintained via secure HttpOnly cookies set by the server.
    */
   static async register(data: RegisterStudentData): Promise<AuthResponseData> {
     const res = (await apiClient.post('/auth/register', data)) as unknown as ApiResponse<AuthResponseData>;
-    if (res.data?.tokens?.accessToken) {
-      localStorage.setItem('kalptaru_auth_token', res.data.tokens.accessToken);
-      if (res.data.tokens.refreshToken) {
-        localStorage.setItem('kalptaru_refresh_token', res.data.tokens.refreshToken);
-      }
-    }
     return res.data;
   }
 
@@ -55,17 +45,13 @@ export class AuthService {
 
   /**
    * Logout current session
+   * Instructs server to clear HttpOnly authentication cookies.
    */
   static async logout(): Promise<void> {
     try {
       await apiClient.post('/auth/logout');
     } catch {
       // Ignore network errors during logout
-    } finally {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('kalptaru_auth_token');
-        localStorage.removeItem('kalptaru_refresh_token');
-      }
     }
   }
 
@@ -73,7 +59,6 @@ export class AuthService {
    * Check if session might exist
    */
   static hasToken(): boolean {
-    if (typeof window === 'undefined') return false;
-    return true;
+    return typeof window !== 'undefined';
   }
 }

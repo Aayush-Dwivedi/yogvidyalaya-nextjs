@@ -27,7 +27,7 @@ export async function PATCH(
 ) {
   try {
     await connectDB();
-    await requireAdminSession();
+    await requireAdminSession(request);
     const { id } = await params;
     const body = await request.json();
     const parsed = updateWorkshopSchema.body.safeParse(body);
@@ -42,12 +42,12 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
-    await requireAdminSession();
+    await requireAdminSession(request);
     const { id } = await params;
     await WorkshopService.deleteWorkshop(id);
     return ApiResponse.success(null, 'Workshop deleted');

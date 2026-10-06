@@ -20,7 +20,7 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     await connectDB();
-    await requireAdminSession();
+    await requireAdminSession(request);
     const body = await request.json();
     const parsed = updateInstituteSchema.body.safeParse(body);
     if (!parsed.success) return ApiResponse.badRequest('Validation failed', parsed.error.flatten().fieldErrors);

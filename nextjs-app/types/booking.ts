@@ -1,4 +1,4 @@
-export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'refunded';
+export type BookingStatus = 'new' | 'contacted' | 'confirmed' | 'completed' | 'cancelled' | 'pending' | 'refunded';
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded' | 'waived';
 export type BookingProgramType = 'course' | 'workshop';
 
@@ -19,12 +19,27 @@ export interface BookingProgram {
 }
 
 export interface BookingSchedule {
+  scheduleId?: string;
   date?: string;
+  endDate?: string;
+  startTime?: string;
+  endTime?: string;
   time?: string;
   batch?: string;
   duration?: string;
   mode?: string;
   venue?: string;
+  location?: string;
+}
+
+export interface BookingAttendeeDetails {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  gender?: string;
+  age?: number;
+  city?: string;
+  message?: string;
 }
 
 export interface BookingAmount {
@@ -46,10 +61,12 @@ export interface BookingMetadata {
 export interface Booking {
   _id: string;
   bookingReference: string;
-  student: BookingStudent;
+  student?: BookingStudent;
   program: BookingProgram;
   schedule: BookingSchedule;
+  attendeeDetails?: BookingAttendeeDetails;
   bookingStatus: BookingStatus;
+  status?: BookingStatus;
   amount: BookingAmount;
   paymentStatus: PaymentStatus;
   bookingDate: string;
@@ -65,8 +82,28 @@ export interface CreateBookingPayload {
   programType: BookingProgramType;
   programId: string;
   schedule?: BookingSchedule;
+  attendeeDetails?: BookingAttendeeDetails;
   metadata?: BookingMetadata;
   notes?: string;
+}
+
+export interface ProgramScheduleOption {
+  id: string;
+  batch: string;
+  date?: string;
+  endDate?: string;
+  startTime?: string;
+  endTime?: string;
+  time?: string;
+  duration?: string;
+  mode: string;
+  venue: string;
+  location?: string;
+  totalCapacity: number;
+  enrolled: number;
+  availableSeats: number;
+  status: string;
+  isFull: boolean;
 }
 
 export interface BookingFilterParams {
@@ -76,6 +113,11 @@ export interface BookingFilterParams {
   status?: string;
   paymentStatus?: string;
   programType?: string;
+  programId?: string;
+  program?: string;
+  date?: string;
+  startDate?: string;
+  endDate?: string;
   sort?: string;
 }
 

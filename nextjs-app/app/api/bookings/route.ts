@@ -3,15 +3,16 @@ import { connectDB } from '@/lib/db/mongoose';
 import { BookingService } from '@/lib/services/booking.service';
 import { createBookingSchema } from '@/lib/validators/booking.validator';
 import { ApiResponse, handleRouteError } from '@/lib/utils/apiResponse';
-import { requireSession } from '@/lib/auth/session';
+import { requireAdminSession } from '@/lib/auth/session';
+import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimiter';
 
 export const runtime = 'nodejs';
 
-// GET /api/bookings
+// GET /api/bookings — Protected for Admin only
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    const session = await requireSession();
+    await requireAdminSession(request);
     const { searchParams } = new URL(request.url);
 
     const query = {
@@ -20,36 +21,26 @@ export async function GET(request: NextRequest) {
       status: searchParams.get('status') || undefined,
       paymentStatus: searchParams.get('paymentStatus') || undefined,
       programType: searchParams.get('programType') || undefined,
+      programId: searchParams.get('programId') || undefined,
+      program: searchParams.get('program') || undefined,
+      date: searchParams.get('date') || undefined,
+      startDate: searchParams.get('startDate') || undefined,
+      endDate: searchParams.get('endDate') || undefined,
       search: searchParams.get('search') || undefined,
     };
 
-    // Admins see all bookings; students see only their own
-    const studentId = ['admin', 'super_admin'].includes(session.role)
-      ? undefined
-      : session.id;
-
-    const result = await BookingService.getBookings(query, studentId);
+    const result = await BookingService.getBookings(query);
     return ApiResponse.paginated(result.items, result.meta, 'Bookings retrieved');
   } catch (error) {
     return handleRouteError(error);
   }
 }
 
-// POST /api/bookings — authenticated student
-export async function POST(request: NextRequest) {
-  try {
-    await connectDB();
-    const session = await requireSession();
-    const body = await request.json();
-
-    const parsed = createBookingSchema.body.safeParse(body);
-    if (!parsed.success) {
-      return ApiResponse.badRequest('Validation failed', parsed.error.flatten().fieldErrors);
-    }
-
-    const booking = await BookingService.createBooking(session.id, parsed.data as any);
-    return ApiResponse.created(booking, 'Booking confirmed successfully');
-  } catch (error) {
-    return handleRouteError(error);
-  }
+// POST /api/bookings — Decommissioned: Online visitor booking submission is decommissioned.
+// Visitors contact Kalptaru Yog Vidyalaya directly via Phone, Email, or WhatsApp.
+export async function POST(_request: NextRequest) {
+  return ApiResponse.badRequest(
+    'Public online booking creation is decommissioned. Please contact Kalptaru Yog Vidyalaya directly.'
+  );
 }
+

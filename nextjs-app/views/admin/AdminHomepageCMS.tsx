@@ -97,6 +97,20 @@ export const AdminHomepageCMS: React.FC = () => {
     loadData();
   }, []);
 
+  const [confirming, setConfirming] = useState(false);
+
+  const handleConfirmChanges = async () => {
+    try {
+      setConfirming(true);
+      await CmsService.confirmAllChanges();
+      showToast('All changes confirmed and published to live website!', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to confirm changes', 'error');
+    } finally {
+      setConfirming(false);
+    }
+  };
+
   const showToast = (text: string, type: 'success' | 'error' = 'success') => {
     setStatusMessage({ type, text });
     setTimeout(() => {
@@ -152,10 +166,10 @@ export const AdminHomepageCMS: React.FC = () => {
           alt: res.alt || file.name,
         },
       }));
-      showToast('Image uploaded to Supabase Storage successfully!');
+      showToast('Image uploaded successfully!');
     } catch (err: any) {
       console.error(err);
-      showToast(err.message || 'Failed to upload image to Supabase Storage', 'error');
+      showToast(err.message || 'Failed to upload image', 'error');
     } finally {
       setUploadingImage(false);
     }
@@ -347,35 +361,48 @@ export const AdminHomepageCMS: React.FC = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft">
         <div>
           <div className="flex items-center gap-2.5 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-sans tracking-widest uppercase bg-gold-500/10 text-gold-400 border border-gold-500/30">
-              Content Management System
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono tracking-widest uppercase bg-gold-50 text-gold-800 border border-gold-300 font-semibold">
+              Content
             </span>
-            <span className="text-xs text-ivory/50">• Public Website Live Sync</span>
+            <span className="text-xs text-ink-muted">• Public Website Live</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-editorial font-normal text-ivory tracking-wide">
-            Homepage CMS
+          <h1 className="text-2xl sm:text-3xl font-editorial font-bold text-plum-900 tracking-wide">
+            Home Page Content
           </h1>
-          <p className="text-xs sm:text-sm text-ivory/70 font-sans mt-1">
+          <p className="text-xs sm:text-sm text-ink-muted font-sans mt-1">
             Manage hero carousel slides, featured curriculum, media highlights, and final conversion CTA.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <button
-            onClick={loadData}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-gold-300 bg-plum-900/60 border border-gold-500/30 hover:bg-plum-900 transition-colors"
+            onClick={handleConfirmChanges}
+            disabled={confirming}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-sans text-plum-950 bg-gold-500 hover:bg-gold-400 font-bold transition-all shadow-sm hover:scale-[1.02]"
+            title="Purge cache and publish all changes to the public website immediately"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            {confirming ? (
+              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="w-3.5 h-3.5 text-plum-950" />
+            )}
+            <span>{confirming ? 'Publishing...' : 'Confirm Changes'}</span>
+          </button>
+          <button
+            onClick={loadData}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-ink hover:text-plum-900 bg-white border border-border hover:bg-surface-subtle transition-colors shadow-xs font-medium"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-gold-600" />
             <span>Sync</span>
           </button>
           <a
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-plum-950 bg-gold-500 hover:bg-gold-400 transition-colors font-medium shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-gold-300 bg-plum-900 hover:bg-plum-800 transition-colors font-semibold shadow-soft"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             <span>View Live Site</span>
@@ -384,65 +411,65 @@ export const AdminHomepageCMS: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-gold-500/20 pb-3">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
         <button
           onClick={() => setActiveTab('hero')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans transition-all ${
             activeTab === 'hero'
-              ? 'bg-gold-500 text-plum-950 shadow-sm'
-              : 'text-ivory/70 hover:text-ivory hover:bg-plum-900/40 border border-transparent'
+              ? 'bg-plum-900 text-gold-300 font-semibold shadow-soft'
+              : 'bg-white text-ink hover:text-plum-900 hover:bg-surface-subtle border border-border font-medium shadow-xs'
           }`}
         >
-          <Sliders className="w-4 h-4" />
+          <Sliders className="w-4 h-4 text-gold-500" />
           <span>Hero Slides ({slides.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('cta')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans transition-all ${
             activeTab === 'cta'
-              ? 'bg-gold-500 text-plum-950 shadow-sm'
-              : 'text-ivory/70 hover:text-ivory hover:bg-plum-900/40 border border-transparent'
+              ? 'bg-plum-900 text-gold-300 font-semibold shadow-soft'
+              : 'bg-white text-ink hover:text-plum-900 hover:bg-surface-subtle border border-border font-medium shadow-xs'
           }`}
         >
-          <Sparkles className="w-4 h-4" />
+          <Sparkles className="w-4 h-4 text-gold-500" />
           <span>Homepage CTA</span>
         </button>
 
         <button
           onClick={() => setActiveTab('courses')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans transition-all ${
             activeTab === 'courses'
-              ? 'bg-gold-500 text-plum-950 shadow-sm'
-              : 'text-ivory/70 hover:text-ivory hover:bg-plum-900/40 border border-transparent'
+              ? 'bg-plum-900 text-gold-300 font-semibold shadow-soft'
+              : 'bg-white text-ink hover:text-plum-900 hover:bg-surface-subtle border border-border font-medium shadow-xs'
           }`}
         >
-          <GraduationCap className="w-4 h-4" />
+          <GraduationCap className="w-4 h-4 text-gold-500" />
           <span>Featured Courses ({courses.filter((c) => c.featured).length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('workshops')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans transition-all ${
             activeTab === 'workshops'
-              ? 'bg-gold-500 text-plum-950 shadow-sm'
-              : 'text-ivory/70 hover:text-ivory hover:bg-plum-900/40 border border-transparent'
+              ? 'bg-plum-900 text-gold-300 font-semibold shadow-soft'
+              : 'bg-white text-ink hover:text-plum-900 hover:bg-surface-subtle border border-border font-medium shadow-xs'
           }`}
         >
-          <Calendar className="w-4 h-4" />
+          <Calendar className="w-4 h-4 text-gold-500" />
           <span>Featured Workshops ({workshops.filter((w) => w.featured).length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('media')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans transition-all ${
             activeTab === 'media'
-              ? 'bg-gold-500 text-plum-950 shadow-sm'
-              : 'text-ivory/70 hover:text-ivory hover:bg-plum-900/40 border border-transparent'
+              ? 'bg-plum-900 text-gold-300 font-semibold shadow-soft'
+              : 'bg-white text-ink hover:text-plum-900 hover:bg-surface-subtle border border-border font-medium shadow-xs'
           }`}
         >
-          <ImageIcon className="w-4 h-4" />
-          <span>Gallery & Video Highlights</span>
+          <ImageIcon className="w-4 h-4 text-gold-500" />
+          <span>Gallery &amp; Video Highlights</span>
         </button>
       </div>
 
@@ -451,16 +478,16 @@ export const AdminHomepageCMS: React.FC = () => {
       {/* ========================================================================= */}
       {activeTab === 'hero' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-plum-900/40 p-4 rounded-xl border border-gold-500/20">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-xl border border-border shadow-soft">
             <div>
-              <h2 className="text-lg font-editorial text-ivory">Hero Slides Carousel</h2>
-              <p className="text-xs text-ivory/70 font-sans">
-                Active slides appear in sequential order in the main public hero carousel. Images stored in Supabase Storage.
+              <h2 className="text-lg font-editorial font-bold text-plum-900">Hero Slides Carousel</h2>
+              <p className="text-xs text-ink-muted font-sans">
+                Active slides appear in sequential order in the main public hero carousel.
               </p>
             </div>
             <button
               onClick={() => handleOpenSlideModal()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-sm self-start sm:self-auto"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-bold bg-gold-500 hover:bg-gold-400 text-plum-950 transition-colors shadow-soft self-start sm:self-auto"
             >
               <Plus className="w-4 h-4" />
               <span>Add New Hero Slide</span>
@@ -469,12 +496,12 @@ export const AdminHomepageCMS: React.FC = () => {
 
           <div className="space-y-3">
             {slides.length === 0 ? (
-              <div className="text-center py-12 bg-plum-950/30 border border-gold-500/10 rounded-xl">
-                <Layers className="w-10 h-10 text-gold-500/40 mx-auto mb-3" />
-                <p className="text-sm text-ivory/70 font-sans">No hero slides found.</p>
+              <div className="text-center py-12 bg-white border border-border rounded-xl shadow-soft">
+                <Layers className="w-10 h-10 text-gold-500/50 mx-auto mb-3" />
+                <p className="text-sm text-ink-muted font-sans">No hero slides found.</p>
                 <button
                   onClick={() => handleOpenSlideModal()}
-                  className="mt-3 text-xs text-gold-400 hover:text-gold-300 underline"
+                  className="mt-3 text-xs text-gold-700 hover:text-gold-900 font-semibold underline"
                 >
                   Create first hero slide
                 </button>
@@ -485,15 +512,15 @@ export const AdminHomepageCMS: React.FC = () => {
                 return (
                   <div
                     key={slideId || index}
-                    className={`flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl border transition-all ${
+                    className={`flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 sm:p-5 rounded-xl border transition-all ${
                       slide.active
-                        ? 'bg-plum-950/40 border-gold-500/30'
-                        : 'bg-plum-950/20 border-white/5 opacity-70'
+                        ? 'bg-white border-border hover:border-gold-400 shadow-soft'
+                        : 'bg-surface-subtle border-border opacity-70'
                     }`}
                   >
                     {/* Thumbnail & Title */}
                     <div className="flex items-start gap-4">
-                      <div className="w-24 h-16 sm:w-32 sm:h-20 rounded-lg overflow-hidden border border-gold-500/20 shrink-0 bg-plum-900/60 relative">
+                      <div className="w-24 h-16 sm:w-32 sm:h-20 rounded-lg overflow-hidden border border-border shrink-0 bg-canvas relative shadow-xs">
                         {slide.image?.url ? (
                           <img
                             src={slide.image.url}
@@ -501,37 +528,37 @@ export const AdminHomepageCMS: React.FC = () => {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gold-400/40 text-xs">
+                          <div className="w-full h-full flex items-center justify-center text-ink-faint text-xs">
                             No image
                           </div>
                         )}
-                        <span className="absolute top-1 left-1 bg-plum-950/80 text-[10px] text-gold-300 font-mono px-1.5 py-0.5 rounded border border-gold-500/20">
+                        <span className="absolute top-1 left-1 bg-plum-900/90 text-[10px] text-gold-300 font-mono font-bold px-1.5 py-0.5 rounded shadow-xs">
                           #{slide.order || index + 1}
                         </span>
                       </div>
 
                       <div className="space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-base font-editorial text-ivory leading-tight">
+                          <h3 className="text-base font-editorial font-bold text-plum-900 leading-tight">
                             {slide.heading}
                           </h3>
                           {slide.active ? (
-                            <Badge variant="gold" size="sm">Active</Badge>
+                            <Badge variant="success" size="sm">Active</Badge>
                           ) : (
                             <Badge variant="neutral" size="sm">Inactive</Badge>
                           )}
                         </div>
                         {slide.subheading && (
-                          <p className="text-xs text-gold-300 font-sans">{slide.subheading}</p>
+                          <p className="text-xs text-gold-700 font-sans font-semibold">{slide.subheading}</p>
                         )}
-                        <p className="text-xs text-ivory/70 font-sans line-clamp-1 max-w-xl">
+                        <p className="text-xs text-ink-muted font-sans line-clamp-1 max-w-xl">
                           {slide.description}
                         </p>
-                        <div className="flex items-center gap-3 text-[11px] text-ivory/50 font-sans pt-1">
-                          <span>Primary CTA: <strong className="text-gold-300">{slide.ctaText}</strong> ({slide.ctaUrl})</span>
+                        <div className="flex items-center gap-3 text-[11px] text-ink-faint font-sans pt-1">
+                          <span>Primary CTA: <strong className="text-plum-900 font-semibold">{slide.ctaText}</strong> ({slide.ctaUrl})</span>
                           {slide.image?.bucket && (
-                            <span className="font-mono text-[10px] text-gold-400/60">
-                              Supabase: {slide.image.path}
+                            <span className="font-mono text-[10px] text-ink-muted">
+                              {slide.image.path}
                             </span>
                           )}
                         </div>
@@ -539,13 +566,13 @@ export const AdminHomepageCMS: React.FC = () => {
                     </div>
 
                     {/* Controls */}
-                    <div className="flex items-center gap-2 self-end md:self-auto border-t md:border-t-0 pt-2 md:pt-0 border-white/5">
+                    <div className="flex items-center gap-2 self-end md:self-auto border-t md:border-t-0 pt-2 md:pt-0 border-border">
                       {/* Move up / down */}
-                      <div className="flex items-center gap-1 bg-plum-900/50 p-1 rounded-lg border border-gold-500/10">
+                      <div className="flex items-center gap-1 bg-canvas p-1 rounded-lg border border-border shadow-xs">
                         <button
                           disabled={index === 0}
                           onClick={() => handleMoveSlide(index, 'up')}
-                          className="p-1.5 text-ivory/70 hover:text-gold-300 disabled:opacity-30 disabled:hover:text-ivory/70 transition-colors"
+                          className="p-1.5 text-ink-muted hover:text-plum-900 disabled:opacity-30 transition-colors"
                           title="Move Up"
                         >
                           <ArrowUp className="w-3.5 h-3.5" />
@@ -553,7 +580,7 @@ export const AdminHomepageCMS: React.FC = () => {
                         <button
                           disabled={index === slides.length - 1}
                           onClick={() => handleMoveSlide(index, 'down')}
-                          className="p-1.5 text-ivory/70 hover:text-gold-300 disabled:opacity-30 disabled:hover:text-ivory/70 transition-colors"
+                          className="p-1.5 text-ink-muted hover:text-plum-900 disabled:opacity-30 transition-colors"
                           title="Move Down"
                         >
                           <ArrowDown className="w-3.5 h-3.5" />
@@ -563,10 +590,10 @@ export const AdminHomepageCMS: React.FC = () => {
                       {/* Active toggle */}
                       <button
                         onClick={() => handleToggleSlideActive(slide)}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-sans transition-colors border ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-sans transition-colors border shadow-xs ${
                           slide.active
-                            ? 'bg-gold-500/10 border-gold-500/30 text-gold-300 hover:bg-gold-500/20'
-                            : 'bg-white/5 border-white/10 text-ivory/60 hover:text-ivory'
+                            ? 'bg-amber-50 border-amber-200 text-amber-800 hover:bg-amber-100 font-medium'
+                            : 'bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100 font-medium'
                         }`}
                       >
                         {slide.active ? 'Hide' : 'Activate'}
@@ -575,7 +602,7 @@ export const AdminHomepageCMS: React.FC = () => {
                       {/* Edit */}
                       <button
                         onClick={() => handleOpenSlideModal(slide)}
-                        className="p-2 text-gold-300 hover:text-gold-200 bg-plum-900/50 hover:bg-plum-900 border border-gold-500/20 rounded-lg transition-colors"
+                        className="p-2 text-gold-700 hover:text-gold-900 bg-gold-50 hover:bg-gold-100 border border-gold-200 rounded-lg transition-colors shadow-xs"
                         title="Edit Slide"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
@@ -584,7 +611,7 @@ export const AdminHomepageCMS: React.FC = () => {
                       {/* Delete */}
                       <button
                         onClick={() => handleDeleteSlide(slideId)}
-                        className="p-2 text-rose-300 hover:text-rose-200 bg-rose-950/40 hover:bg-rose-950 border border-rose-500/20 rounded-lg transition-colors"
+                        className="p-2 text-rose-700 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors shadow-xs"
                         title="Delete Slide"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -603,17 +630,17 @@ export const AdminHomepageCMS: React.FC = () => {
       {/* ========================================================================= */}
       {activeTab === 'cta' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card">
-            <div className="mb-6">
-              <h2 className="text-xl font-editorial text-ivory">Homepage Final CTA Section</h2>
-              <p className="text-xs sm:text-sm text-ivory/70 font-sans mt-1">
+          <div className="lg:col-span-2 bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft">
+            <div className="mb-6 pb-4 border-b border-border">
+              <h2 className="text-xl font-editorial font-bold text-plum-900">Homepage Final CTA Section</h2>
+              <p className="text-xs sm:text-sm text-ink-muted font-sans mt-1">
                 Customize the high-conversion CTA banner displayed at the bottom of the public homepage.
               </p>
             </div>
 
             <form onSubmit={handleSaveCta} className="space-y-4 font-sans">
               <div>
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                   Top Highlight Badge
                 </label>
                 <input
@@ -621,12 +648,12 @@ export const AdminHomepageCMS: React.FC = () => {
                   value={homepageCta.badge || ''}
                   onChange={(e) => setHomepageCta({ ...homepageCta, badge: e.target.value })}
                   placeholder="e.g. Admissions Open • 2026 Batches"
-                  className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2.5 text-sm text-ivory placeholder:text-ivory/40 focus:outline-none focus:border-gold-400"
+                  className="w-full bg-white border border-border rounded-lg px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                   Main Headline
                 </label>
                 <input
@@ -635,12 +662,12 @@ export const AdminHomepageCMS: React.FC = () => {
                   value={homepageCta.title || ''}
                   onChange={(e) => setHomepageCta({ ...homepageCta, title: e.target.value })}
                   placeholder="e.g. JOIN Our Classes"
-                  className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2.5 text-sm text-ivory placeholder:text-ivory/40 focus:outline-none focus:border-gold-400 font-editorial text-base"
+                  className="w-full bg-white border border-border rounded-lg px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs font-editorial text-base font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                   Supporting Paragraph / Value Proposition
                 </label>
                 <textarea
@@ -649,73 +676,73 @@ export const AdminHomepageCMS: React.FC = () => {
                   value={homepageCta.description || ''}
                   onChange={(e) => setHomepageCta({ ...homepageCta, description: e.target.value })}
                   placeholder="Describe why sadhakas should enroll..."
-                  className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2.5 text-sm text-ivory placeholder:text-ivory/40 focus:outline-none focus:border-gold-400 resize-y"
+                  className="w-full bg-white border border-border rounded-lg px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs resize-y"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div className="space-y-3 p-3.5 bg-plum-900/30 border border-gold-500/20 rounded-lg">
-                  <h4 className="text-xs font-semibold text-gold-300 uppercase tracking-wider">
+                <div className="space-y-3 p-3.5 bg-canvas border border-border rounded-lg">
+                  <h4 className="text-xs font-bold text-plum-900 uppercase tracking-wider">
                     Primary CTA Button
                   </h4>
                   <div>
-                    <label className="block text-[11px] text-ivory/70 mb-1">Button Label</label>
+                    <label className="block text-[11px] text-ink-muted font-medium mb-1">Button Label</label>
                     <input
                       type="text"
                       value={homepageCta.primaryCtaText || ''}
                       onChange={(e) =>
                         setHomepageCta({ ...homepageCta, primaryCtaText: e.target.value })
                       }
-                      className="w-full bg-plum-900/60 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory"
+                      className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-ivory/70 mb-1">Destination URL</label>
+                    <label className="block text-[11px] text-ink-muted font-medium mb-1">Destination URL</label>
                     <input
                       type="text"
                       value={homepageCta.primaryCtaUrl || ''}
                       onChange={(e) =>
                         setHomepageCta({ ...homepageCta, primaryCtaUrl: e.target.value })
                       }
-                      className="w-full bg-plum-900/60 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory font-mono"
+                      className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink font-mono focus:outline-none focus:border-gold-500"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-3 p-3.5 bg-plum-900/30 border border-gold-500/20 rounded-lg">
-                  <h4 className="text-xs font-semibold text-gold-300 uppercase tracking-wider">
+                <div className="space-y-3 p-3.5 bg-canvas border border-border rounded-lg">
+                  <h4 className="text-xs font-bold text-plum-900 uppercase tracking-wider">
                     Secondary CTA Button
                   </h4>
                   <div>
-                    <label className="block text-[11px] text-ivory/70 mb-1">Button Label</label>
+                    <label className="block text-[11px] text-ink-muted font-medium mb-1">Button Label</label>
                     <input
                       type="text"
                       value={homepageCta.secondaryCtaText || ''}
                       onChange={(e) =>
                         setHomepageCta({ ...homepageCta, secondaryCtaText: e.target.value })
                       }
-                      className="w-full bg-plum-900/60 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory"
+                      className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-ivory/70 mb-1">Destination URL</label>
+                    <label className="block text-[11px] text-ink-muted font-medium mb-1">Destination URL</label>
                     <input
                       type="text"
                       value={homepageCta.secondaryCtaUrl || ''}
                       onChange={(e) =>
                         setHomepageCta({ ...homepageCta, secondaryCtaUrl: e.target.value })
                       }
-                      className="w-full bg-plum-900/60 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory font-mono"
+                      className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink font-mono focus:outline-none focus:border-gold-500"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gold-500/20 flex justify-end">
+              <div className="pt-4 border-t border-border flex justify-end">
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-lg text-sm font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-sm disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-lg text-sm font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft disabled:opacity-50"
                 >
                   {saving ? 'Saving CTA Changes...' : 'Save Homepage CTA'}
                 </button>
@@ -724,25 +751,25 @@ export const AdminHomepageCMS: React.FC = () => {
           </div>
 
           {/* Live Preview Panel */}
-          <div className="bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card flex flex-col justify-between">
+          <div className="bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Eye className="w-4 h-4 text-gold-400" />
-                <h3 className="text-sm font-sans font-semibold text-ivory uppercase tracking-wider">
+              <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border">
+                <Eye className="w-4 h-4 text-gold-600" />
+                <h3 className="text-xs font-sans font-bold text-plum-900 uppercase tracking-wider">
                   Live Preview
                 </h3>
               </div>
-              <p className="text-xs text-ivory/60 mb-6 font-sans">
-                This shows how the CTA appears to visitors on the public website.
+              <p className="text-xs text-ink-muted mb-5 font-sans">
+                Real-time simulation of how the CTA looks to public visitors.
               </p>
 
-              <div className="bg-plum-900 border border-gold-500/40 rounded-xl p-6 text-center space-y-4 shadow-modal">
+              <div className="bg-gradient-to-br from-plum-950 to-plum-900 border border-gold-500/30 rounded-xl p-6 text-center space-y-4 shadow-modal">
                 {homepageCta.badge && (
-                  <span className="inline-block px-3 py-1 rounded-full text-xs font-sans tracking-wide bg-plum-950/80 text-gold-300 border border-gold-500/30">
+                  <span className="inline-block px-3 py-1 rounded-full text-xs font-sans tracking-wide bg-plum-900 text-gold-300 border border-gold-500/40 font-medium">
                     {homepageCta.badge}
                   </span>
                 )}
-                <h4 className="text-xl font-editorial font-normal text-ivory leading-snug">
+                <h4 className="text-xl font-editorial font-bold text-ivory leading-snug">
                   {homepageCta.title || 'CTA Headline'}
                 </h4>
                 <p className="text-xs text-ivory/80 font-sans font-light leading-relaxed">
@@ -751,13 +778,13 @@ export const AdminHomepageCMS: React.FC = () => {
                 <div className="flex flex-col gap-2 pt-2">
                   <button
                     type="button"
-                    className="w-full py-2 bg-gold-500 text-plum-950 rounded-lg text-xs font-semibold shadow-sm hover:bg-gold-400"
+                    className="w-full py-2.5 bg-gold-500 hover:bg-gold-400 text-plum-950 rounded-lg text-xs font-bold shadow-soft transition-colors"
                   >
                     {homepageCta.primaryCtaText || 'Explore Programs'}
                   </button>
                   <button
                     type="button"
-                    className="w-full py-2 bg-plum-950/60 border border-gold-500/30 text-gold-200 rounded-lg text-xs hover:bg-plum-950"
+                    className="w-full py-2 bg-plum-900 hover:bg-plum-800 border border-gold-500/30 text-gold-200 rounded-lg text-xs font-medium transition-colors"
                   >
                     {homepageCta.secondaryCtaText || 'Admissions Enquiry'}
                   </button>
@@ -765,8 +792,8 @@ export const AdminHomepageCMS: React.FC = () => {
               </div>
             </div>
 
-            <p className="text-[11px] text-ivory/40 text-center font-sans mt-6">
-              Saved CTA is immediately returned by GET /api/home.
+            <p className="text-[11px] text-ink-muted text-center font-sans mt-6 pt-3 border-t border-border">
+              Saved changes appear immediately on the website.
             </p>
           </div>
         </div>
@@ -776,72 +803,72 @@ export const AdminHomepageCMS: React.FC = () => {
       {/* TAB 3: FEATURED COURSES */}
       {/* ========================================================================= */}
       {activeTab === 'courses' && (
-        <div className="space-y-4 bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="space-y-4 bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border">
             <div>
-              <h2 className="text-xl font-editorial text-ivory">Featured Courses on Homepage</h2>
-              <p className="text-xs text-ivory/70 font-sans mt-0.5">
+              <h2 className="text-xl font-editorial font-bold text-plum-900">Featured Courses on Homepage</h2>
+              <p className="text-xs text-ink-muted font-sans mt-0.5">
                 Toggle which academic courses appear in the "Featured Programs" section of the public homepage.
               </p>
             </div>
-            <span className="text-xs text-gold-400 font-sans">
-              Currently Featured: <strong>{courses.filter((c) => c.featured).length}</strong>
+            <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-gold-50 text-gold-800 border border-gold-300">
+              Featured: {courses.filter((c) => c.featured).length}
             </span>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-left font-sans text-xs">
-              <thead className="bg-plum-900/60 border-b border-gold-500/20 text-gold-300">
+              <thead className="bg-canvas border-b border-border text-ink-muted font-mono uppercase tracking-wider text-[11px]">
                 <tr>
-                  <th className="px-4 py-3 font-semibold uppercase tracking-wider">Course</th>
-                  <th className="px-4 py-3 font-semibold uppercase tracking-wider">Duration / Mode</th>
-                  <th className="px-4 py-3 font-semibold uppercase tracking-wider">Tuition</th>
-                  <th className="px-4 py-3 font-semibold uppercase tracking-wider text-center">Featured on Home</th>
+                  <th className="px-4 py-3 font-semibold">Course</th>
+                  <th className="px-4 py-3 font-semibold">Duration / Mode</th>
+                  <th className="px-4 py-3 font-semibold">Tuition</th>
+                  <th className="px-4 py-3 font-semibold text-center">Featured on Home</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gold-500/10">
+              <tbody className="divide-y divide-border/70">
                 {courses.map((course) => {
                   const courseId = (course._id || course.id) as string;
                   return (
-                    <tr key={courseId} className="hover:bg-plum-900/30 transition-colors">
+                    <tr key={courseId} className="hover:bg-canvas/50 transition-colors">
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-3">
                           {course.coverImage?.url ? (
                             <img
                               src={course.coverImage.url}
                               alt={course.title}
-                              className="w-12 h-10 object-cover rounded border border-gold-500/20 shrink-0"
+                              className="w-12 h-10 object-cover rounded border border-border shrink-0 shadow-xs"
                             />
                           ) : (
-                            <div className="w-12 h-10 rounded bg-plum-900 border border-gold-500/10 flex items-center justify-center text-[10px] text-ivory/40 shrink-0">
+                            <div className="w-12 h-10 rounded bg-canvas border border-border flex items-center justify-center text-[10px] text-ink-faint shrink-0">
                               No Pic
                             </div>
                           )}
                           <div>
-                            <div className="font-editorial text-sm text-ivory font-medium">
+                            <div className="font-editorial text-sm text-plum-900 font-bold">
                               {course.title}
                             </div>
-                            <div className="text-[11px] text-ivory/60 line-clamp-1">
+                            <div className="text-[11px] text-ink-muted line-clamp-1">
                               {course.shortDescription || course.description}
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5 text-ivory/80 whitespace-nowrap">
-                        <div>{course.duration}</div>
-                        <div className="text-[11px] text-gold-400/80">{course.mode}</div>
+                      <td className="px-4 py-3.5 text-ink whitespace-nowrap">
+                        <div className="font-medium">{course.duration}</div>
+                        <div className="text-[11px] text-gold-700 font-medium">{course.mode}</div>
                       </td>
-                      <td className="px-4 py-3.5 text-ivory/80 whitespace-nowrap font-mono">
+                      <td className="px-4 py-3.5 text-plum-900 whitespace-nowrap font-mono font-semibold">
                         {course.price?.displayPrice ||
                           (course.price?.amount ? `₹${course.price.amount.toLocaleString()}` : 'Free')}
                       </td>
                       <td className="px-4 py-3.5 text-center">
                         <button
                           onClick={() => handleToggleCourseFeatured(courseId, course.featured)}
-                          className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-all shadow-xs ${
                             course.featured
-                              ? 'bg-gold-500 text-plum-950 shadow-sm hover:bg-gold-400'
-                              : 'bg-plum-900/60 text-ivory/60 hover:text-ivory border border-gold-500/20'
+                              ? 'bg-gold-50 border border-gold-300 text-gold-800 hover:bg-gold-100'
+                              : 'bg-white border border-border text-ink-muted hover:text-plum-900 hover:bg-canvas'
                           }`}
                         >
                           {course.featured ? 'Featured ★' : 'Standard'}
@@ -860,72 +887,72 @@ export const AdminHomepageCMS: React.FC = () => {
       {/* TAB 4: FEATURED WORKSHOPS */}
       {/* ========================================================================= */}
       {activeTab === 'workshops' && (
-        <div className="space-y-4 bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="space-y-4 bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border">
             <div>
-              <h2 className="text-xl font-editorial text-ivory">Featured Workshops on Homepage</h2>
-              <p className="text-xs text-ivory/70 font-sans mt-0.5">
+              <h2 className="text-xl font-editorial font-bold text-plum-900">Featured Workshops on Homepage</h2>
+              <p className="text-xs text-ink-muted font-sans mt-0.5">
                 Workshops marked as featured appear immediately in the homepage workshop carousel.
               </p>
             </div>
-            <span className="text-xs text-gold-400 font-sans">
-              Currently Featured: <strong>{workshops.filter((w) => w.featured).length}</strong>
+            <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-gold-50 text-gold-800 border border-gold-300">
+              Featured: {workshops.filter((w) => w.featured).length}
             </span>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-left font-sans text-xs">
-              <thead className="bg-plum-900/60 border-b border-gold-500/20 text-gold-300">
+              <thead className="bg-canvas border-b border-border text-ink-muted font-mono uppercase tracking-wider text-[11px]">
                 <tr>
-                  <th className="px-4 py-3 font-semibold uppercase tracking-wider">Workshop</th>
-                  <th className="px-4 py-3 font-semibold uppercase tracking-wider">Date & Duration</th>
-                  <th className="px-4 py-3 font-semibold uppercase tracking-wider">Fee</th>
-                  <th className="px-4 py-3 font-semibold uppercase tracking-wider text-center">Featured on Home</th>
+                  <th className="px-4 py-3 font-semibold">Workshop</th>
+                  <th className="px-4 py-3 font-semibold">Date & Duration</th>
+                  <th className="px-4 py-3 font-semibold">Fee</th>
+                  <th className="px-4 py-3 font-semibold text-center">Featured on Home</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gold-500/10">
+              <tbody className="divide-y divide-border/70">
                 {workshops.map((workshop) => {
                   const workshopId = (workshop._id || workshop.id) as string;
                   return (
-                    <tr key={workshopId} className="hover:bg-plum-900/30 transition-colors">
+                    <tr key={workshopId} className="hover:bg-canvas/50 transition-colors">
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-3">
                           {workshop.coverImage?.url ? (
                             <img
                               src={workshop.coverImage.url}
                               alt={workshop.title}
-                              className="w-12 h-10 object-cover rounded border border-gold-500/20 shrink-0"
+                              className="w-12 h-10 object-cover rounded border border-border shrink-0 shadow-xs"
                             />
                           ) : (
-                            <div className="w-12 h-10 rounded bg-plum-900 border border-gold-500/10 flex items-center justify-center text-[10px] text-ivory/40 shrink-0">
+                            <div className="w-12 h-10 rounded bg-canvas border border-border flex items-center justify-center text-[10px] text-ink-faint shrink-0">
                               No Pic
                             </div>
                           )}
                           <div>
-                            <div className="font-editorial text-sm text-ivory font-medium">
+                            <div className="font-editorial text-sm text-plum-900 font-bold">
                               {workshop.title}
                             </div>
-                            <div className="text-[11px] text-ivory/60 line-clamp-1">
+                            <div className="text-[11px] text-ink-muted line-clamp-1">
                               {workshop.shortDescription || workshop.description}
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5 text-ivory/80 whitespace-nowrap">
-                        <div>{new Date(workshop.date).toLocaleDateString()}</div>
-                        <div className="text-[11px] text-gold-400/80">{workshop.duration}</div>
+                      <td className="px-4 py-3.5 text-ink whitespace-nowrap">
+                        <div className="font-medium">{new Date(workshop.date).toLocaleDateString()}</div>
+                        <div className="text-[11px] text-gold-700 font-medium">{workshop.duration}</div>
                       </td>
-                      <td className="px-4 py-3.5 text-ivory/80 whitespace-nowrap font-mono">
+                      <td className="px-4 py-3.5 text-plum-900 whitespace-nowrap font-mono font-semibold">
                         {workshop.price?.displayPrice ||
                           (workshop.price?.amount ? `₹${workshop.price.amount.toLocaleString()}` : 'Free')}
                       </td>
                       <td className="px-4 py-3.5 text-center">
                         <button
                           onClick={() => handleToggleWorkshopFeatured(workshopId, workshop.featured)}
-                          className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-all shadow-xs ${
                             workshop.featured
-                              ? 'bg-gold-500 text-plum-950 shadow-sm hover:bg-gold-400'
-                              : 'bg-plum-900/60 text-ivory/60 hover:text-ivory border border-gold-500/20'
+                              ? 'bg-gold-50 border border-gold-300 text-gold-800 hover:bg-gold-100'
+                              : 'bg-white border border-border text-ink-muted hover:text-plum-900 hover:bg-canvas'
                           }`}
                         >
                           {workshop.featured ? 'Featured ★' : 'Standard'}
@@ -946,15 +973,15 @@ export const AdminHomepageCMS: React.FC = () => {
       {activeTab === 'media' && (
         <div className="space-y-6">
           {/* Gallery Highlights */}
-          <div className="bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card space-y-4">
-            <div className="flex items-center justify-between">
+          <div className="bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
               <div>
-                <h3 className="text-lg font-editorial text-ivory">Gallery Highlights (Homepage)</h3>
-                <p className="text-xs text-ivory/70 font-sans">
+                <h3 className="text-lg font-editorial font-bold text-plum-900">Gallery Highlights (Homepage)</h3>
+                <p className="text-xs text-ink-muted font-sans mt-0.5">
                   Select which campus & sadhana photos appear in the homepage gallery highlights strip.
                 </p>
               </div>
-              <span className="text-xs text-gold-400 font-sans">
+              <span className="px-2.5 py-0.5 rounded text-xs font-mono font-semibold bg-gold-50 text-gold-800 border border-gold-300">
                 Featured: {galleryImages.filter((g) => g.featured).length}
               </span>
             </div>
@@ -967,8 +994,8 @@ export const AdminHomepageCMS: React.FC = () => {
                     key={imgId}
                     className={`relative rounded-lg overflow-hidden border transition-all ${
                       img.featured
-                        ? 'border-gold-500 ring-2 ring-gold-500/40 shadow-modal'
-                        : 'border-white/10 opacity-60 hover:opacity-100'
+                        ? 'border-gold-500 ring-2 ring-gold-400/30 shadow-md'
+                        : 'border-border opacity-70 hover:opacity-100 shadow-xs'
                     }`}
                   >
                     <img
@@ -976,16 +1003,16 @@ export const AdminHomepageCMS: React.FC = () => {
                       alt={img.title}
                       className="w-full h-24 object-cover"
                     />
-                    <div className="p-2 bg-plum-950/90 text-left">
-                      <div className="text-[11px] font-sans text-ivory line-clamp-1 font-medium">
+                    <div className="p-2 bg-white border-t border-border text-left">
+                      <div className="text-[11px] font-sans text-plum-900 line-clamp-1 font-semibold">
                         {img.title}
                       </div>
                       <button
                         onClick={() => handleToggleGalleryFeatured(imgId, img.featured)}
-                        className={`mt-1.5 w-full py-1 rounded text-[10px] font-sans transition-colors ${
+                        className={`mt-1.5 w-full py-1 rounded text-[10px] font-sans font-semibold transition-colors shadow-xs ${
                           img.featured
-                            ? 'bg-gold-500 text-plum-950 font-semibold'
-                            : 'bg-plum-900 text-ivory/70 hover:text-ivory'
+                            ? 'bg-gold-500 text-plum-950 hover:bg-gold-400'
+                            : 'bg-canvas text-ink-muted hover:text-plum-900 border border-border'
                         }`}
                       >
                         {img.featured ? 'Featured ★' : 'Feature'}
@@ -998,15 +1025,15 @@ export const AdminHomepageCMS: React.FC = () => {
           </div>
 
           {/* Video Highlights */}
-          <div className="bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card space-y-4">
-            <div className="flex items-center justify-between">
+          <div className="bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
               <div>
-                <h3 className="text-lg font-editorial text-ivory">Featured Videos (Homepage)</h3>
-                <p className="text-xs text-ivory/70 font-sans">
+                <h3 className="text-lg font-editorial font-bold text-plum-900">Featured Videos (Homepage)</h3>
+                <p className="text-xs text-ink-muted font-sans mt-0.5">
                   Select which YouTube video discourses or guided practices appear in the video spotlight.
                 </p>
               </div>
-              <span className="text-xs text-gold-400 font-sans">
+              <span className="px-2.5 py-0.5 rounded text-xs font-mono font-semibold bg-gold-50 text-gold-800 border border-gold-300">
                 Featured: {videos.filter((v) => v.featured).length}
               </span>
             </div>
@@ -1019,32 +1046,32 @@ export const AdminHomepageCMS: React.FC = () => {
                     key={vidId}
                     className={`p-3 rounded-lg border flex gap-3 transition-all ${
                       vid.featured
-                        ? 'bg-plum-900/50 border-gold-500/40'
-                        : 'bg-plum-950/30 border-white/10 opacity-70'
+                        ? 'bg-gold-50/30 border-gold-300 shadow-soft'
+                        : 'bg-white border-border hover:border-gold-300 shadow-xs'
                     }`}
                   >
                     {vid.thumbnail?.url ? (
                       <img
                         src={vid.thumbnail.url}
                         alt={vid.title}
-                        className="w-20 h-14 object-cover rounded border border-gold-500/20 shrink-0"
+                        className="w-20 h-14 object-cover rounded border border-border shrink-0 shadow-xs"
                       />
                     ) : (
-                      <div className="w-20 h-14 bg-plum-900 rounded flex items-center justify-center text-gold-400/40 shrink-0">
-                        <VideoIcon className="w-5 h-5" />
+                      <div className="w-20 h-14 bg-canvas rounded flex items-center justify-center text-ink-muted shrink-0 border border-border">
+                        <VideoIcon className="w-5 h-5 text-gold-600" />
                       </div>
                     )}
                     <div className="flex-1 space-y-1">
-                      <div className="text-xs font-editorial text-ivory line-clamp-1 font-medium">
+                      <div className="text-xs font-editorial font-bold text-plum-900 line-clamp-1">
                         {vid.title}
                       </div>
-                      <div className="text-[10px] text-ivory/60 font-sans">{vid.speaker || vid.category}</div>
+                      <div className="text-[10px] text-ink-muted font-sans">{vid.speaker || vid.category}</div>
                       <button
                         onClick={() => handleToggleVideoFeatured(vidId, vid.featured)}
-                        className={`mt-1 px-2.5 py-0.5 rounded text-[10px] font-sans ${
+                        className={`mt-1 px-2.5 py-0.5 rounded text-[10px] font-sans font-semibold transition-colors shadow-xs ${
                           vid.featured
-                            ? 'bg-gold-500 text-plum-950 font-semibold'
-                            : 'bg-plum-900 text-ivory/70 border border-gold-500/20'
+                            ? 'bg-gold-500 text-plum-950 hover:bg-gold-400'
+                            : 'bg-canvas text-ink-muted hover:text-plum-900 border border-border'
                         }`}
                       >
                         {vid.featured ? 'Featured ★' : 'Set Featured'}
@@ -1072,23 +1099,23 @@ export const AdminHomepageCMS: React.FC = () => {
       >
         <form onSubmit={handleSaveSlide} className="space-y-4 font-sans text-xs sm:text-sm">
           {/* Image Upload Area (Supabase Storage) */}
-          <div className="space-y-2 p-3.5 bg-plum-900/30 border border-gold-500/20 rounded-lg">
+          <div className="space-y-2 p-3.5 bg-canvas border border-border rounded-lg">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-gold-300 uppercase tracking-wider">
-                Hero Background Image (Supabase Storage)
+              <label className="text-xs font-bold text-plum-900 uppercase tracking-wider">
+                Hero Background Image
               </label>
-              <span className="text-[10px] text-ivory/50">High-res WebP/JPG (1920x1080 recommended)</span>
+              <span className="text-[10px] text-ink-muted">High-res WebP/JPG (1920x1080 recommended)</span>
             </div>
 
             {editingSlide?.image?.url ? (
-              <div className="relative rounded-lg overflow-hidden border border-gold-500/30 max-h-48 group">
+              <div className="relative rounded-lg overflow-hidden border border-border max-h-48 group shadow-xs">
                 <img
                   src={editingSlide.image.url}
                   alt={editingSlide.heading || 'Hero slide preview'}
                   className="w-full h-44 object-cover"
                 />
-                <div className="absolute inset-0 bg-plum-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                  <label className="cursor-pointer px-3 py-1.5 bg-gold-500 text-plum-950 rounded text-xs font-medium hover:bg-gold-400">
+                <div className="absolute inset-0 bg-plum-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                  <label className="cursor-pointer px-3 py-1.5 bg-gold-500 text-plum-950 rounded text-xs font-bold hover:bg-gold-400 shadow-soft">
                     Replace Image
                     <input
                       type="file"
@@ -1098,18 +1125,18 @@ export const AdminHomepageCMS: React.FC = () => {
                     />
                   </label>
                 </div>
-                <div className="absolute bottom-1 right-2 bg-plum-950/80 px-2 py-0.5 rounded text-[10px] text-gold-400 font-mono">
-                  {editingSlide.image.path || 'Supabase Storage'}
+                <div className="absolute bottom-1 right-2 bg-plum-950/80 px-2 py-0.5 rounded text-[10px] text-gold-300 font-mono">
+                  {editingSlide.image.path || 'Upload Image'}
                 </div>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gold-500/30 rounded-lg cursor-pointer bg-plum-950/40 hover:bg-plum-900/40 transition-colors">
-                <Upload className="w-8 h-8 text-gold-400 mb-2" />
-                <span className="text-xs text-ivory font-medium">
-                  {uploadingImage ? 'Uploading to Supabase Storage...' : 'Click to upload image'}
+              <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-lg cursor-pointer bg-white hover:bg-canvas transition-colors">
+                <Upload className="w-8 h-8 text-gold-600 mb-2" />
+                <span className="text-xs text-plum-900 font-semibold">
+                  {uploadingImage ? 'Uploading...' : 'Click to upload image'}
                 </span>
-                <span className="text-[11px] text-ivory/50 mt-1">
-                  Direct upload into Supabase Storage bucket 'kalptaru-media/hero'
+                <span className="text-[11px] text-ink-muted mt-1">
+                  Upload image (JPEG, PNG, or WebP. Max 5MB)
                 </span>
                 <input
                   type="file"
@@ -1124,75 +1151,75 @@ export const AdminHomepageCMS: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gold-300 mb-1">Slide Heading *</label>
+              <label className="block text-xs font-bold text-plum-900 mb-1">Slide Heading *</label>
               <input
                 type="text"
                 required
                 value={editingSlide?.heading || ''}
                 onChange={(e) => setEditingSlide({ ...editingSlide, heading: e.target.value })}
                 placeholder="e.g. Kalptaru Yog Vidyalaya"
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs"
               />
             </div>
 
             <div>
-              <label className="block text-xs text-gold-300 mb-1">Subheading / Badge</label>
+              <label className="block text-xs font-bold text-plum-900 mb-1">Subheading / Badge</label>
               <input
                 type="text"
                 value={editingSlide?.subheading || ''}
                 onChange={(e) => setEditingSlide({ ...editingSlide, subheading: e.target.value })}
                 placeholder="e.g. Traditional Yoga & Wellness"
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs text-gold-300 mb-1">Slide Description *</label>
+            <label className="block text-xs font-bold text-plum-900 mb-1">Slide Description *</label>
             <textarea
               rows={2}
               required
               value={editingSlide?.description || ''}
               onChange={(e) => setEditingSlide({ ...editingSlide, description: e.target.value })}
               placeholder="Detailed description of the slide philosophy or sanctuary..."
-              className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs resize-y"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-gold-300 mb-1">Sacred Quote / Shloka Reference</label>
+            <label className="block text-xs font-bold text-plum-900 mb-1">Sacred Quote / Shloka Reference</label>
             <input
               type="text"
               value={editingSlide?.quote || ''}
               onChange={(e) => setEditingSlide({ ...editingSlide, quote: e.target.value })}
               placeholder='e.g. "Yogas chitta vritti nirodha — Yoga is the stilling of the mind."'
-              className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400 font-editorial"
+              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs font-editorial"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gold-300 mb-1">Primary CTA Button</label>
+              <label className="block text-xs font-bold text-plum-900 mb-1">Primary CTA Button</label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={editingSlide?.ctaText || ''}
                   onChange={(e) => setEditingSlide({ ...editingSlide, ctaText: e.target.value })}
                   placeholder="Button Label"
-                  className="w-1/2 bg-plum-900/50 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory"
+                  className="w-1/2 bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500"
                 />
                 <input
                   type="text"
                   value={editingSlide?.ctaUrl || ''}
                   onChange={(e) => setEditingSlide({ ...editingSlide, ctaUrl: e.target.value })}
                   placeholder="URL (/programs)"
-                  className="w-1/2 bg-plum-900/50 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory font-mono"
+                  className="w-1/2 bg-white border border-border rounded px-3 py-1.5 text-xs text-ink font-mono focus:outline-none focus:border-gold-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs text-gold-300 mb-1">Secondary CTA Button</label>
+              <label className="block text-xs font-bold text-plum-900 mb-1">Secondary CTA Button</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -1201,7 +1228,7 @@ export const AdminHomepageCMS: React.FC = () => {
                     setEditingSlide({ ...editingSlide, secondaryCtaText: e.target.value })
                   }
                   placeholder="Button Label"
-                  className="w-1/2 bg-plum-900/50 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory"
+                  className="w-1/2 bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500"
                 />
                 <input
                   type="text"
@@ -1210,21 +1237,21 @@ export const AdminHomepageCMS: React.FC = () => {
                     setEditingSlide({ ...editingSlide, secondaryCtaUrl: e.target.value })
                   }
                   placeholder="URL"
-                  className="w-1/2 bg-plum-900/50 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-ivory font-mono"
+                  className="w-1/2 bg-white border border-border rounded px-3 py-1.5 text-xs text-ink font-mono focus:outline-none focus:border-gold-500"
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-gold-500/20">
+          <div className="flex items-center justify-between pt-3 border-t border-border">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={editingSlide?.active ?? true}
                 onChange={(e) => setEditingSlide({ ...editingSlide, active: e.target.checked })}
-                className="rounded border-gold-500/30 bg-plum-900 text-gold-500 focus:ring-gold-400"
+                className="rounded border-border text-gold-600 focus:ring-gold-500"
               />
-              <span className="text-xs text-ivory">Slide is Active on Public Site</span>
+              <span className="text-xs text-ink font-medium">Slide is Active on Public Site</span>
             </label>
 
             <div className="flex items-center gap-2">
@@ -1234,14 +1261,14 @@ export const AdminHomepageCMS: React.FC = () => {
                   setSlideModalOpen(false);
                   setEditingSlide(null);
                 }}
-                className="px-4 py-2 rounded-lg text-xs font-sans text-ivory/70 hover:text-ivory border border-white/10"
+                className="px-4 py-2 rounded-lg text-xs font-sans text-ink hover:text-plum-900 bg-white border border-border hover:bg-canvas shadow-xs font-medium"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={saving || uploadingImage}
-                className="px-5 py-2 rounded-lg text-xs font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-sm disabled:opacity-50"
+                className="px-5 py-2 rounded-lg text-xs font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft disabled:opacity-50"
               >
                 {saving ? 'Saving...' : 'Save Hero Slide'}
               </button>

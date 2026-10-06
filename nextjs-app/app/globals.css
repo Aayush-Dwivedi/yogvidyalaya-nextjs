@@ -149,6 +149,17 @@
   .border-gold-500  { border-color: #C5A059 !important; }
   .border-gold-400  { border-color: #D8B26E !important; }
   .font-editorial   { font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif !important; }
+
+  /* Hide scrollbar utility */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+  }
 }
 
 /* ─── Micro-Animations ───────────────────────────────────────────────────────── */

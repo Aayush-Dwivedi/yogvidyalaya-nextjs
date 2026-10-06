@@ -1,4 +1,4 @@
-import { apiClient } from '../api/axios';
+import { apiClient } from '@/lib/api/axios';
 import { ApiResponse } from '../types';
 import {
   CmsHeroSlide,
@@ -59,6 +59,15 @@ export class CmsService {
 
   static async updateHomepageCta(cta: CmsHomepageCta): Promise<CmsHomepageCta> {
     const res = (await apiClient.put('/home/cta', cta)) as unknown as ApiResponse<CmsHomepageCta>;
+    return res.data;
+  }
+
+  static async confirmAllChanges(): Promise<any> {
+    const res = (await apiClient.post('/admin/revalidate')) as unknown as ApiResponse<any>;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('kalptaru_last_sync', Date.now().toString());
+      window.dispatchEvent(new CustomEvent('kalptaru-cms-updated', { detail: { timestamp: Date.now() } }));
+    }
     return res.data;
   }
 
@@ -164,9 +173,9 @@ export class CmsService {
   // FOUNDER
   // ==========================================
 
-  static async getFounders(): Promise<CmsFounder[]> {
+  static async getFounders(status: string = 'all'): Promise<CmsFounder[]> {
     const res = (await apiClient.get('/founders', {
-      params: { limit: 20 },
+      params: { limit: 100, status },
     })) as unknown as ApiResponse<CmsFounder[]>;
     return res.data;
   }

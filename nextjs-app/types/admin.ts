@@ -1,54 +1,9 @@
-export interface AdminOverviewCards {
-  students: {
-    total: number;
-    active: number;
-    growth: string;
-    sublabel: string;
-  };
-  bookings: {
-    total: number;
-    confirmed: number;
-    pending: number;
-    growth: string;
-    sublabel: string;
-  };
-  courses: {
-    total: number;
-    published: number;
-    activeBatches: number;
-    sublabel: string;
-  };
-  workshops: {
-    total: number;
-    upcoming: number;
-    averageOccupancy: string;
-    sublabel: string;
-  };
-  memberships: {
-    totalPlans: number;
-    activeMembers: number;
-    monthlyRecurring: string;
-    sublabel: string;
-  };
-  revenue: {
-    totalFormatted: string;
-    rawTotal: number;
-    growth: string;
-    sublabel: string;
-  };
-}
-
-export interface AdminRecentActivity {
-  id: string;
-  actor: string;
-  action: string;
-  entityType: 'student' | 'booking' | 'course' | 'workshop' | 'enquiry' | 'payment';
-  details: string;
-  timestamp: string;
-  statusBadge?: {
-    label: string;
-    variant: 'success' | 'warning' | 'gold' | 'plum' | 'neutral';
-  };
+export interface AdminStats {
+  students: number;
+  bookings: number;
+  courses: number;
+  workshops: number;
+  enquiries: number;
 }
 
 export interface AdminRecentBooking {
@@ -57,11 +12,11 @@ export interface AdminRecentBooking {
   studentName: string;
   studentEmail: string;
   sessionTitle: string;
-  sessionType: 'Shala Batch' | 'Workshop' | 'Acharya Consultation' | 'Asana Lab';
+  sessionType: string;
   date: string;
   time: string;
   venue: string;
-  status: 'confirmed' | 'waitlisted' | 'pending';
+  status: 'new' | 'contacted' | 'confirmed' | 'waitlisted' | 'pending' | 'cancelled' | 'completed' | 'refunded';
   amount: string;
 }
 
@@ -75,7 +30,6 @@ export interface AdminUpcomingWorkshop {
   instructor: string;
   capacity: number;
   enrolled: number;
-  occupancyPercentage: number;
   status: 'published' | 'draft' | 'closed';
 }
 
@@ -91,9 +45,16 @@ export interface AdminNewEnquiry {
 }
 
 export interface AdminDashboardData {
-  overview: AdminOverviewCards;
-  recentActivity: AdminRecentActivity[];
+  stats: AdminStats;
+  overview?: {
+    students: { total: number };
+    bookings: { total: number };
+    courses: { total: number };
+    workshops: { total: number };
+    enquiries: { total: number };
+  };
   recentBookings: AdminRecentBooking[];
   upcomingWorkshops: AdminUpcomingWorkshop[];
-  newEnquiries: AdminNewEnquiry[];
+  recentEnquiries: AdminNewEnquiry[];
+  newEnquiries?: AdminNewEnquiry[];
 }

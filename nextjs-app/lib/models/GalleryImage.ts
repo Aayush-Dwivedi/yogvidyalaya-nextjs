@@ -72,7 +72,6 @@ const GalleryImageSchema = new Schema<IGalleryImage>(
 
 GalleryImageSchema.index({ title: 'text', description: 'text', event: 'text' });
 
-export const GalleryImage = model<IGalleryImage>(
-  'GalleryImage',
-  GalleryImageSchema
-);
+export const GalleryImage =
+  (models.GalleryImage as Model<IGalleryImage>) ||
+  model<IGalleryImage>('GalleryImage', GalleryImageSchema);

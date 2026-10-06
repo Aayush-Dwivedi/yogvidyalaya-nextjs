@@ -13,4 +13,5 @@ export * from './Video';
 export * from './Benefit';
 export * from './MediaAsset';
 export * from './User';
+export * from './Booking';
 export * from './Enquiry';

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Badge } from '../../components/Badge';
@@ -8,11 +8,84 @@ import { LinkButton } from '../../components/LinkButton';
 import { Modal } from '../../components/Modal';
 import { FEATURED_VIDEOS } from '../../services/homeData';
 import { VideoItem } from '../../types/home';
+import { CmsVideo } from '../../types/cms';
 import { KalptaruTree } from '../../components/Motifs';
+import { CmsService } from '../../services/cmsService';
 
-export const VideosSection: React.FC = () => {
+export interface VideosSectionProps {
+  videos?: (VideoItem | CmsVideo)[];
+}
+
+const normalizeVideos = (items: any[]): VideoItem[] => {
+  const normalized: VideoItem[] = items.map((v, idx) => ({
+    id: v._id || v.id || `video-${idx}`,
+    title: v.title || 'Live Yoga Interactive Session',
+    youtubeId:
+      v.youtubeId ||
+      (v.url?.includes('v=') ? v.url.split('v=')[1]?.substring(0, 11) : '') ||
+      (v.url?.includes('youtu.be/') ? v.url.split('youtu.be/')[1]?.substring(0, 11) : '') ||
+      FEATURED_VIDEOS[idx % FEATURED_VIDEOS.length]?.youtubeId ||
+      'dQw4w9WgXcQ',
+    thumbnail:
+      v.thumbnail ||
+      (v.youtubeId ? `https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg` : '') ||
+      FEATURED_VIDEOS[idx % FEATURED_VIDEOS.length]?.thumbnail ||
+      '',
+    category: v.category || 'Discourse',
+    duration: v.duration || '25:00',
+    speaker: v.speaker || v.instructor || 'Mrs. Shuchi Mohan',
+    description: v.description || '',
+    views: v.views || '1.2K',
+  }));
+
+  while (normalized.length < 3) {
+    normalized.push(FEATURED_VIDEOS[normalized.length]);
+  }
+  return normalized;
+};
+
+export const VideosSection: React.FC<VideosSectionProps> = ({ videos: propVideos }) => {
+  const [videos, setVideos] = useState<VideoItem[]>(() =>
+    propVideos && propVideos.length > 0 ? normalizeVideos(propVideos) : FEATURED_VIDEOS
+  );
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
-  const [mainVideo, ...supportingVideos] = FEATURED_VIDEOS;
+
+  useEffect(() => {
+    if (propVideos && propVideos.length > 0) {
+      setVideos(normalizeVideos(propVideos));
+    }
+  }, [propVideos]);
+
+  useEffect(() => {
+    const fetchLiveVideos = async () => {
+      try {
+        const homeData = await CmsService.getHomeContent();
+        if (homeData?.featuredVideos && homeData.featuredVideos.length > 0) {
+          setVideos(normalizeVideos(homeData.featuredVideos));
+        }
+      } catch (err) {
+        console.warn('Using default featured videos:', err);
+      }
+    };
+
+    if (!propVideos || propVideos.length === 0) {
+      fetchLiveVideos();
+    }
+
+    const handleUpdate = () => {
+      fetchLiveVideos();
+    };
+
+    window.addEventListener('kalptaru-cms-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+
+    return () => {
+      window.removeEventListener('kalptaru-cms-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, [propVideos]);
+
+  const [mainVideo, ...supportingVideos] = videos;
 
   return (
     <section className="py-20 sm:py-28 bg-canvas-warm relative overflow-hidden border-b border-border/70">
@@ -39,14 +112,14 @@ export const VideosSection: React.FC = () => {
               className="relative aspect-video overflow-hidden rounded-[1px] bg-plum-950 cursor-pointer"
               role="button"
               tabIndex={0}
-              aria-label={`Play video: ${mainVideo.title}`}
+              aria-label={`Play video: ${mainVideo?.title}`}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') setSelectedVideo(mainVideo);
               }}
             >
               <img
-                src={mainVideo.thumbnail}
-                alt={mainVideo.title}
+                src={mainVideo?.thumbnail}
+                alt={mainVideo?.title}
                 className="w-full h-full object-cover filter brightness-[0.8] group-hover:scale-[1.03] transition-transform duration-700"
                 loading="lazy"
               />
@@ -64,23 +137,23 @@ export const VideosSection: React.FC = () => {
               {/* Badges */}
               <div className="absolute top-3 left-3">
                 <Badge variant="dark" size="sm">
-                  {mainVideo.category}
+                  {mainVideo?.category}
                 </Badge>
               </div>
 
               <div className="absolute bottom-3 right-3">
                 <span className="text-[11px] font-mono text-ivory bg-plum-950/80 px-2.5 py-1 rounded-[2px] border border-border/40">
-                  {mainVideo.duration}
+                  {mainVideo?.duration}
                 </span>
               </div>
             </div>
 
             <div className="p-4 sm:p-5">
               <span className="text-xs uppercase font-mono tracking-wide text-gold-700 block mb-1">
-                Speaker: {mainVideo.speaker}
+                Speaker: {mainVideo?.speaker}
               </span>
               <h3 className="text-xl sm:text-2xl font-editorial font-normal text-plum-900 leading-snug">
-                {mainVideo.title}
+                {mainVideo?.title}
               </h3>
             </div>
           </div>
@@ -160,7 +233,7 @@ export const VideosSection: React.FC = () => {
             isOpen={!!selectedVideo}
             onClose={() => setSelectedVideo(null)}
             title={selectedVideo.title}
-            description={`Presented by ${selectedVideo.speaker} &bull; ${selectedVideo.duration}`}
+            description={`Presented by ${selectedVideo.speaker} • ${selectedVideo.duration}`}
             size="xl"
           >
             <div className="aspect-video w-full rounded-[2px] overflow-hidden bg-plum-950 border border-border">
@@ -178,3 +251,5 @@ export const VideosSection: React.FC = () => {
     </section>
   );
 };
+
+export default VideosSection;

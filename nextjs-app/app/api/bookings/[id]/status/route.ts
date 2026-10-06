@@ -14,7 +14,7 @@ export async function PATCH(
 ) {
   try {
     await connectDB();
-    await requireAdminSession();
+    await requireAdminSession(request);
 
     const { id } = await params;
     const body = await request.json();

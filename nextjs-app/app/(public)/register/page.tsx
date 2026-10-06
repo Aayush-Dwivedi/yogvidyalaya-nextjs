@@ -1,7 +1,5 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { RegisterPage } from '@/views/RegisterPage';
-
-export default function Page() {
-  return <RegisterPage />;
+export default function RegisterPage() {
+  redirect('/courses');
 }

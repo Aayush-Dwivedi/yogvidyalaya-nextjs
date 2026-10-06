@@ -1,5 +1,6 @@
 import { Schema, model, Document, Types, models, Model } from 'mongoose';
 import { StorageImageSchema, SEOMetadataSchema } from './common.schema';
+import { IProgramSchedule, ProgramScheduleSchema } from './Course';
 import {
   IStorageImage,
   ISEOMetadata,
@@ -45,6 +46,7 @@ export interface IWorkshop extends Document {
   mode: DeliveryMode;
   location: IWorkshopLocation;
   capacity: IWorkshopCapacity;
+  schedules?: IProgramSchedule[];
   price: IPrice;
   instructor: IWorkshopInstructor;
   registrationDeadline?: Date;
@@ -160,6 +162,10 @@ const WorkshopSchema = new Schema<IWorkshop>(
     capacity: {
       type: CapacitySchema,
       required: [true, 'Capacity details are required'],
+    },
+    schedules: {
+      type: [ProgramScheduleSchema],
+      default: () => [],
     },
     price: {
       type: PriceSchema,

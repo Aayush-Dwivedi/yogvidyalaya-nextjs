@@ -247,28 +247,20 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Desktop Authentication / CTA Buttons */}
+          {/* Desktop Navigation CTA */}
           <div className="hidden lg:flex items-center space-x-3">
-            {isAuthenticated && user ? (
+            {isAuthenticated && (user?.role === 'admin' || user?.role === 'super_admin') ? (
               <Link
-                href="/dashboard"
+                href="/admin"
                 className="inline-flex items-center gap-2 text-xs uppercase tracking-wide-editorial text-plum-900 font-semibold px-3 py-2 border border-gold-500/70 rounded bg-gold-50/60 hover:bg-gold-50 transition-colors shadow-soft"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                Student Portal
+                Admin Dashboard
               </Link>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="text-xs uppercase tracking-wide-editorial text-plum-900 font-medium px-3 py-2 hover:text-plum-700 transition-colors"
-                >
-                  Login
-                </Link>
-                <LinkButton href="/register" variant="primary" size="sm">
-                  Register
-                </LinkButton>
-              </>
+              <LinkButton href="/contact" variant="primary" size="sm">
+                Admissions Enquiry
+              </LinkButton>
             )}
           </div>
 
@@ -378,21 +370,16 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
 
-            {/* Mobile Auth Actions */}
+            {/* Mobile Navigation CTA */}
             <div className="pt-6 border-t border-border space-y-2.5">
-              {isAuthenticated && user ? (
-                <LinkButton href="/dashboard" variant="primary" size="md" className="w-full">
-                  Go to Student Portal
+              {isAuthenticated && (user?.role === 'admin' || user?.role === 'super_admin') ? (
+                <LinkButton href="/admin" variant="primary" size="md" className="w-full">
+                  Admin Dashboard
                 </LinkButton>
               ) : (
-                <>
-                  <LinkButton href="/register" variant="primary" size="md" className="w-full">
-                    Register as Student
-                  </LinkButton>
-                  <LinkButton href="/login" variant="secondary" size="md" className="w-full">
-                    Student Login
-                  </LinkButton>
-                </>
+                <LinkButton href="/contact" variant="primary" size="md" className="w-full">
+                  Admissions Enquiry
+                </LinkButton>
               )}
             </div>
           </nav>

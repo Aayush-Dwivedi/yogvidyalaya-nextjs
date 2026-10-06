@@ -92,11 +92,11 @@ export const ProfilePage: React.FC = () => {
         profileImage: uploadedMedia,
       });
 
-      setSuccessMessage('Profile photo uploaded to Supabase Storage and saved successfully!');
+      setSuccessMessage('Profile photo uploaded and saved successfully!');
       setTimeout(() => setSuccessMessage(null), 4000);
     } catch (err: unknown) {
       const errObj = err as { message?: string };
-      setErrorMessage(errObj?.message || 'Failed to upload image to Supabase Storage.');
+      setErrorMessage(errObj?.message || 'Failed to upload profile photo.');
       // Revert preview if failed
       setImagePreview(user?.profileImage?.url || null);
     } finally {
@@ -157,7 +157,7 @@ export const ProfilePage: React.FC = () => {
           Manage Profile
         </h1>
         <p className="text-xs text-ink-muted mt-1 font-sans">
-          Update your student identification details, shala contact info, and profile image stored in Supabase Storage.
+          Update your student identification details, shala contact info, and profile image.
         </p>
       </div>
 
@@ -182,10 +182,10 @@ export const ProfilePage: React.FC = () => {
         </div>
       )}
 
-      {/* Profile Photo & Supabase Storage Section */}
+      {/* Profile Photo Section */}
       <div className="bg-surface border border-border rounded p-6 shadow-soft">
         <h2 className="text-sm font-semibold text-plum-900 font-sans uppercase tracking-wider mb-4">
-          Profile Photo (Supabase Storage)
+          Profile Photo
         </h2>
 
         <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -233,13 +233,13 @@ export const ProfilePage: React.FC = () => {
 
               {profileImage?.url && (
                 <span className="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2 py-1 rounded border border-emerald-200 inline-flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5" /> Supabase Storage Linked
+                  <ShieldCheck className="w-3.5 h-3.5" /> Photo Uploaded
                 </span>
               )}
             </div>
 
             <p className="text-[11px] text-ink-faint">
-              Accepts JPEG, PNG, or WebP. Maximum file size: 5MB. Uploads directly to Supabase Storage.
+              Accepts JPEG, PNG, or WebP. Maximum file size: 5MB.
             </p>
           </div>
         </div>
@@ -366,7 +366,7 @@ export const ProfilePage: React.FC = () => {
         {/* Form Actions */}
         <div className="pt-4 border-t border-border/80 flex items-center justify-between">
           <div className="text-[11px] font-mono text-ink-faint">
-            Role: <strong className="text-plum-900 capitalize">{user?.role}</strong> | ID: {user?._id?.slice(-6) || 'Student'}
+            Student ID: <span className="font-semibold text-plum-900">{user?._id?.slice(-6) || 'KYV'}</span>
           </div>
 
           <Button

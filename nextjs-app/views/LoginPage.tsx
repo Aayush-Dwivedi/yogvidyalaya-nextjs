@@ -9,7 +9,7 @@ import { Button } from '../components/Button';
 import { Mail, Lock, Eye, EyeOff, Sparkles, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
-  const { login, loginDemoStudent, loginDemoAdmin, isLoading, error } = useAuth();
+  const { login, isLoading, error } = useAuth();
   const router = useRouter();
 
   const [email, setEmail] = useState('');
@@ -31,33 +31,11 @@ export const LoginPage: React.FC = () => {
       if (loggedUser.role === 'admin' || loggedUser.role === 'super_admin') {
         router.replace('/admin');
       } else {
-        router.replace('/dashboard');
+        setLocalError('Access restricted: Only administrative accounts are permitted.');
       }
     } catch (err: unknown) {
       const errObj = err as { message?: string };
       setLocalError(errObj?.message || 'Login failed. Please verify your credentials.');
-    }
-  };
-
-  const handleStudentDemo = async () => {
-    setLocalError(null);
-    try {
-      await loginDemoStudent();
-      router.replace('/dashboard');
-    } catch (err: unknown) {
-      const errObj = err as { message?: string };
-      setLocalError(errObj?.message || 'Student demo login failed.');
-    }
-  };
-
-  const handleAdminDemo = async () => {
-    setLocalError(null);
-    try {
-      await loginDemoAdmin();
-      router.replace('/admin');
-    } catch (err: unknown) {
-      const errObj = err as { message?: string };
-      setLocalError(errObj?.message || 'Admin demo login failed.');
     }
   };
 
@@ -76,57 +54,15 @@ export const LoginPage: React.FC = () => {
         </div>
 
         <h2 className="font-editorial text-3xl font-bold tracking-tight text-plum-900">
-          Kalptaru Portal Sign In
+          Admin Sign In
         </h2>
         <p className="mt-2 text-xs sm:text-sm text-ink-muted">
-          Access your courses, shala bookings, and administrative modules
+          Administrative access for Kalptaru Yog Vidyalaya management
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-surface py-8 px-4 sm:rounded-[2px] sm:px-10 border border-border shadow-card space-y-6">
-          {/* Quick Demo Logins Panel */}
-          <div className="bg-canvas-warm border border-gold-500/30 rounded p-4 space-y-3">
-            <div className="flex items-center space-x-2 text-xs font-semibold text-plum-900 uppercase tracking-widest-editorial">
-              <Sparkles className="w-3.5 h-3.5 text-gold-600" />
-              <span>Instant Evaluator Logins</span>
-            </div>
-            <p className="text-[11px] text-ink-muted leading-relaxed">
-              Use pre-configured credentials to evaluate the student or admin portals immediately:
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={handleStudentDemo}
-                isLoading={isLoading}
-                className="w-full text-xs"
-              >
-                Student Demo
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleAdminDemo}
-                isLoading={isLoading}
-                className="w-full text-xs border-plum-900/30 text-plum-900 hover:bg-plum-50"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 mr-1 text-gold-600" />
-                Admin Demo
-              </Button>
-            </div>
-          </div>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-surface px-2 text-ink-faint">Or sign in with email</span>
-            </div>
-          </div>
 
           {(localError || error) && (
             <div className="p-3 rounded bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start space-x-2">
@@ -137,9 +73,9 @@ export const LoginPage: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
-              label="Email Address"
+              label="Admin Email"
               type="email"
-              placeholder="e.g. sadhaka@kalptaruyog.org"
+              placeholder="e.g. admin@kalptaruyogvidyalaya.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -150,7 +86,7 @@ export const LoginPage: React.FC = () => {
               <Input
                 label="Password"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Enter account password"
+                placeholder="Enter admin password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -166,21 +102,6 @@ export const LoginPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="flex items-center justify-between text-xs pt-1">
-              <label className="flex items-center space-x-2 cursor-pointer text-ink-muted">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="rounded border-border text-plum-900 focus:ring-gold-500"
-                />
-                <span>Remember me</span>
-              </label>
-
-              <span className="text-gold-700 hover:text-gold-900 cursor-pointer">
-                Forgot password?
-              </span>
-            </div>
-
             <Button
               type="submit"
               variant="primary"
@@ -189,19 +110,14 @@ export const LoginPage: React.FC = () => {
               className="w-full mt-2"
               rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              Sign In to Kalptaru
+              Sign In to Admin
             </Button>
           </form>
 
-          {/* Registration Referral Footer */}
-          <div className="text-center text-xs text-ink-muted pt-2 border-t border-border">
-            <span>New to Kalptaru Yog Vidyalaya? </span>
-            <Link
-              href="/register"
-              className="font-medium text-gold-700 hover:text-gold-900 underline underline-offset-2 ml-1"
-            >
-              Enroll as a Student
-            </Link>
+          {/* Secure Portal Notice */}
+          <div className="text-center text-xs text-ink-muted pt-2 border-t border-border flex items-center justify-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-gold-600" />
+            <span>Authorized administrative personnel only</span>
           </div>
         </div>
       </div>

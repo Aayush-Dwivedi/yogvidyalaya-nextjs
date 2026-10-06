@@ -10,7 +10,7 @@ export const runtime = 'nodejs';
 
 const VALID_FOLDERS = new Set<StorageFolder>([
   'hero', 'courses', 'workshops', 'gallery', 'founder',
-  'institute', 'videos', 'site-assets', 'general',
+  'institute', 'videos', 'site-assets', 'student', 'general',
 ]);
 
 function resolveFolder(raw?: string | null): StorageFolder {
@@ -24,7 +24,7 @@ function resolveFolder(raw?: string | null): StorageFolder {
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    await requireAdminSession();
+    await requireAdminSession(request);
 
     const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get('page')) || 1;
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
-    await requireAdminSession();
+    await requireAdminSession(request);
 
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     await connectDB();
-    await requireAdminSession();
+    await requireAdminSession(request);
 
     const body = await request.json();
     if (!body.path) {

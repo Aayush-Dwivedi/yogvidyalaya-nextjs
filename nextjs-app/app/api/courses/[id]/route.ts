@@ -29,7 +29,7 @@ export async function PATCH(
 ) {
   try {
     await connectDB();
-    await requireAdminSession();
+    await requireAdminSession(request);
 
     const { id } = await params;
     const body = await request.json();
@@ -47,12 +47,12 @@ export async function PATCH(
 
 // DELETE /api/courses/[id] — admin only
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
-    await requireAdminSession();
+    await requireAdminSession(request);
 
     const { id } = await params;
     await CourseService.deleteCourse(id);

@@ -119,10 +119,10 @@ export const AdminGalleryCMS: React.FC = () => {
           alt: res.alt || file.name,
         },
       }));
-      showToast('Photo uploaded to Supabase Storage bucket!');
+      showToast('Photo uploaded successfully!');
     } catch (err: any) {
       console.error(err);
-      showToast(err.message || 'Failed to upload photo to Supabase Storage', 'error');
+      showToast(err.message || 'Failed to upload photo', 'error');
     } finally {
       setUploadingImage(false);
     }
@@ -271,59 +271,58 @@ export const AdminGalleryCMS: React.FC = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft">
         <div>
           <div className="flex items-center gap-2.5 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-sans tracking-widest uppercase bg-gold-500/10 text-gold-400 border border-gold-500/30">
-              Media & Sacred Visuals
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-sans tracking-widest uppercase bg-gold-50 text-gold-700 border border-gold-200">
+              Media
             </span>
-            <span className="text-xs text-ivory/50">• Supabase Storage Layer</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-editorial font-normal text-ivory tracking-wide">
-            Gallery CMS
+          <h1 className="text-2xl sm:text-3xl font-editorial font-bold text-plum-900 tracking-wide">
+            Gallery
           </h1>
-          <p className="text-xs sm:text-sm text-ivory/70 font-sans mt-1">
-            Upload, edit, delete, categorize, reorder, and feature ashram & sadhana photography using Supabase Storage.
+          <p className="text-xs sm:text-sm text-ink-muted font-sans mt-1">
+            Upload, edit, delete, categorize, reorder, and feature ashram & sadhana photography.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setCategoryModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-sans text-gold-300 bg-plum-900/60 border border-gold-500/30 hover:bg-plum-900 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-sans text-plum-900 bg-white border border-border hover:bg-canvas transition-colors shadow-xs"
           >
-            <FolderPlus className="w-3.5 h-3.5" />
+            <FolderPlus className="w-3.5 h-3.5 text-gold-600" />
             <span>New Category</span>
           </button>
           <button
             onClick={loadData}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-sans text-gold-300 bg-plum-900/60 border border-gold-500/30 hover:bg-plum-900 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-sans text-plum-900 bg-white border border-border hover:bg-canvas transition-colors shadow-xs"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <RefreshCw className="w-3.5 h-3.5 text-gold-600" />
             <span>Sync</span>
           </button>
           <button
             onClick={() => handleOpenUploadModal()}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium bg-plum-900 hover:bg-plum-800 text-gold-300 transition-colors shadow-soft"
           >
-            <Upload className="w-4 h-4" />
+            <Upload className="w-4 h-4 text-gold-400" />
             <span>Upload Photo</span>
           </button>
         </div>
       </div>
 
       {/* Category Filter Bar */}
-      <div className="flex flex-wrap items-center gap-2 bg-plum-950/30 p-2.5 rounded-xl border border-gold-500/10">
-        <span className="text-xs text-gold-400 font-sans px-2 flex items-center gap-1">
-          <Filter className="w-3 h-3" />
+      <div className="flex flex-wrap items-center gap-2 bg-white p-2.5 rounded-xl border border-border shadow-soft">
+        <span className="text-xs text-ink-muted font-sans px-2 flex items-center gap-1 font-medium">
+          <Filter className="w-3 h-3 text-gold-600" />
           <span>Filter:</span>
         </span>
         <button
           onClick={() => setSelectedCategory('all')}
           className={`px-3 py-1.5 rounded-lg text-xs font-sans transition-colors ${
             selectedCategory === 'all'
-              ? 'bg-gold-500 text-plum-950 font-medium'
-              : 'text-ivory/70 hover:text-ivory bg-plum-900/40'
+              ? 'bg-plum-900 text-gold-300 font-semibold shadow-xs'
+              : 'text-ink-muted hover:text-plum-900 bg-canvas border border-border'
           }`}
         >
           All Photos ({images.length})
@@ -332,8 +331,8 @@ export const AdminGalleryCMS: React.FC = () => {
           onClick={() => setSelectedCategory('featured')}
           className={`px-3 py-1.5 rounded-lg text-xs font-sans transition-colors ${
             selectedCategory === 'featured'
-              ? 'bg-gold-500 text-plum-950 font-medium'
-              : 'text-ivory/70 hover:text-ivory bg-plum-900/40'
+              ? 'bg-plum-900 text-gold-300 font-semibold shadow-xs'
+              : 'text-ink-muted hover:text-plum-900 bg-canvas border border-border'
           }`}
         >
           ★ Featured on Home ({images.filter((img) => img.featured).length})
@@ -351,8 +350,8 @@ export const AdminGalleryCMS: React.FC = () => {
               onClick={() => setSelectedCategory(catId)}
               className={`px-3 py-1.5 rounded-lg text-xs font-sans transition-colors ${
                 selectedCategory === catId
-                  ? 'bg-gold-500 text-plum-950 font-medium'
-                  : 'text-ivory/70 hover:text-ivory bg-plum-900/40'
+                  ? 'bg-plum-900 text-gold-300 font-semibold shadow-xs'
+                  : 'text-ink-muted hover:text-plum-900 bg-canvas border border-border'
               }`}
             >
               {cat.name} ({count})
@@ -364,9 +363,9 @@ export const AdminGalleryCMS: React.FC = () => {
       {/* Gallery Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredImages.length === 0 ? (
-          <div className="col-span-full py-16 text-center bg-plum-950/20 border border-gold-500/10 rounded-xl">
-            <ImageIcon className="w-10 h-10 text-gold-500/30 mx-auto mb-2" />
-            <p className="text-sm text-ivory/60 font-sans">No photos in this category.</p>
+          <div className="col-span-full py-16 text-center bg-white border border-border rounded-xl shadow-soft">
+            <ImageIcon className="w-10 h-10 text-ink-faint mx-auto mb-2" />
+            <p className="text-sm text-ink-muted font-sans">No photos in this category.</p>
           </div>
         ) : (
           filteredImages.map((img) => {
@@ -379,10 +378,10 @@ export const AdminGalleryCMS: React.FC = () => {
             return (
               <div
                 key={imgId}
-                className="group bg-plum-950/40 border border-gold-500/20 rounded-xl overflow-hidden backdrop-blur-sm shadow-card flex flex-col justify-between hover:border-gold-500/40 transition-all"
+                className="group bg-white border border-border rounded-xl overflow-hidden shadow-soft flex flex-col justify-between hover:border-gold-300 hover:shadow-card transition-all"
               >
                 <div>
-                  <div className="relative aspect-[4/3] bg-plum-900 overflow-hidden">
+                  <div className="relative aspect-[4/3] bg-canvas overflow-hidden">
                     <img
                       src={img.image.url}
                       alt={img.title}
@@ -390,7 +389,7 @@ export const AdminGalleryCMS: React.FC = () => {
                     />
 
                     {/* Order badge */}
-                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-plum-950/80 text-[10px] text-gold-300 font-mono border border-gold-500/20">
+                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-white/90 text-[10px] text-plum-900 font-mono border border-border shadow-xs">
                       Order #{img.order}
                     </span>
 
@@ -399,63 +398,63 @@ export const AdminGalleryCMS: React.FC = () => {
                       onClick={() => handleToggleFeatured(img)}
                       className={`absolute top-2 right-2 p-1.5 rounded-full transition-all ${
                         img.featured
-                          ? 'bg-gold-500 text-plum-950 shadow-sm'
-                          : 'bg-plum-950/70 text-ivory/50 hover:text-gold-300'
+                          ? 'bg-gold-50 text-gold-700 border border-gold-300 shadow-xs'
+                          : 'bg-white/80 text-ink-faint hover:text-gold-600 border border-border'
                       }`}
                       title={img.featured ? 'Featured on Homepage' : 'Click to feature on Homepage'}
                     >
-                      <Star className="w-3.5 h-3.5 fill-current" />
+                      <Star className={`w-3.5 h-3.5 ${img.featured ? 'fill-gold-500 text-gold-500' : ''}`} />
                     </button>
                   </div>
 
                   <div className="p-3.5 space-y-1.5">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[11px] font-sans text-gold-300/90 font-medium">
+                      <span className="text-[11px] font-sans text-gold-700 font-semibold">
                         {categoryName}
                       </span>
                       {img.featured && <Badge variant="gold" size="sm">Featured</Badge>}
                     </div>
 
-                    <h3 className="font-editorial text-base text-ivory font-medium line-clamp-1">
+                    <h3 className="font-editorial text-base text-plum-900 font-bold line-clamp-1">
                       {img.title}
                     </h3>
 
                     {img.description && (
-                      <p className="text-xs text-ivory/60 font-sans line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-ink-muted font-sans line-clamp-2 leading-relaxed">
                         {img.description}
                       </p>
                     )}
 
                     {img.image?.path && (
-                      <p className="text-[10px] font-mono text-gold-400/60 truncate pt-1">
-                        Supabase: {img.image.path}
+                      <p className="text-[10px] font-mono text-ink-faint truncate pt-1">
+                        {img.image.path}
                       </p>
                     )}
                   </div>
                 </div>
 
                 {/* Card footer controls */}
-                <div className="p-3 border-t border-gold-500/10 bg-plum-900/30 flex items-center justify-between">
-                  <span className="text-[11px] text-ivory/50 font-sans capitalize">
+                <div className="p-3 border-t border-border bg-canvas/40 flex items-center justify-between">
+                  <span className="text-[11px] text-ink-muted font-sans capitalize">
                     Status: {img.status}
                   </span>
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => handleOpenUploadModal(img)}
-                      className="p-1.5 text-gold-300 hover:text-gold-200 bg-plum-900/60 hover:bg-plum-900 border border-gold-500/20 rounded transition-colors"
+                      className="p-1.5 text-plum-900 hover:text-plum-950 bg-white hover:bg-gold-50 border border-border rounded transition-colors shadow-xs"
                       title="Edit photo details"
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
+                      <Edit2 className="w-3.5 h-3.5 text-gold-700" />
                     </button>
                     <button
                       onClick={() => {
                         setImageToDelete(img);
                         setDeleteModalOpen(true);
                       }}
-                      className="p-1.5 text-rose-300 hover:text-rose-200 bg-rose-950/40 hover:bg-rose-950 border border-rose-500/20 rounded transition-colors"
+                      className="p-1.5 text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded transition-colors shadow-xs"
                       title="Delete photo"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-3.5 h-3.5 text-rose-600" />
                     </button>
                   </div>
                 </div>
@@ -477,23 +476,22 @@ export const AdminGalleryCMS: React.FC = () => {
       >
         <form onSubmit={handleSaveImage} className="space-y-4 font-sans text-xs sm:text-sm">
           {/* Supabase Storage Upload */}
-          <div className="space-y-2 p-3.5 bg-plum-900/30 border border-gold-500/20 rounded-lg">
+          <div className="space-y-2 p-3.5 bg-canvas border border-border rounded-lg shadow-xs">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-gold-300 uppercase tracking-wider">
-                Photo (Supabase Storage)
+              <label className="text-xs font-semibold text-plum-900 uppercase tracking-wider">
+                Photo
               </label>
-              <span className="text-[10px] text-ivory/50">Stored in kalptaru-media/gallery</span>
             </div>
 
             {editingImage?.image?.url ? (
-              <div className="relative rounded-lg overflow-hidden border border-gold-500/30 max-h-48 group">
+              <div className="relative rounded-lg overflow-hidden border border-border max-h-48 group shadow-xs">
                 <img
                   src={editingImage.image.url}
                   alt={editingImage.title || 'Preview'}
                   className="w-full h-40 object-cover"
                 />
-                <div className="absolute inset-0 bg-plum-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <label className="cursor-pointer px-3 py-1.5 bg-gold-500 text-plum-950 rounded text-xs font-medium hover:bg-gold-400">
+                <div className="absolute inset-0 bg-plum-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <label className="cursor-pointer px-3 py-1.5 bg-plum-900 text-gold-300 rounded text-xs font-medium hover:bg-plum-800 shadow-soft">
                     Replace Photo
                     <input
                       type="file"
@@ -503,18 +501,15 @@ export const AdminGalleryCMS: React.FC = () => {
                     />
                   </label>
                 </div>
-                <div className="absolute bottom-1 right-2 bg-plum-950/80 px-2 py-0.5 rounded text-[10px] text-gold-400 font-mono">
-                  {editingImage.image.path}
-                </div>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gold-500/30 rounded-lg cursor-pointer bg-plum-950/40 hover:bg-plum-900/40 transition-colors">
-                <Upload className="w-8 h-8 text-gold-400 mb-2" />
-                <span className="text-xs text-ivory font-medium">
-                  {uploadingImage ? 'Uploading to Supabase Storage...' : 'Click or Drag to Upload Photo'}
+              <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-lg cursor-pointer bg-white hover:border-gold-400 transition-colors shadow-xs">
+                <Upload className="w-8 h-8 text-gold-600 mb-2" />
+                <span className="text-xs text-plum-900 font-semibold">
+                  {uploadingImage ? 'Uploading photo...' : 'Click or Drag to Upload Photo'}
                 </span>
-                <span className="text-[11px] text-ivory/50 mt-1">
-                  Upload directly via Supabase Storage provider abstraction
+                <span className="text-[11px] text-ink-muted mt-1">
+                  Accepts JPEG, PNG, or WebP. Max 5MB.
                 </span>
                 <input
                   type="file"
@@ -528,7 +523,7 @@ export const AdminGalleryCMS: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
               Photo Title *
             </label>
             <input
@@ -537,19 +532,19 @@ export const AdminGalleryCMS: React.FC = () => {
               value={editingImage?.title || ''}
               onChange={(e) => setEditingImage({ ...editingImage, title: e.target.value })}
               placeholder="e.g. Dawn Surya Namaskar on the Pavilions"
-              className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Category
               </label>
               <select
                 value={(editingImage?.category as string) || ''}
                 onChange={(e) => setEditingImage({ ...editingImage, category: e.target.value })}
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink focus:outline-none focus:border-gold-500 shadow-xs"
               >
                 {categories.map((c) => (
                   <option key={c._id || c.id} value={c._id || c.id}>
@@ -560,7 +555,7 @@ export const AdminGalleryCMS: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Event / Occasion
               </label>
               <input
@@ -568,13 +563,13 @@ export const AdminGalleryCMS: React.FC = () => {
                 value={editingImage?.event || ''}
                 onChange={(e) => setEditingImage({ ...editingImage, event: e.target.value })}
                 placeholder="e.g. Navratri Sadhana, 200-Hour TTC"
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
               Caption / Description
             </label>
             <textarea
@@ -582,13 +577,13 @@ export const AdminGalleryCMS: React.FC = () => {
               value={editingImage?.description || ''}
               onChange={(e) => setEditingImage({ ...editingImage, description: e.target.value })}
               placeholder="Describe the asana posture, chanting circle, or ashram setting..."
-              className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Display Order
               </label>
               <input
@@ -597,7 +592,7 @@ export const AdminGalleryCMS: React.FC = () => {
                 onChange={(e) =>
                   setEditingImage({ ...editingImage, order: Number(e.target.value) })
                 }
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400 font-mono"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs"
               />
             </div>
 
@@ -609,28 +604,28 @@ export const AdminGalleryCMS: React.FC = () => {
                   onChange={(e) =>
                     setEditingImage({ ...editingImage, featured: e.target.checked })
                   }
-                  className="rounded border-gold-500/30 bg-plum-900 text-gold-500 focus:ring-gold-400"
+                  className="rounded border-border text-plum-900 focus:ring-gold-400"
                 />
-                <span className="text-xs text-ivory">Feature on Homepage</span>
+                <span className="text-xs text-ink font-medium">Feature on Homepage</span>
               </label>
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-gold-500/20">
+          <div className="flex justify-end gap-2 pt-4 border-t border-border">
             <button
               type="button"
               onClick={() => {
                 setModalOpen(false);
                 setEditingImage(null);
               }}
-              className="px-4 py-2 rounded-lg text-xs font-sans text-ivory/70 hover:text-ivory border border-white/10"
+              className="px-4 py-2 rounded-lg text-xs font-sans text-ink-muted hover:text-ink border border-border bg-white shadow-xs"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving || uploadingImage}
-              className="px-5 py-2 rounded-lg text-xs font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-sm disabled:opacity-50"
+              className="px-5 py-2 rounded-lg text-xs font-sans font-medium bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Gallery Photo'}
             </button>
@@ -647,7 +642,7 @@ export const AdminGalleryCMS: React.FC = () => {
       >
         <form onSubmit={handleCreateCategory} className="space-y-4 font-sans text-sm">
           <div>
-            <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
               Category Name *
             </label>
             <input
@@ -656,7 +651,7 @@ export const AdminGalleryCMS: React.FC = () => {
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               placeholder="e.g. Asana Lab, Vedic Havans, Nature Retreats"
-              className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
             />
           </div>
 
@@ -664,14 +659,14 @@ export const AdminGalleryCMS: React.FC = () => {
             <button
               type="button"
               onClick={() => setCategoryModalOpen(false)}
-              className="px-4 py-2 rounded-lg text-xs text-ivory/70 hover:text-ivory border border-white/10"
+              className="px-4 py-2 rounded-lg text-xs text-ink-muted hover:text-ink border border-border bg-white shadow-xs"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 rounded-lg text-xs bg-gold-500 text-plum-950 hover:bg-gold-400 font-medium disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-xs bg-plum-900 text-gold-300 hover:bg-plum-800 font-medium transition-colors shadow-soft disabled:opacity-50"
             >
               {saving ? 'Creating...' : 'Create Category'}
             </button>
@@ -687,11 +682,11 @@ export const AdminGalleryCMS: React.FC = () => {
         size="sm"
       >
         <div className="space-y-4 font-sans text-sm">
-          <p className="text-ivory/80">
+          <p className="text-ink">
             Are you sure you want to permanently delete{' '}
-            <strong className="text-gold-300">"{imageToDelete?.title}"</strong>?
+            <strong className="text-plum-900 font-bold">"{imageToDelete?.title}"</strong>?
           </p>
-          <p className="text-xs text-rose-300/80">
+          <p className="text-xs text-rose-600 font-medium">
             The image will be removed from the gallery and public homepage highlights.
           </p>
 
@@ -699,7 +694,7 @@ export const AdminGalleryCMS: React.FC = () => {
             <button
               type="button"
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 rounded-lg text-xs text-ivory/70 hover:text-ivory border border-white/10"
+              className="px-4 py-2 rounded-lg text-xs text-ink-muted hover:text-ink border border-border bg-white shadow-xs"
             >
               Cancel
             </button>
@@ -707,7 +702,7 @@ export const AdminGalleryCMS: React.FC = () => {
               type="button"
               disabled={saving}
               onClick={confirmDelete}
-              className="px-4 py-2 rounded-lg text-xs bg-rose-600 hover:bg-rose-500 text-white font-medium shadow-sm disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-xs bg-rose-600 hover:bg-rose-700 text-white font-medium shadow-sm disabled:opacity-50"
             >
               {saving ? 'Deleting...' : 'Yes, Delete Photo'}
             </button>

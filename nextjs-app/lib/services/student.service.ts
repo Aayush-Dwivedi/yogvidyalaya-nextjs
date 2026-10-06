@@ -86,43 +86,34 @@ export class StudentService {
 
     const firstName = student.name.split(' ')[0] || 'Sadhaka';
 
-    // Format real bookings if available, else retain graceful starter defaults
+    // Format real bookings if available; do NOT fabricate fake bookings
     const activeStudentBookings = studentBookings.filter(b => ['confirmed', 'pending'].includes(b.bookingStatus));
-    const formattedUpcomingBookings = activeStudentBookings.length > 0
-      ? activeStudentBookings.map((b) => ({
-          id: b._id.toString(),
-          title: b.program.title,
-          type: (b.program.programType === 'workshop' ? 'Workshop' : 'Shala Batch') as any,
-          date: b.schedule?.date
-            ? new Date(b.schedule.date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })
-            : new Date(b.bookingDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
-          time: b.schedule?.time || 'Scheduled Session',
-          venue: b.schedule?.venue || 'Kalptaru Tapovan Shala',
-          status: b.bookingStatus as any,
-          instructor: 'Acharya Mentor',
-        }))
-      : [
-          {
-            id: 'bkg-101',
-            title: 'Morning Hatha Shala Sadhana',
-            type: 'Shala Batch' as const,
-            date: 'Tomorrow, Oct 02, 2026',
-            time: '06:00 AM – 07:30 AM',
-            venue: 'Main Shala Hall & Courtyard',
-            status: 'confirmed' as const,
-            instructor: 'Mrs. Shuchi Mohan',
-          },
-          {
-            id: 'bkg-102',
-            title: 'Pranayama & Kundalini Awakening Lab',
-            type: 'Workshop' as const,
-            date: 'Oct 18, 2026',
-            time: '09:00 AM – 05:00 PM',
-            venue: 'Sacred Grove Pavilion',
-            status: 'confirmed' as const,
-            instructor: 'Mrs. Shuchi Mohan',
-          },
-        ];
+    const formattedUpcomingBookings = activeStudentBookings.map((b) => ({
+      id: b._id.toString(),
+      title: b.program.title,
+      type: (b.program.programType === 'workshop' ? 'Workshop' : 'Shala Batch') as any,
+      date: b.schedule?.date
+        ? new Date(b.schedule.date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })
+        : new Date(b.bookingDate || b.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
+      time: b.schedule?.time || 'Scheduled Session',
+      venue: b.schedule?.venue || b.schedule?.location || 'Kalptaru Tapovan Shala',
+      status: b.bookingStatus as any,
+      instructor: 'Acharya Mentor',
+    }));
+
+    // Real paid bookings formatted as purchases
+    const paidBookings = studentBookings.filter(b => b.paymentStatus === 'paid');
+    const recentPurchases = paidBookings.map((b) => ({
+      id: b._id.toString(),
+      invoiceNo: b.bookingReference,
+      itemTitle: b.program.title,
+      itemType: (b.program.programType === 'course' ? 'Course' : 'Workshop') as any,
+      date: new Date(b.bookingDate || b.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
+      amount: b.amount?.displayAmount || `₹${b.amount?.total || 0}`,
+      rawAmount: b.amount?.total || 0,
+      status: 'paid' as const,
+      paymentMethod: (b as any).paymentMethod || 'Shala Desk',
+    }));
 
     return {
       welcome: {
@@ -145,41 +136,7 @@ export class StudentService {
         ],
       },
       upcomingBookings: formattedUpcomingBookings,
-      recentPurchases: [
-        {
-          id: 'tx-201',
-          invoiceNo: 'INV-2026-0891',
-          itemTitle: '200-Hour Classical Yoga Teacher Training (TTC)',
-          itemType: 'Course',
-          date: 'Sep 15, 2026',
-          amount: '₹48,000',
-          rawAmount: 48000,
-          status: 'paid',
-          paymentMethod: 'UPI / NetBanking',
-        },
-        {
-          id: 'tx-202',
-          invoiceNo: 'INV-2026-0814',
-          itemTitle: 'Monthly Sadhana Pass — October 2026',
-          itemType: 'Membership',
-          date: 'Sep 28, 2026',
-          amount: '₹2,500',
-          rawAmount: 2500,
-          status: 'paid',
-          paymentMethod: 'Debit Card (**4120)',
-        },
-        {
-          id: 'tx-203',
-          invoiceNo: 'INV-2026-0752',
-          itemTitle: 'Pranayama & Kundalini Awakening Masterclass',
-          itemType: 'Workshop',
-          date: 'Aug 20, 2026',
-          amount: '₹5,500',
-          rawAmount: 5500,
-          status: 'paid',
-          paymentMethod: 'UPI',
-        },
-      ],
+      recentPurchases,
       upcomingWorkshops: workshops.map((ws, idx) => ({
         id: ws._id.toString(),
         title: ws.title,

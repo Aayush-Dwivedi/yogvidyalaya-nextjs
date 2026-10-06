@@ -22,7 +22,6 @@ import {
   Sparkles,
   ArrowRight,
 } from 'lucide-react';
-import { BookingModal, BookingProgramTarget } from '../components/booking/BookingModal';
 
 export const CoursesPage: React.FC = () => {
   const [courses, setCourses] = useState<CmsCourse[]>([]);
@@ -33,7 +32,6 @@ export const CoursesPage: React.FC = () => {
   const [selectedMode, setSelectedMode] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCurriculum, setExpandedCurriculum] = useState<Record<string, boolean>>({});
-  const [bookingModalProgram, setBookingModalProgram] = useState<BookingProgramTarget | null>(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -49,6 +47,14 @@ export const CoursesPage: React.FC = () => {
     };
 
     fetchCourses();
+
+    window.addEventListener('kalptaru-cms-updated', fetchCourses);
+    window.addEventListener('storage', fetchCourses);
+
+    return () => {
+      window.removeEventListener('kalptaru-cms-updated', fetchCourses);
+      window.removeEventListener('storage', fetchCourses);
+    };
   }, []);
 
   const toggleCurriculum = (courseId: string) => {
@@ -407,26 +413,15 @@ export const CoursesPage: React.FC = () => {
                           </div>
 
                           <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setBookingModalProgram({
-                                  id: courseId,
-                                  type: 'course',
-                                  title: course.title,
-                                  subtitle: course.shortDescription,
-                                  price: course.price,
-                                  duration: course.duration,
-                                  mode: course.mode,
-                                  schedule: course.schedule,
-                                  capacity: course.capacity,
-                                })
-                              }
+                            <LinkButton
+                              to="/contact"
+                              variant="primary"
+                              size="md"
                               className="w-full sm:w-auto bg-plum-900 hover:bg-plum-800 text-gold-300 font-semibold px-6 py-2.5 rounded-lg text-xs transition-colors shadow-soft flex items-center justify-center gap-1.5"
                             >
-                              <span>Book / Enroll Now</span>
+                              <span>Book Now</span>
                               <ArrowRight className="w-3.5 h-3.5" />
-                            </button>
+                            </LinkButton>
                             <LinkButton
                               to={`/contact/enquiry?program=${encodeURIComponent(course.title)}`}
                               variant="outline"
@@ -468,13 +463,6 @@ export const CoursesPage: React.FC = () => {
           </div>
         </Container>
       </section>
-
-      {/* Booking Flow Modal */}
-      <BookingModal
-        isOpen={!!bookingModalProgram}
-        onClose={() => setBookingModalProgram(null)}
-        program={bookingModalProgram}
-      />
     </div>
   );
 };

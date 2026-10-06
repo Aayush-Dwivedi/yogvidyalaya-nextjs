@@ -7,11 +7,11 @@ import { clearAuthCookies } from '@/lib/auth/token';
 
 export const runtime = 'nodejs';
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     await connectDB();
 
-    const session = await requireSession();
+    const session = await requireSession(request);
     await AuthService.logoutAll(session.id);
     await clearAuthCookies();
 

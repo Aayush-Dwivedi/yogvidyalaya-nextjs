@@ -3,6 +3,7 @@ export * from './AboutPage';
 export * from './FounderPage';
 export * from './InstitutePage';
 export * from './ProgramsPage';
+export * from './TrainersPage';
 export * from './CoursesPage';
 export * from './WorkshopsPage';
 export * from './CorporatePage';

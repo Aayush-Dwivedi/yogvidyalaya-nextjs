@@ -18,7 +18,6 @@ import {
   Sparkles,
   ArrowRight,
 } from 'lucide-react';
-import { BookingModal, BookingProgramTarget } from '../components/booking/BookingModal';
 
 export const WorkshopsPage: React.FC = () => {
   const [workshops, setWorkshops] = useState<CmsWorkshop[]>([]);
@@ -28,7 +27,6 @@ export const WorkshopsPage: React.FC = () => {
   const [selectedMode, setSelectedMode] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [upcomingOnly, setUpcomingOnly] = useState(false);
-  const [bookingModalProgram, setBookingModalProgram] = useState<BookingProgramTarget | null>(null);
 
   useEffect(() => {
     const fetchWorkshops = async () => {
@@ -44,6 +42,14 @@ export const WorkshopsPage: React.FC = () => {
     };
 
     fetchWorkshops();
+
+    window.addEventListener('kalptaru-cms-updated', fetchWorkshops);
+    window.addEventListener('storage', fetchWorkshops);
+
+    return () => {
+      window.removeEventListener('kalptaru-cms-updated', fetchWorkshops);
+      window.removeEventListener('storage', fetchWorkshops);
+    };
   }, []);
 
   const now = new Date();
@@ -158,7 +164,7 @@ export const WorkshopsPage: React.FC = () => {
         <Container size="wide">
           {loading ? (
             <div className="py-24">
-              <LoadingState message="Loading upcoming sadhana masterclasses from backend..." />
+              <LoadingState message="Loading upcoming sadhana masterclasses..." />
             </div>
           ) : filteredWorkshops.length === 0 ? (
             <div className="text-center py-20 bg-surface border border-border rounded-xl p-8 max-w-lg mx-auto shadow-card">
@@ -329,28 +335,15 @@ export const WorkshopsPage: React.FC = () => {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setBookingModalProgram({
-                              id: wsId,
-                              type: 'workshop',
-                              title: ws.title,
-                              subtitle: ws.shortDescription,
-                              price: ws.price,
-                              duration: ws.duration,
-                              mode: ws.mode,
-                              date: ws.date,
-                              time: `${ws.startTime} – ${ws.endTime}`,
-                              venue: ws.location?.venue,
-                              capacity: ws.capacity,
-                            })
-                          }
+                        <LinkButton
+                          to="/contact"
+                          variant="primary"
+                          size="sm"
                           className="bg-plum-900 hover:bg-plum-800 text-gold-300 font-semibold px-4 py-2 rounded-lg text-xs transition-colors shadow-soft flex items-center gap-1.5"
                         >
-                          <span>Reserve Seat</span>
+                          <span>Book Now</span>
                           <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
+                        </LinkButton>
                         <LinkButton
                           to={`/contact/enquiry?program=${encodeURIComponent(ws.title)}`}
                           variant="ghost"
@@ -386,13 +379,6 @@ export const WorkshopsPage: React.FC = () => {
           </div>
         </Container>
       </section>
-
-      {/* Booking Flow Modal */}
-      <BookingModal
-        isOpen={!!bookingModalProgram}
-        onClose={() => setBookingModalProgram(null)}
-        program={bookingModalProgram}
-      />
     </div>
   );
 };

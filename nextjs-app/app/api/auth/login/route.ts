@@ -4,12 +4,22 @@ import { AuthService } from '@/lib/services/auth.service';
 import { loginSchema } from '@/lib/validators/auth.validator';
 import { ApiResponse, handleRouteError } from '@/lib/utils/apiResponse';
 import { setAuthCookies } from '@/lib/auth/token';
+import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimiter';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
+
+    const ip = getClientIp(request);
+    const rateCheck = checkRateLimit(ip, 'auth:login', 10, 15 * 60 * 1000);
+    if (!rateCheck.allowed) {
+      return ApiResponse.error(
+        `Too many login attempts. Please try again in ${Math.ceil(rateCheck.resetMs / 60000)} minutes.`,
+        429
+      );
+    }
 
     const body = await request.json();
     const parsed = loginSchema.body.safeParse(body);

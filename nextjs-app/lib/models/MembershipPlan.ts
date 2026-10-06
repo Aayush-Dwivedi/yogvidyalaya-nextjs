@@ -105,7 +105,6 @@ const MembershipPlanSchema = new Schema<IMembershipPlan>(
   }
 );
 
-export const MembershipPlan = model<IMembershipPlan>(
-  'MembershipPlan',
-  MembershipPlanSchema
-);
+export const MembershipPlan =
+  (models.MembershipPlan as Model<IMembershipPlan>) ||
+  model<IMembershipPlan>('MembershipPlan', MembershipPlanSchema);

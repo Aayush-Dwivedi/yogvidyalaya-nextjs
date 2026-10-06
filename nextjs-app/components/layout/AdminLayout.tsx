@@ -19,7 +19,6 @@ import {
   Video,
   Users,
   CalendarCheck,
-  ShoppingBag,
   MessageSquare,
   Settings,
   LogOut,
@@ -27,7 +26,10 @@ import {
   Menu,
   X,
   ExternalLink,
+  RefreshCw,
+  CheckCircle2,
 } from 'lucide-react';
+import { CmsService } from '../../services/cmsService';
 
 interface SubMenuItem {
   name: string;
@@ -40,7 +42,6 @@ interface AdminNavGroup {
   href?: string;
   icon: React.ComponentType<{ className?: string }>;
   children?: SubMenuItem[];
-  badge?: string;
 }
 
 const ADMIN_NAVIGATION: AdminNavGroup[] = [
@@ -53,7 +54,7 @@ const ADMIN_NAVIGATION: AdminNavGroup[] = [
     name: 'Content',
     icon: FileText,
     children: [
-      { name: 'Homepage', href: '/admin/content/homepage', icon: Home },
+      { name: 'Home', href: '/admin/content/homepage', icon: Home },
       { name: 'Institute', href: '/admin/content/institute', icon: Building2 },
       { name: 'Founder', href: '/admin/content/founder', icon: Users2 },
       { name: 'Benefits', href: '/admin/content/benefits', icon: Sparkles },
@@ -65,8 +66,9 @@ const ADMIN_NAVIGATION: AdminNavGroup[] = [
     children: [
       { name: 'Courses', href: '/admin/programs/courses', icon: GraduationCap },
       { name: 'Workshops', href: '/admin/programs/workshops', icon: CalendarDays },
+      { name: 'Trainers', href: '/admin/programs/trainers', icon: Users },
       { name: 'Corporate', href: '/admin/programs/corporate', icon: Briefcase },
-      { name: 'Membership', href: '/admin/programs/membership', icon: Award },
+      { name: 'Memberships', href: '/admin/programs/membership', icon: Award },
     ],
   },
   {
@@ -78,19 +80,9 @@ const ADMIN_NAVIGATION: AdminNavGroup[] = [
     ],
   },
   {
-    name: 'Users',
-    href: '/admin/users',
-    icon: Users,
-  },
-  {
     name: 'Bookings',
     href: '/admin/bookings',
     icon: CalendarCheck,
-  },
-  {
-    name: 'Orders',
-    href: '/admin/orders',
-    icon: ShoppingBag,
   },
   {
     name: 'Enquiries',
@@ -110,11 +102,21 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
   const pathname = usePathname();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
-    Content: true,
-    Programs: true,
-    Media: true,
-  });
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => ({
+    Content: pathname.includes('/admin/content'),
+    Programs: pathname.includes('/admin/programs'),
+    Media: pathname.includes('/admin/media'),
+  }));
+
+  React.useEffect(() => {
+    if (pathname.includes('/admin/content')) {
+      setExpandedGroups((prev) => ({ ...prev, Content: true }));
+    } else if (pathname.includes('/admin/programs')) {
+      setExpandedGroups((prev) => ({ ...prev, Programs: true }));
+    } else if (pathname.includes('/admin/media')) {
+      setExpandedGroups((prev) => ({ ...prev, Media: true }));
+    }
+  }, [pathname]);
 
   const toggleGroup = (groupName: string) => {
     setExpandedGroups((prev) => ({
@@ -123,29 +125,45 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
     }));
   };
 
+  const [confirming, setConfirming] = useState(false);
+  const [confirmedSuccess, setConfirmedSuccess] = useState(false);
+
+  const handleConfirmChanges = async () => {
+    try {
+      setConfirming(true);
+      await CmsService.confirmAllChanges();
+      setConfirmedSuccess(true);
+      setTimeout(() => setConfirmedSuccess(false), 3500);
+    } catch (err) {
+      console.error('Failed to confirm changes:', err);
+      alert('Failed to publish changes. Please try again.');
+    } finally {
+      setConfirming(false);
+    }
+  };
+
   const handleLogout = async () => {
     await logout();
     router.replace('/login');
   };
 
   const getBreadcrumbLabel = () => {
-    if (pathname === '/admin') return 'Administration Dashboard';
-    if (pathname.includes('/admin/content/homepage')) return 'Content / Homepage Slides & Text';
-    if (pathname.includes('/admin/content/institute')) return 'Content / Institute Details';
-    if (pathname.includes('/admin/content/founder')) return 'Content / Founder Profile';
-    if (pathname.includes('/admin/content/benefits')) return 'Content / Classical Benefits';
-    if (pathname.includes('/admin/programs/courses')) return 'Programs / Academic Courses';
-    if (pathname.includes('/admin/programs/workshops')) return 'Programs / Workshops & Retreats';
-    if (pathname.includes('/admin/programs/corporate')) return 'Programs / Corporate Wellness';
-    if (pathname.includes('/admin/programs/membership')) return 'Programs / Shala Memberships';
-    if (pathname.includes('/admin/media/gallery')) return 'Media / Sacred Gallery';
-    if (pathname.includes('/admin/media/videos')) return 'Media / Lecture & Asana Videos';
-    if (pathname.includes('/admin/users')) return 'Access / Sadhaka & Admin Users';
-    if (pathname.includes('/admin/bookings')) return 'Sadhana / Shala Bookings';
-    if (pathname.includes('/admin/orders')) return 'Transactions / Financial Orders';
-    if (pathname.includes('/admin/enquiries')) return 'Communications / Prospective Enquiries';
-    if (pathname.includes('/admin/settings')) return 'System / Platform Configuration';
-    return 'Admin Console';
+    if (pathname === '/admin') return 'Dashboard';
+    if (pathname.includes('/admin/content/homepage')) return 'Content / Home';
+    if (pathname.includes('/admin/content/institute')) return 'Content / Institute';
+    if (pathname.includes('/admin/content/founder')) return 'Content / Founder';
+    if (pathname.includes('/admin/content/benefits')) return 'Content / Benefits';
+    if (pathname.includes('/admin/programs/courses')) return 'Programs / Courses';
+    if (pathname.includes('/admin/programs/workshops')) return 'Programs / Workshops';
+    if (pathname.includes('/admin/programs/trainers')) return 'Programs / Trainers';
+    if (pathname.includes('/admin/programs/corporate')) return 'Programs / Corporate';
+    if (pathname.includes('/admin/programs/membership')) return 'Programs / Memberships';
+    if (pathname.includes('/admin/media/gallery')) return 'Media / Gallery';
+    if (pathname.includes('/admin/media/videos')) return 'Media / Videos';
+    if (pathname.includes('/admin/bookings')) return 'Bookings';
+    if (pathname.includes('/admin/enquiries')) return 'Enquiries';
+    if (pathname.includes('/admin/settings')) return 'Settings';
+    return 'Admin';
   };
 
   const adminInitials = user?.name
@@ -155,12 +173,12 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
         .slice(0, 2)
         .join('')
         .toUpperCase()
-    : 'KA';
+    : 'AD';
 
   return (
-    <div className="min-h-screen bg-[#F8F6F1] flex flex-col lg:flex-row text-ink font-sans">
+    <div className="h-screen w-full overflow-hidden bg-[#F8F6F1] flex flex-col lg:flex-row text-ink font-sans">
       {/* Mobile Top Header */}
-      <header className="lg:hidden sticky top-0 z-40 bg-[#1C0D1B] border-b border-plum-900/50 px-4 py-3 flex items-center justify-between shadow-soft text-white">
+      <header className="lg:hidden sticky top-0 z-40 bg-[#1C0D1B] border-b border-plum-900/50 px-4 py-3 flex items-center justify-between shadow-soft text-white shrink-0">
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -177,19 +195,35 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
             />
             <div>
               <span className="font-editorial text-lg text-white font-bold leading-tight block">
-                Kalptaru Vidyalaya
+                Kalptaru Yog Vidyalaya
               </span>
               <span className="text-[10px] font-mono tracking-widest uppercase text-gold-400 font-semibold">
-                Admin Console
+                Admin
               </span>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono bg-gold-500/20 text-gold-300 px-2 py-0.5 rounded border border-gold-500/30">
-            {user?.role === 'super_admin' ? 'SUPER ADMIN' : 'ADMIN'}
-          </span>
+          <button
+            onClick={handleConfirmChanges}
+            disabled={confirming}
+            className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-all flex items-center gap-1 ${
+              confirmedSuccess
+                ? 'bg-emerald-600 text-white'
+                : 'bg-gold-500 hover:bg-gold-400 text-plum-950 font-bold'
+            }`}
+            title="Publish all changes to live site"
+          >
+            {confirming ? (
+              <RefreshCw className="w-3 h-3 animate-spin" />
+            ) : confirmedSuccess ? (
+              <CheckCircle2 className="w-3 h-3" />
+            ) : (
+              <Sparkles className="w-3 h-3" />
+            )}
+            <span>{confirming ? 'Syncing' : confirmedSuccess ? 'Live!' : 'Confirm'}</span>
+          </button>
         </div>
       </header>
 
@@ -210,7 +244,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
       >
         <div className="flex flex-col h-full overflow-hidden">
           {/* Sidebar Top Branding Header */}
-          <div className="p-4 border-b border-plum-900/60 bg-[#150914]">
+          <div className="p-4 border-b border-plum-900/60 bg-[#150914] shrink-0">
             <div className="flex items-center justify-between mb-3">
               <Link href="/admin" className="flex items-center space-x-3 group">
                 <img
@@ -223,7 +257,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
                     Kalptaru Yog
                   </h2>
                   <p className="text-[9px] uppercase font-mono tracking-widest text-gold-400 font-bold">
-                    Admin Console
+                    Admin
                   </p>
                 </div>
               </Link>
@@ -244,12 +278,12 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-semibold text-white truncate">
-                  {user?.name || 'Acharya Administrator'}
+                  {user?.name || 'Admin'}
                 </p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   <span className="text-[10px] font-mono text-gold-400 uppercase tracking-wider">
-                    {user?.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+                    Admin
                   </span>
                 </div>
               </div>
@@ -257,7 +291,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
           </div>
 
           {/* Sidebar Navigation Items */}
-          <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-1 scrollbar-thin">
+          <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-1 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {ADMIN_NAVIGATION.map((item) => {
               const Icon = item.icon;
               const hasChildren = item.children && item.children.length > 0;
@@ -332,11 +366,6 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
                     <Icon className={`w-4 h-4 shrink-0 ${isDirectActive ? 'text-plum-950' : 'text-gold-500'}`} />
                     <span className="tracking-wide">{item.name}</span>
                   </div>
-                  {item.badge && (
-                    <span className="text-[9px] font-mono bg-gold-400 text-plum-950 px-1 py-0.2 rounded font-bold">
-                      {item.badge}
-                    </span>
-                  )}
                 </Link>
               );
             })}
@@ -344,58 +373,65 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
 
           {/* Bottom Actions: Site Link & Logout */}
           <div className="p-3 border-t border-plum-900/60 bg-[#150914] space-y-1">
-            <div className="grid grid-cols-2 gap-1 mb-1">
-              <Link
-                href="/"
-                className="flex items-center justify-center gap-1 py-1.5 px-2 text-[10px] font-mono text-zinc-400 hover:text-white hover:bg-plum-900/40 rounded transition-colors"
-                title="Open Public Website"
-              >
-                <span>Site</span>
-                <ExternalLink className="w-3 h-3 text-gold-400" />
-              </Link>
-              <Link
-                href="/dashboard"
-                className="flex items-center justify-center gap-1 py-1.5 px-2 text-[10px] font-mono text-zinc-400 hover:text-white hover:bg-plum-900/40 rounded transition-colors"
-                title="Open Student Portal"
-              >
-                <span>Student</span>
-                <ExternalLink className="w-3 h-3 text-gold-400" />
-              </Link>
-            </div>
+            <Link
+              href="/"
+              className="flex items-center justify-center gap-1.5 py-1.5 px-2 text-xs font-mono text-zinc-400 hover:text-white hover:bg-plum-900/40 rounded transition-colors mb-1"
+              title="Open Public Website"
+            >
+              <span>View Website</span>
+              <ExternalLink className="w-3.5 h-3.5 text-gold-400" />
+            </Link>
 
             <button
               onClick={handleLogout}
               className="w-full flex items-center justify-center space-x-2 px-2.5 py-1.5 text-xs font-semibold text-rose-300 hover:text-rose-100 hover:bg-rose-950/40 rounded border border-rose-900/40 transition-colors"
             >
               <LogOut className="w-3.5 h-3.5 shrink-0" />
-              <span>Log Out</span>
+              <span>Logout</span>
             </button>
           </div>
         </div>
       </aside>
 
       {/* Main Administrative Workspace */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-y-auto">
         {/* Top Header Bar for Desktop */}
-        <header className="hidden lg:flex sticky top-0 z-30 bg-white border-b border-border px-8 py-3.5 items-center justify-between shadow-soft">
+        <header className="hidden lg:flex sticky top-0 z-30 bg-white border-b border-border px-8 py-3.5 items-center justify-between shadow-soft shrink-0">
           <div className="flex items-center space-x-3">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-gold-700 bg-gold-50 border border-gold-200 px-2 py-0.5 rounded font-semibold">
-              Admin Console
-            </span>
-            <span className="text-border">/</span>
             <span className="text-xs font-medium text-plum-900 font-mono">
               {getBreadcrumbLabel()}
             </span>
           </div>
 
           <div className="flex items-center space-x-4">
-            {/* Live DB / API Status Badge */}
-            <div className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Live API v1.0</span>
-            </div>
-
-            <div className="h-4 w-[1px] bg-border" />
+            {/* Confirm Changes Button */}
+            <button
+              onClick={handleConfirmChanges}
+              disabled={confirming}
+              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm ${
+                confirmedSuccess
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-gold-500 hover:bg-gold-400 text-plum-950 hover:scale-[1.02]'
+              }`}
+              title="Publish and sync all CMS edits directly to the public website"
+            >
+              {confirming ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Syncing...</span>
+                </>
+              ) : confirmedSuccess ? (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Changes Confirmed &amp; Live!</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Confirm Changes</span>
+                </>
+              )}
+            </button>
 
             <Link
               href="/"
@@ -404,22 +440,15 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
               Website <ExternalLink className="w-3.5 h-3.5 ml-1" />
             </Link>
 
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center text-xs font-mono uppercase tracking-wider text-ink-muted hover:text-plum-900 transition-colors"
-            >
-              Student Portal <ExternalLink className="w-3.5 h-3.5 ml-1" />
-            </Link>
-
             <div className="h-4 w-[1px] bg-border" />
 
             <div className="flex items-center space-x-2 text-right">
               <div>
                 <p className="text-xs font-bold text-plum-900 leading-tight">
-                  {user?.name || 'Mrs. Shuchi Mohan'}
+                  {user?.name || 'Admin'}
                 </p>
                 <p className="text-[10px] font-mono text-gold-700 font-semibold uppercase">
-                  {user?.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+                  Admin
                 </p>
               </div>
               <div className="w-8 h-8 rounded-full bg-[#1C0D1B] text-gold-400 font-bold text-xs flex items-center justify-center border border-gold-500/50 shadow-sm">

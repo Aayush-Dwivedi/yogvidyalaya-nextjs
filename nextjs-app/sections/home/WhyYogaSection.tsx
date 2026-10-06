@@ -1,14 +1,74 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { WHY_YOGA_BENEFITS } from '../../services/homeData';
 import { OrnamentalDivider } from '../../components/Motifs';
+import { BenefitItem } from '../../types/home';
+import { CmsBenefit } from '../../types/cms';
+import { CmsService } from '../../services/cmsService';
 
-export const WhyYogaSection: React.FC = () => {
-  // Bespoke subtle yogic line-art iconography corresponding to each benefit
+export interface WhyYogaSectionProps {
+  benefits?: (BenefitItem | CmsBenefit)[];
+}
+
+const normalizeBenefits = (items: any[]): BenefitItem[] => {
+  if (!items || items.length === 0) return WHY_YOGA_BENEFITS;
+  return items.map((b, idx) => ({
+    id: b._id || b.id || `benefit-${idx}`,
+    title: b.title || 'Holistic Wellness',
+    sanskritTerm: b.sanskritTerm || '',
+    description: b.description || '',
+    scriptureRef: b.scriptureRef || '',
+    icon: b.icon || 'lotus',
+  }));
+};
+
+export const WhyYogaSection: React.FC<WhyYogaSectionProps> = ({ benefits: propBenefits }) => {
+  const [benefits, setBenefits] = useState<BenefitItem[]>(() =>
+    propBenefits && propBenefits.length > 0 ? normalizeBenefits(propBenefits) : WHY_YOGA_BENEFITS
+  );
+
+  useEffect(() => {
+    if (propBenefits && propBenefits.length > 0) {
+      setBenefits(normalizeBenefits(propBenefits));
+    }
+  }, [propBenefits]);
+
+  useEffect(() => {
+    const fetchLiveBenefits = async () => {
+      try {
+        const homeData = await CmsService.getHomeContent();
+        if (homeData?.benefits && homeData.benefits.length > 0) {
+          setBenefits(normalizeBenefits(homeData.benefits));
+        }
+      } catch (err) {
+        console.warn('Using default benefits:', err);
+      }
+    };
+
+    if (!propBenefits || propBenefits.length === 0) {
+      fetchLiveBenefits();
+    }
+
+    const handleUpdate = () => {
+      fetchLiveBenefits();
+    };
+
+    window.addEventListener('kalptaru-cms-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+
+    return () => {
+      window.removeEventListener('kalptaru-cms-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, [propBenefits]);
+
+  // Subtle yogic line-art iconography corresponding to each benefit
   const getBenefitIcon = (index: number) => {
-    switch (index) {
-      case 0: // Physical Wellness / Prana Flow
+    switch (index % 6) {
+      case 0:
         return (
           <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <circle cx="12" cy="12" r="9" strokeWidth="1" />
@@ -16,7 +76,7 @@ export const WhyYogaSection: React.FC = () => {
             <circle cx="12" cy="12" r="3" strokeWidth="0.8" strokeDasharray="1.5 1.5" />
           </svg>
         );
-      case 1: // Mental Clarity / Third Eye
+      case 1:
         return (
           <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" strokeWidth="1" />
@@ -24,7 +84,7 @@ export const WhyYogaSection: React.FC = () => {
             <circle cx="12" cy="12" r="1" fill="currentColor" />
           </svg>
         );
-      case 2: // Better Flexibility / Fluid Spine Arc
+      case 2:
         return (
           <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path d="M6 18c4-4 8-12 12-12" strokeWidth="1" strokeLinecap="round" />
@@ -33,7 +93,7 @@ export const WhyYogaSection: React.FC = () => {
             <circle cx="6" cy="18" r="2" strokeWidth="1" />
           </svg>
         );
-      case 3: // Stress Management / Calming Wave
+      case 3:
         return (
           <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path d="M3 14c3-3 6 3 9 0s6-3 9 0" strokeWidth="1" strokeLinecap="round" />
@@ -41,14 +101,14 @@ export const WhyYogaSection: React.FC = () => {
             <circle cx="12" cy="5" r="1.5" fill="currentColor" />
           </svg>
         );
-      case 4: // Mindful Living / Sacred Lotus Petal
+      case 4:
         return (
           <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path d="M12 3c-3 5-4 9-4 13 0 3 2 5 4 5s4-2 4-5c0-4-1-8-4-13z" strokeWidth="1" />
             <circle cx="12" cy="10" r="1" fill="currentColor" />
           </svg>
         );
-      case 5: // Improved Strength / Merudanda (Spine) Column
+      case 5:
         return (
           <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <rect x="10" y="4" width="4" height="16" rx="1" strokeWidth="1" />
@@ -72,9 +132,9 @@ export const WhyYogaSection: React.FC = () => {
           align="center"
         />
 
-        {/* 6 Benefits Editorial Grid */}
+        {/* Benefits Editorial Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
-          {WHY_YOGA_BENEFITS.map((benefit, idx) => (
+          {benefits.map((benefit, idx) => (
             <div
               key={benefit.id}
               className="bg-surface border border-border rounded-[2px] p-6 sm:p-8 flex flex-col justify-between shadow-soft hover:border-gold-500/60 transition-all duration-300 group hover:-translate-y-0.5"
@@ -95,9 +155,11 @@ export const WhyYogaSection: React.FC = () => {
                   <h3 className="text-xl font-editorial font-normal text-plum-900 group-hover:text-plum-800 transition-colors">
                     {benefit.title}
                   </h3>
-                  <span className="text-xs font-editorial italic text-gold-700 block mt-0.5">
-                    {benefit.sanskritTerm}
-                  </span>
+                  {benefit.sanskritTerm && (
+                    <span className="text-xs font-editorial italic text-gold-700 block mt-0.5">
+                      {benefit.sanskritTerm}
+                    </span>
+                  )}
                 </div>
 
                 {/* Narrative Description */}
@@ -107,11 +169,13 @@ export const WhyYogaSection: React.FC = () => {
               </div>
 
               {/* Dimension Reference */}
-              <div className="pt-4 mt-6 border-t border-border/60">
-                <span className="text-[10px] uppercase font-mono text-ink-faint">
-                  {benefit.scriptureRef}
-                </span>
-              </div>
+              {benefit.scriptureRef && (
+                <div className="pt-4 mt-6 border-t border-border/60">
+                  <span className="text-[10px] uppercase font-mono text-ink-faint">
+                    {benefit.scriptureRef}
+                  </span>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -134,3 +198,5 @@ export const WhyYogaSection: React.FC = () => {
     </section>
   );
 };
+
+export default WhyYogaSection;

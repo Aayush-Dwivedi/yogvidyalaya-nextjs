@@ -53,10 +53,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           </p>
           <div className="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
             <Link
-              href="/dashboard"
+              href="/"
               className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold bg-plum-900 text-gold-200 rounded hover:bg-plum-800 transition-colors"
             >
-              Return to Student Portal <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+              Return to Home <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
             </Link>
             <Link
               href="/login"

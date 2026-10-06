@@ -97,6 +97,20 @@ export const Footer: React.FC = () => {
                   09818047984
                 </a>
               </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-gold-400 font-medium">WhatsApp: </span>
+                <a
+                  href="https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-ivory hover:text-gold-300 transition-colors inline-flex items-center gap-1.5"
+                >
+                  <span className="w-4 h-4 rounded-full bg-ivory flex items-center justify-center p-0.5 inline-flex">
+                    <img src="/whatsapp-icon.png" alt="WhatsApp" className="w-full h-full object-contain" />
+                  </span>
+                  <span>Join Community Group</span>
+                </a>
+              </div>
               <div>
                 <span className="text-gold-400 font-medium">Email: </span>
                 <a href="mailto:shuchimohan@kalptaruyogvidyalaya.com" className="text-ivory hover:text-gold-300 transition-colors">

@@ -21,6 +21,23 @@ export interface ICourseCapacity {
   enrolled?: number;
 }
 
+export interface IProgramSchedule {
+  _id?: Types.ObjectId | string;
+  batch?: string;
+  date?: Date;
+  endDate?: Date;
+  startTime?: string;
+  endTime?: string;
+  time?: string;
+  duration?: string;
+  capacity: number;
+  enrolled?: number;
+  location?: string;
+  venue?: string;
+  mode?: DeliveryMode | string;
+  status?: 'active' | 'full' | 'cancelled' | 'completed';
+}
+
 export interface ICourseInstructor {
   name: string;
   title?: string;
@@ -48,6 +65,7 @@ export interface ICourse extends Document {
   certification?: string;
   eligibility?: string;
   schedule?: string;
+  schedules?: IProgramSchedule[];
   capacity: ICourseCapacity;
   order: number;
   status: ContentStatus;
@@ -94,6 +112,29 @@ const CourseCapacitySchema = new Schema<ICourseCapacity>(
     enrolled: { type: Number, default: 0, min: 0 },
   },
   { _id: false }
+);
+
+export const ProgramScheduleSchema = new Schema<IProgramSchedule>(
+  {
+    batch: { type: String, trim: true },
+    date: { type: Date },
+    endDate: { type: Date },
+    startTime: { type: String, trim: true },
+    endTime: { type: String, trim: true },
+    time: { type: String, trim: true },
+    duration: { type: String, trim: true },
+    capacity: { type: Number, default: 30, min: 1 },
+    enrolled: { type: Number, default: 0, min: 0 },
+    location: { type: String, trim: true },
+    venue: { type: String, trim: true },
+    mode: { type: String, trim: true },
+    status: {
+      type: String,
+      enum: ['active', 'full', 'cancelled', 'completed'],
+      default: 'active',
+    },
+  },
+  { _id: true }
 );
 
 const CourseSchema = new Schema<ICourse>(
@@ -165,6 +206,10 @@ const CourseSchema = new Schema<ICourse>(
     schedule: {
       type: String,
       trim: true,
+    },
+    schedules: {
+      type: [ProgramScheduleSchema],
+      default: () => [],
     },
     capacity: {
       type: CourseCapacitySchema,

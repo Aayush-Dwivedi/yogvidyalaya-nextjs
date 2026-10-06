@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { ZodError } from 'zod';
 
 /**
  * Standardised API response helpers for Next.js Route Handlers.
@@ -90,12 +91,24 @@ export class ApiResponse {
   static conflict(message: string): NextResponse {
     return ApiResponse.error(message, 409);
   }
+
+  static tooManyRequests(message = 'Too many requests. Please try again later.'): NextResponse {
+    return ApiResponse.error(message, 429);
+  }
 }
 
 /**
  * Convert an AppError or generic Error to a structured API response.
  */
 export function handleRouteError(error: unknown): NextResponse {
+  // Handle Zod validation errors
+  if (error instanceof ZodError) {
+    const issueMessages = error.issues
+      .map((i) => `${i.path.join('.') || 'field'}: ${i.message}`)
+      .join('; ');
+    return ApiResponse.badRequest(`Validation failed: ${issueMessages}`, error.issues);
+  }
+
   // Handle AppError (from lib/utils/appError.ts)
   if (error && typeof error === 'object' && 'statusCode' in error) {
     const appError = error as { statusCode: number; message: string };

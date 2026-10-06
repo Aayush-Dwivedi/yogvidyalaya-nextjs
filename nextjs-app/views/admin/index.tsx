@@ -9,6 +9,7 @@ import { AdminGalleryCMS } from './AdminGalleryCMS';
 import { AdminVideosCMS } from './AdminVideosCMS';
 import { AdminCoursesPage } from './AdminCoursesPage';
 import { AdminWorkshopsPage } from './AdminWorkshopsPage';
+import { AdminTrainersPage } from './AdminTrainersPage';
 import { AdminBookingsPage } from './AdminBookingsPage';
 
 export {
@@ -22,6 +23,7 @@ export {
   AdminVideosCMS,
   AdminCoursesPage,
   AdminWorkshopsPage,
+  AdminTrainersPage,
   AdminBookingsPage,
 };
 
@@ -34,6 +36,7 @@ export const AdminContentBenefits: React.FC = () => <AdminBenefitsCMS />;
 // Programs Sub-Modules
 export const AdminProgramsCourses: React.FC = () => <AdminCoursesPage />;
 export const AdminProgramsWorkshops: React.FC = () => <AdminWorkshopsPage />;
+export const AdminProgramsTrainers: React.FC = () => <AdminTrainersPage />;
 
 export const AdminProgramsCorporate: React.FC = () => (
   <AdminModulePlaceholder
@@ -62,40 +65,40 @@ export const AdminMediaVideos: React.FC = () => <AdminVideosCMS />;
 // Core Modules
 export const AdminUsersPage: React.FC = () => (
   <AdminModulePlaceholder
-    moduleName="User Accounts & Access Permissions"
-    category="Access Control"
-    description="Manage student registrations, active shala passes, acharya staff accounts, and role permissions."
-    sampleColumns={['Full Name', 'Email Address', 'Phone', 'Role', 'Status', 'Last Active']}
-    sampleCount={142}
+    moduleName="Students"
+    category="Students"
+    description="View and manage enrolled students and student profiles."
+    sampleColumns={['Full Name', 'Email Address', 'Phone', 'Status', 'Joined']}
+    sampleCount={9}
   />
 );
 
 export const AdminOrdersPage: React.FC = () => (
   <AdminModulePlaceholder
-    moduleName="Orders & Payment Transactions"
+    moduleName="Orders & Receipts"
     category="Finance"
-    description="Financial transaction ledger, course enrollment receipts, membership dues, and tax invoices."
-    sampleColumns={['Invoice #', 'Student', 'Item Purchased', 'Payment Method', 'Amount', 'Status']}
-    sampleCount={94}
+    description="Receipts, course enrollments, and transactions."
+    sampleColumns={['Receipt #', 'Student', 'Item', 'Amount', 'Status']}
+    sampleCount={4}
   />
 );
 
 export const AdminEnquiriesPage: React.FC = () => (
   <AdminModulePlaceholder
-    moduleName="Prospective Sadhaka Enquiries"
+    moduleName="Enquiries"
     category="Communications"
-    description="Review incoming student applications, course questions, corporate proposals, and general inquiries."
+    description="Review incoming student applications, course questions, and general inquiries."
     sampleColumns={['Sender Name', 'Contact Info', 'Program of Interest', 'Received Date', 'Status']}
-    sampleCount={12}
+    sampleCount={0}
   />
 );
 
 export const AdminSettingsPage: React.FC = () => (
   <AdminModulePlaceholder
-    moduleName="System & Platform Settings"
+    moduleName="Settings"
     category="Configuration"
-    description="Configure administrative notifications, Supabase Storage bucket quotas, security policies, and backups."
-    sampleColumns={['Config Key', 'Category', 'Current Setting', 'Last Modified By', 'Status']}
-    sampleCount={9}
+    description="Configure administrative notifications, preferences, and security policies."
+    sampleColumns={['Setting', 'Category', 'Current Value', 'Last Updated', 'Status']}
+    sampleCount={5}
   />
 );

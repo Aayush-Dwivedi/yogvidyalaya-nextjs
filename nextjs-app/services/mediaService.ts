@@ -1,4 +1,4 @@
-import { apiClient } from '../api/axios';
+import { apiClient } from '@/lib/api/axios';
 import { ApiResponse } from '../types';
 import { ProfileImage } from '../types/auth';
 

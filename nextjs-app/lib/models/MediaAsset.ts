@@ -58,6 +58,7 @@ const MediaAssetSchema = new Schema<IMediaAsset>(
         'institute',
         'videos',
         'site-assets',
+        'student',
         'general',
       ],
       default: 'general',

@@ -5,25 +5,107 @@ import { HERO_SLIDES, HERO_METRICS } from '../../services/homeData';
 import { LinkButton } from '../../components/LinkButton';
 import { Container } from '../../components/Container';
 import { cn } from '../../utils/cn';
+import { CmsService } from '../../services/cmsService';
+import { CmsHeroSlide } from '../../types/cms';
+import { HeroSlide } from '../../types/home';
 
-export const HeroSection: React.FC = () => {
+export interface NormalizedHeroSlide {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  quote?: string;
+  image: string;
+  ctaText?: string;
+  ctaUrl?: string;
+  secondaryCtaText?: string;
+  secondaryCtaUrl?: string;
+}
+
+export interface HeroSectionProps {
+  slides?: (HeroSlide | CmsHeroSlide)[];
+}
+
+const normalizeSlides = (rawSlides: (HeroSlide | CmsHeroSlide)[]): NormalizedHeroSlide[] => {
+  return rawSlides.map((s: any, idx: number) => ({
+    id: s._id || s.id || `slide-${idx}`,
+    title: s.heading || s.title || 'Kalptaru Yog Vidyalaya',
+    subtitle: s.subheading || s.subtitle || 'Traditional Yoga & Wellness',
+    description:
+      s.description ||
+      'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
+    quote: s.quote || 'Affiliated by Indian Yoga Association',
+    image:
+      (typeof s.image === 'string' ? s.image : s.image?.url) ||
+      HERO_SLIDES[idx % HERO_SLIDES.length]?.image ||
+      'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1920&q=85',
+    ctaText: s.ctaText || 'Explore Courses',
+    ctaUrl: s.ctaUrl || '/programs/courses',
+    secondaryCtaText: s.secondaryCtaText || 'Contact Us',
+    secondaryCtaUrl: s.secondaryCtaUrl || '/contact',
+  }));
+};
+
+export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) => {
+  const [slides, setSlides] = useState<NormalizedHeroSlide[]>(() =>
+    propSlides && propSlides.length > 0 ? normalizeSlides(propSlides) : normalizeSlides(HERO_SLIDES)
+  );
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Sync when propSlides changes
+  useEffect(() => {
+    if (propSlides && propSlides.length > 0) {
+      setSlides(normalizeSlides(propSlides));
+    }
+  }, [propSlides]);
+
+  // Load from CMS if not provided, and listen for live updates from Admin panel
+  useEffect(() => {
+    const fetchLiveSlides = async () => {
+      try {
+        const live = await CmsService.getHeroSlides(true);
+        if (live && live.length > 0) {
+          setSlides(normalizeSlides(live));
+        }
+      } catch (err) {
+        console.warn('Using existing hero slides:', err);
+      }
+    };
+
+    if (!propSlides || propSlides.length === 0) {
+      fetchLiveSlides();
+    }
+
+    const handleUpdate = () => {
+      fetchLiveSlides();
+    };
+
+    window.addEventListener('kalptaru-cms-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+
+    return () => {
+      window.removeEventListener('kalptaru-cms-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, [propSlides]);
+
+  const slideCount = slides.length || 1;
+
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-  }, []);
+    setCurrentSlide((prev) => (prev + 1) % slideCount);
+  }, [slideCount]);
 
   const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
-  }, []);
+    setCurrentSlide((prev) => (prev - 1 + slideCount) % slideCount);
+  }, [slideCount]);
 
   // Auto-advance slides every 7 seconds
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || slideCount <= 1) return;
     const interval = setInterval(nextSlide, 7000);
     return () => clearInterval(interval);
-  }, [nextSlide, isPaused]);
+  }, [nextSlide, isPaused, slideCount]);
 
   // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -31,7 +113,8 @@ export const HeroSection: React.FC = () => {
     if (e.key === 'ArrowLeft') prevSlide();
   };
 
-  const slide = HERO_SLIDES[currentSlide];
+  const activeIndex = Math.min(currentSlide, Math.max(0, slides.length - 1));
+  const slide = slides[activeIndex] || normalizeSlides(HERO_SLIDES)[0];
 
   return (
     <section
@@ -44,12 +127,12 @@ export const HeroSection: React.FC = () => {
     >
       {/* Background Slides with Cross-Fade */}
       <div className="absolute inset-0 z-0">
-        {HERO_SLIDES.map((s, index) => (
+        {slides.map((s, index) => (
           <div
             key={s.id}
             className={cn(
               'absolute inset-0 transition-opacity duration-1000 ease-in-out',
-              index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
+              index === activeIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
             )}
             style={{ transitionProperty: 'opacity, transform' }}
           >
@@ -86,11 +169,13 @@ export const HeroSection: React.FC = () => {
 
             {/* Institution Title & Affiliation */}
             <div>
-              <span className="text-xs uppercase tracking-wide-editorial text-gold-200/80 block mb-1">
-                Affiliated by Indian Yoga Association
-              </span>
+              {slide.quote && (
+                <span className="text-xs uppercase tracking-wide-editorial text-gold-200/80 block mb-1">
+                  {slide.quote}
+                </span>
+              )}
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-editorial font-normal text-white leading-[1.12] tracking-tight drop-shadow-sm">
-                Kalptaru Yog Vidyalaya
+                {slide.title}
               </h1>
             </div>
 
@@ -102,21 +187,21 @@ export const HeroSection: React.FC = () => {
             {/* Actions */}
             <div className="flex flex-wrap items-center gap-4 pt-2 sm:pt-4">
               <LinkButton
-                to="/programs/courses"
+                to={slide.ctaUrl || '/programs/courses'}
                 variant="primary"
                 size="lg"
                 className="bg-gold-500 text-plum-950 border-gold-400 hover:bg-gold-400 hover:text-plum-900 shadow-modal font-medium"
               >
-                Explore Courses
+                {slide.ctaText || 'Explore Courses'}
               </LinkButton>
 
               <LinkButton
-                to="/contact"
+                to={slide.secondaryCtaUrl || '/contact'}
                 variant="outline"
                 size="lg"
                 className="border-gold-400/60 text-gold-200 hover:text-white hover:border-gold-300 hover:bg-gold-500/15 bg-plum-900/60 backdrop-blur-sm shadow-sm"
               >
-                Contact Us
+                {slide.secondaryCtaText || 'Contact Us'}
               </LinkButton>
             </div>
           </div>
@@ -150,16 +235,16 @@ export const HeroSection: React.FC = () => {
             <div className="flex items-center justify-between sm:justify-end w-full lg:w-auto space-x-6">
               {/* Slide Indicators */}
               <div className="flex items-center space-x-2" role="tablist">
-                {HERO_SLIDES.map((s, idx) => (
+                {slides.map((s, idx) => (
                   <button
                     key={s.id}
                     onClick={() => setCurrentSlide(idx)}
                     role="tab"
-                    aria-selected={idx === currentSlide}
+                    aria-selected={idx === activeIndex}
                     aria-label={`Go to slide ${idx + 1}: ${s.title}`}
                     className={cn(
                       'transition-all duration-300 rounded-full focus:outline-none focus:ring-1 focus:ring-gold-400',
-                      idx === currentSlide
+                      idx === activeIndex
                         ? 'w-8 h-1.5 bg-gold-400'
                         : 'w-2 h-1.5 bg-white/40 hover:bg-white/70'
                     )}
@@ -195,3 +280,5 @@ export const HeroSection: React.FC = () => {
     </section>
   );
 };
+
+export default HeroSection;

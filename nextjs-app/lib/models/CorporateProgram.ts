@@ -134,7 +134,6 @@ const CorporateProgramSchema = new Schema<ICorporateProgram>(
   }
 );
 
-export const CorporateProgram = model<ICorporateProgram>(
-  'CorporateProgram',
-  CorporateProgramSchema
-);
+export const CorporateProgram =
+  (models.CorporateProgram as Model<ICorporateProgram>) ||
+  model<ICorporateProgram>('CorporateProgram', CorporateProgramSchema);

@@ -11,7 +11,7 @@ export async function PATCH(request: NextRequest) {
   try {
     await connectDB();
 
-    const session = await requireSession();
+    const session = await requireSession(request);
     const body = await request.json();
 
     const parsed = updateProfileSchema.body.safeParse(body);

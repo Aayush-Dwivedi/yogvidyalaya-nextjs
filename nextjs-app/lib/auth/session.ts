@@ -73,6 +73,19 @@ export async function requireAdminSession(request?: NextRequest | Request): Prom
 }
 
 /**
+ * Require a student session.
+ * Denies admin users from accessing student-only data/endpoints.
+ * Throws FORBIDDEN if user is an administrator.
+ */
+export async function requireStudentSession(request?: NextRequest | Request): Promise<SessionUser> {
+  const session = await requireSession(request);
+  if (session.role !== 'student') {
+    throw new Error('FORBIDDEN');
+  }
+  return session;
+}
+
+/**
  * Check if the current user has at least admin access.
  * Respects super_admin > admin > student hierarchy.
  */

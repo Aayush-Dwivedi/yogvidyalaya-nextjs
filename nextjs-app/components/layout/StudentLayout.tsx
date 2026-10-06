@@ -6,33 +6,20 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard,
-  User,
-  UserCheck,
-  GraduationCap,
-  ShoppingBag,
   CalendarCheck,
-  Sparkles,
-  Award,
+  GraduationCap,
+  User,
   Receipt,
-  Settings,
   LogOut,
   Menu,
   X,
   ExternalLink,
-  ChevronDown,
 } from 'lucide-react';
-import { Badge } from '../Badge';
 
 interface NavItem {
   name: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  badge?: string;
-  children?: Array<{
-    name: string;
-    href: string;
-    icon: React.ComponentType<{ className?: string }>;
-  }>;
 }
 
 const NAVIGATION_ITEMS: NavItem[] = [
@@ -42,16 +29,9 @@ const NAVIGATION_ITEMS: NavItem[] = [
     icon: LayoutDashboard,
   },
   {
-    name: 'Profile',
-    href: '/dashboard/profile',
-    icon: User,
-    children: [
-      {
-        name: 'Manage Profile',
-        href: '/dashboard/profile',
-        icon: UserCheck,
-      },
-    ],
+    name: 'My Bookings',
+    href: '/dashboard/bookings',
+    icon: CalendarCheck,
   },
   {
     name: 'My Courses',
@@ -59,34 +39,14 @@ const NAVIGATION_ITEMS: NavItem[] = [
     icon: GraduationCap,
   },
   {
-    name: 'Purchases',
-    href: '/dashboard/purchases',
-    icon: ShoppingBag,
+    name: 'Profile',
+    href: '/dashboard/profile',
+    icon: User,
   },
   {
-    name: 'Bookings',
-    href: '/dashboard/bookings',
-    icon: CalendarCheck,
-  },
-  {
-    name: 'Workshop Schedule',
-    href: '/dashboard/workshops',
-    icon: Sparkles,
-  },
-  {
-    name: 'Membership',
-    href: '/dashboard/membership',
-    icon: Award,
-  },
-  {
-    name: 'Payment History',
+    name: 'Payments',
     href: '/dashboard/payments',
     icon: Receipt,
-  },
-  {
-    name: 'Settings',
-    href: '/dashboard/settings',
-    icon: Settings,
   },
 ];
 
@@ -95,7 +55,6 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [profileDropdownOpen, setProfileDropdownOpen] = useState(true);
 
   const handleLogout = async () => {
     await logout();
@@ -104,16 +63,12 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const getPageTitle = () => {
     const path = pathname || '';
-    if (path === '/dashboard') return 'Student Dashboard';
-    if (path.includes('/dashboard/profile')) return 'Manage Profile';
-    if (path.includes('/dashboard/courses')) return 'My Courses & Enrolments';
-    if (path.includes('/dashboard/purchases')) return 'Purchases & Invoices';
-    if (path.includes('/dashboard/bookings')) return 'Shala & Session Bookings';
-    if (path.includes('/dashboard/workshops')) return 'Workshop Schedule';
-    if (path.includes('/dashboard/membership')) return 'Current Membership';
-    if (path.includes('/dashboard/payments')) return 'Payment History & Ledger';
-    if (path.includes('/dashboard/settings')) return 'Account Settings';
-    return 'Student Portal';
+    if (path === '/dashboard') return 'Dashboard';
+    if (path.includes('/dashboard/bookings')) return 'My Bookings';
+    if (path.includes('/dashboard/courses')) return 'My Courses';
+    if (path.includes('/dashboard/profile')) return 'Profile';
+    if (path.includes('/dashboard/payments')) return 'Payments';
+    return 'Dashboard';
   };
 
   const initials = user?.name
@@ -172,9 +127,9 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
         />
       )}
 
-      {/* Unified Sidebar (Desktop & Mobile Drawer) */}
+      {/* Unified Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-surface border-r border-border transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:h-screen lg:flex lg:flex-col ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-surface border-r border-border transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:h-screen lg:flex lg:flex-col ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -222,16 +177,11 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
               )}
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-plum-900 truncate">
-                  {user?.name || 'Sadhaka Student'}
+                  {user?.name || 'Student'}
                 </p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <Badge variant="gold" size="sm" className="py-0 px-1.5 text-[10px]">
-                    Student
-                  </Badge>
-                  <span className="text-[11px] text-ink-muted truncate">
-                    {user?.city || 'Shala Member'}
-                  </span>
-                </div>
+                <p className="text-[11px] text-ink-muted truncate">
+                  {user?.city || 'Student'}
+                </p>
               </div>
             </div>
           </div>
@@ -240,80 +190,27 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
           <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1 scrollbar-thin">
             {NAVIGATION_ITEMS.map((item) => {
               const Icon = item.icon;
-              const hasChildren = item.children && item.children.length > 0;
-              const isChildActive = hasChildren
-                ? item.children!.some((c) => pathname === c.href)
-                : false;
-              const isDirectActive = pathname === item.href;
-              const isActive = isDirectActive || (hasChildren && isChildActive);
+              const isActive = pathname === item.href;
 
               return (
-                <div key={item.name} className="space-y-1">
-                  <div className="flex items-center">
-                    <Link
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex-1 flex items-center justify-between px-3 py-2.5 text-xs font-medium rounded transition-colors duration-150 ${
-                        isActive
-                          ? 'bg-plum-900 text-gold-400 font-semibold shadow-soft'
-                          : 'text-ink-muted hover:text-plum-900 hover:bg-surface-subtle'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <Icon className="w-4 h-4 shrink-0" />
-                        <span className="tracking-wide">{item.name}</span>
-                      </div>
-                      {item.badge && (
-                        <span className="text-[10px] font-mono bg-gold-500/20 text-gold-700 px-1.5 py-0.5 rounded">
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
-
-                    {hasChildren && (
-                      <button
-                        type="button"
-                        onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                        className={`p-2 hover:bg-surface-subtle text-ink-muted transition-transform ${
-                          isDirectActive || isChildActive ? 'text-gold-500' : ''
-                        } ${profileDropdownOpen ? 'rotate-180' : ''}`}
-                        aria-label="Toggle profile sub-menu"
-                      >
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Sub-menu (Profile -> Manage Profile) */}
-                  {hasChildren && profileDropdownOpen && (
-                    <div className="pl-7 pr-1 space-y-1 py-1">
-                      {item.children!.map((child) => {
-                        const ChildIcon = child.icon;
-                        const isSubActive = pathname === child.href;
-                        return (
-                          <Link
-                            key={child.name}
-                            href={child.href}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className={`flex items-center space-x-2.5 px-3 py-1.5 text-xs rounded transition-colors ${
-                              isSubActive
-                                ? 'text-gold-600 font-semibold bg-gold-50/60'
-                                : 'text-ink-faint hover:text-plum-900 hover:bg-surface-subtle'
-                            }`}
-                          >
-                            <ChildIcon className="w-3.5 h-3.5" />
-                            <span>{child.name}</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center space-x-3 px-3 py-2.5 text-xs font-medium rounded transition-colors duration-150 ${
+                    isActive
+                      ? 'bg-plum-900 text-gold-400 font-semibold shadow-soft'
+                      : 'text-ink-muted hover:text-plum-900 hover:bg-surface-subtle'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="tracking-wide">{item.name}</span>
+                </Link>
               );
             })}
           </nav>
 
-          {/* Sidebar Footer: Return to Public Site & Sign Out */}
+          {/* Sidebar Footer */}
           <div className="p-4 border-t border-border space-y-2 bg-canvas/30">
             <Link
               href="/"
@@ -321,7 +218,7 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
             >
               <div className="flex items-center space-x-2">
                 <ExternalLink className="w-4 h-4 text-gold-600" />
-                <span>Visit Main Vidyalaya</span>
+                <span>Visit Main Website</span>
               </div>
             </Link>
 
@@ -330,7 +227,7 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
               className="w-full flex items-center space-x-2 px-3 py-2 text-xs text-rose-700 hover:bg-rose-50 rounded transition-colors"
             >
               <LogOut className="w-4 h-4" />
-              <span>Sign Out</span>
+              <span>Logout</span>
             </button>
           </div>
         </div>
@@ -345,7 +242,7 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
               {getPageTitle()}
             </h1>
             <p className="text-xs text-ink-muted mt-0.5 font-sans">
-              Welcome back, <span className="font-semibold text-plum-900">{user?.name}</span>. Dedicated to your holistic yogic sadhana.
+              Welcome back, <span className="font-semibold text-plum-900">{user?.name}</span>.
             </p>
           </div>
 
@@ -354,7 +251,7 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
               href="/"
               className="inline-flex items-center text-xs font-mono uppercase tracking-wider text-ink-muted hover:text-plum-900 transition-colors"
             >
-              Visit Public Site <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
+              Main Website <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
             </Link>
 
             <div className="h-4 w-[1px] bg-border" />
@@ -368,7 +265,7 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
                   {user?.name}
                 </p>
                 <p className="text-[10px] text-ink-faint">
-                  {user?.role === 'super_admin' ? 'Super Admin' : user?.role === 'admin' ? 'Acharya Admin' : 'Student Sadhaka'}
+                  Student
                 </p>
               </div>
               {user?.profileImage?.url ? (

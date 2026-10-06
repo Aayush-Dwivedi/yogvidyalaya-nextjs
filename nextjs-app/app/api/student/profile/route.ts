@@ -3,14 +3,14 @@ import { connectDB } from '@/lib/db/mongoose';
 import { AuthService } from '@/lib/services/auth.service';
 import { updateProfileSchema } from '@/lib/validators/auth.validator';
 import { ApiResponse, handleRouteError } from '@/lib/utils/apiResponse';
-import { requireSession } from '@/lib/auth/session';
+import { requireStudentSession } from '@/lib/auth/session';
 
 export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    const session = await requireSession(request);
+    const session = await requireStudentSession(request);
     const user = await AuthService.getUserById(session.userId);
     return ApiResponse.success(user);
   } catch (error) {
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     await connectDB();
-    const session = await requireSession(request);
+    const session = await requireStudentSession(request);
 
     const body = await request.json();
     const data = updateProfileSchema.body.parse(body);

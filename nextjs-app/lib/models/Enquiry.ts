@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, models, Model } from 'mongoose';
 
 export interface IEnquiry extends Document {
   name: string;
@@ -59,4 +59,6 @@ const EnquirySchema = new Schema<IEnquiry>(
   }
 );
 
-export const Enquiry = mongoose.model<IEnquiry>('Enquiry', EnquirySchema);
+export const Enquiry =
+  (models.Enquiry as Model<IEnquiry>) ||
+  mongoose.model<IEnquiry>('Enquiry', EnquirySchema);

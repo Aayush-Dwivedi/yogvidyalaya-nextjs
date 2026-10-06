@@ -53,7 +53,6 @@ const GalleryCategorySchema = new Schema<IGalleryCategory>(
   }
 );
 
-export const GalleryCategory = model<IGalleryCategory>(
-  'GalleryCategory',
-  GalleryCategorySchema
-);
+export const GalleryCategory =
+  (models.GalleryCategory as Model<IGalleryCategory>) ||
+  model<IGalleryCategory>('GalleryCategory', GalleryCategorySchema);

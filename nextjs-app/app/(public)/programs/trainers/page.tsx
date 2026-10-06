@@ -1,7 +1,7 @@
 'use client';
 
-import { ProgramsPage } from '@/views/ProgramsPage';
+import { TrainersPage } from '@/views/TrainersPage';
 
 export default function Page() {
-  return <ProgramsPage />;
+  return <TrainersPage />;
 }

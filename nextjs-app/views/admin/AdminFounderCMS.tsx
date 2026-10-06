@@ -117,7 +117,7 @@ export const AdminFounderCMS: React.FC = () => {
           alt: res.alt || 'Founder Portrait',
         },
       }));
-      showToast('Profile image uploaded to Supabase Storage!');
+      showToast('Profile image uploaded successfully!');
     } catch (err: any) {
       showToast(err.message || 'Failed to upload profile image', 'error');
     } finally {
@@ -161,24 +161,63 @@ export const AdminFounderCMS: React.FC = () => {
     e.preventDefault();
     try {
       setSaving(true);
-      const payload: Partial<CmsFounder> = {
-        ...founder,
-        title: founder.designation || founder.title,
-        designation: founder.designation || founder.title,
-        bio: founder.biography || founder.bio,
-        biography: founder.biography || founder.bio,
-        quote: founder.message || founder.quote,
-        message: founder.message || founder.quote,
+      const rawSlug = founder.slug?.trim() || founder.name?.trim() || 'shuchi-mohan';
+      const slug =
+        rawSlug
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '') || 'shuchi-mohan';
+
+      const photoUrl =
+        (typeof founder.image === 'string' ? founder.image : founder.image?.url) ||
+        'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=800&q=80';
+      const photoPath =
+        (typeof founder.image === 'object' && founder.image?.path?.trim()) ||
+        'founders/acharya-ramanath.jpg';
+      const photoAlt =
+        (typeof founder.image === 'object' && founder.image?.alt?.trim()) ||
+        founder.name ||
+        'Founder Portrait';
+
+      const payload = {
+        name: founder.name?.trim() || 'Mrs. Shuchi Mohan',
+        title: founder.designation?.trim() || founder.title?.trim() || 'Founder & Lead Instructor',
+        designation: founder.designation?.trim() || founder.title?.trim() || 'Physiotherapist & Therapeutic Yoga Consultant',
+        slug,
+        bio: founder.biography?.trim() || founder.bio?.trim() || '',
+        biography: founder.biography?.trim() || founder.bio?.trim() || '',
+        shortBio: founder.shortBio?.trim() || '',
+        quote: founder.message?.trim() || founder.quote?.trim() || '',
+        message: founder.message?.trim() || founder.quote?.trim() || '',
+        lineage: founder.lineage || '',
+        qualifications: founder.qualifications || [],
+        achievements: founder.achievements || [],
+        experienceYears: Number(founder.experienceYears) || 15,
+        specializations: founder.specializations || [],
+        socialLinks: founder.socialLinks || { twitter: '', linkedin: '', instagram: '', website: '' },
+        order: Number(founder.order) || 1,
+        status: founder.status || 'published',
+        featured: founder.featured ?? true,
+        image: {
+          url: photoUrl,
+          path: photoPath,
+          alt: photoAlt,
+          bucket: 'kalptaru-media',
+        },
       };
 
-      const founderId = founder._id || founder.id;
+      const founderId = (founder._id || founder.id) as string;
       if (founderId) {
         await CmsService.updateFounder(founderId, payload);
       } else {
         const created = await CmsService.createFounder(payload);
         setFounder((prev) => ({ ...prev, _id: created._id || created.id }));
       }
-      showToast('Founder profile updated successfully! Public API immediately updated.');
+      showToast('Founder profile updated successfully!');
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('kalptaru-cms-updated', { detail: { timestamp: Date.now() } }));
+      }
     } catch (err: any) {
       console.error(err);
       showToast(err.message || 'Failed to save founder profile', 'error');
@@ -222,35 +261,34 @@ export const AdminFounderCMS: React.FC = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft">
         <div>
           <div className="flex items-center gap-2.5 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-sans tracking-widest uppercase bg-gold-500/10 text-gold-400 border border-gold-500/30">
-              Spiritual Stewardship
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono tracking-widest uppercase bg-gold-50 text-gold-800 border border-gold-300 font-semibold">
+              Content
             </span>
-            <span className="text-xs text-ivory/50">• Public Website Live Sync</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-editorial font-normal text-ivory tracking-wide">
-            Founder Profile CMS
+          <h1 className="text-2xl sm:text-3xl font-editorial font-bold text-plum-900 tracking-wide">
+            Founder Profile
           </h1>
-          <p className="text-xs sm:text-sm text-ivory/70 font-sans mt-1">
-            Manage Acharya name, designation, biography, Supabase Storage portrait, achievements, and quote.
+          <p className="text-xs sm:text-sm text-ink-muted font-sans mt-1">
+            Manage Acharya name, designation, biography, portrait, achievements, and quote.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <button
             onClick={loadData}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-gold-300 bg-plum-900/60 border border-gold-500/30 hover:bg-plum-900 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-ink hover:text-plum-900 bg-white border border-border hover:bg-canvas transition-colors shadow-xs font-medium"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <RefreshCw className="w-3.5 h-3.5 text-gold-600" />
             <span>Sync</span>
           </button>
           <a
             href="/about/founder"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-plum-950 bg-gold-500 hover:bg-gold-400 transition-colors font-medium shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-gold-300 bg-plum-900 hover:bg-plum-800 transition-colors font-semibold shadow-soft"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             <span>View Public Founder Page</span>
@@ -261,13 +299,13 @@ export const AdminFounderCMS: React.FC = () => {
       <form onSubmit={handleSaveFounder} className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Profile Image & Quick Summary Card */}
-          <div className="bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card space-y-4 font-sans flex flex-col justify-between">
+          <div className="bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft space-y-4 font-sans flex flex-col justify-between">
             <div className="space-y-4">
-              <h2 className="text-base font-semibold text-gold-300 uppercase tracking-wider">
+              <h2 className="text-xs font-bold text-plum-900 uppercase tracking-wider">
                 Founder Portrait Image
               </h2>
 
-              <div className="relative group rounded-xl overflow-hidden border border-gold-500/30 bg-plum-900 aspect-square flex items-center justify-center">
+              <div className="relative group rounded-xl overflow-hidden border border-border bg-canvas aspect-square flex items-center justify-center shadow-xs">
                 {founder.image?.url ? (
                   <img
                     src={founder.image.url}
@@ -275,15 +313,15 @@ export const AdminFounderCMS: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="text-center text-gold-400/40 p-4">
-                    <Users2 className="w-12 h-12 mx-auto mb-2" />
+                  <div className="text-center text-ink-muted p-4">
+                    <Users2 className="w-12 h-12 mx-auto mb-2 text-gold-600" />
                     <span className="text-xs">No Portrait Uploaded</span>
                   </div>
                 )}
 
-                <div className="absolute inset-0 bg-plum-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
-                  <label className="cursor-pointer px-4 py-2 bg-gold-500 text-plum-950 rounded-lg text-xs font-semibold hover:bg-gold-400 shadow-modal">
-                    {uploadingImage ? 'Uploading to Supabase...' : 'Change Portrait'}
+                <div className="absolute inset-0 bg-plum-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
+                  <label className="cursor-pointer px-4 py-2 bg-gold-500 text-plum-950 rounded-lg text-xs font-bold hover:bg-gold-400 shadow-modal">
+                    {uploadingImage ? 'Uploading...' : 'Change Portrait'}
                     <input
                       type="file"
                       accept="image/*"
@@ -296,37 +334,37 @@ export const AdminFounderCMS: React.FC = () => {
               </div>
 
               {founder.image?.path && (
-                <div className="p-2 bg-plum-900/40 border border-gold-500/20 rounded text-[11px] font-mono text-gold-400/80 truncate">
-                  Supabase: {founder.image.path}
+                <div className="p-2 bg-canvas border border-border rounded text-[11px] font-mono text-ink-muted truncate">
+                  {founder.image.path}
                 </div>
               )}
 
-              <div className="p-3 bg-plum-900/20 border border-gold-500/10 rounded-lg space-y-1 text-xs text-ivory/80">
+              <div className="p-3 bg-canvas border border-border rounded-lg space-y-1 text-xs text-ink">
                 <div className="flex justify-between">
-                  <span className="text-ivory/50">Experience:</span>
-                  <span className="font-mono text-gold-300">{founder.experienceYears || 25} Years</span>
+                  <span className="text-ink-muted">Experience:</span>
+                  <span className="font-mono text-plum-900 font-bold">{founder.experienceYears || 25} Years</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-ivory/50">Lineage:</span>
-                  <span className="text-ivory line-clamp-1">{founder.lineage || 'Traditional Hatha'}</span>
+                  <span className="text-ink-muted">Lineage:</span>
+                  <span className="text-ink font-medium line-clamp-1">{founder.lineage || 'Traditional Hatha'}</span>
                 </div>
               </div>
             </div>
 
-            <p className="text-[11px] text-ivory/50 text-center">
-              Image is safely stored in Supabase Storage bucket 'kalptaru-media/founder'.
+            <p className="text-[11px] text-ink-muted text-center pt-2">
+              High-resolution portrait photograph.
             </p>
           </div>
 
           {/* Details & Biography */}
-          <div className="lg:col-span-2 bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card space-y-4 font-sans">
-            <h2 className="text-lg font-editorial text-ivory border-b border-gold-500/20 pb-3">
-              Personal Information & Spiritual Credentials
+          <div className="lg:col-span-2 bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft space-y-4 font-sans">
+            <h2 className="text-lg font-editorial font-bold text-plum-900 border-b border-border pb-3">
+              Personal Information &amp; Spiritual Credentials
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                   Full Name *
                 </label>
                 <input
@@ -335,12 +373,12 @@ export const AdminFounderCMS: React.FC = () => {
                   value={founder.name || ''}
                   onChange={(e) => setFounder({ ...founder, name: e.target.value })}
                   placeholder="e.g. Mrs. Shuchi Mohan"
-                  className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2.5 text-sm text-ivory focus:outline-none focus:border-gold-400 font-editorial text-base"
+                  className="w-full bg-white border border-border rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:border-gold-500 font-editorial text-base font-bold shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                   Designation / Spiritual Title *
                 </label>
                 <input
@@ -355,13 +393,13 @@ export const AdminFounderCMS: React.FC = () => {
                     })
                   }
                   placeholder="e.g. Founder & Lead Instructor"
-                  className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2.5 text-sm text-ivory focus:outline-none focus:border-gold-400"
+                  className="w-full bg-white border border-border rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:border-gold-500 shadow-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Sacred Message / Quote *
               </label>
               <textarea
@@ -376,12 +414,12 @@ export const AdminFounderCMS: React.FC = () => {
                   })
                 }
                 placeholder="Direct spiritual message or sacred quote to sadhakas..."
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2.5 text-sm text-ivory focus:outline-none focus:border-gold-400 font-editorial text-base"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:border-gold-500 font-editorial text-base shadow-xs resize-y"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Comprehensive Biography *
               </label>
               <textarea
@@ -396,31 +434,31 @@ export const AdminFounderCMS: React.FC = () => {
                   })
                 }
                 placeholder="Full biography, early sadhana, gurukula education, tapasya, and mission..."
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2.5 text-sm text-ivory focus:outline-none focus:border-gold-400 leading-relaxed"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:border-gold-500 leading-relaxed shadow-xs resize-y"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
-                Short Bio (for Cards & Highlights)
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
+                Short Bio (for Cards &amp; Highlights)
               </label>
               <input
                 type="text"
                 value={founder.shortBio || ''}
                 onChange={(e) => setFounder({ ...founder, shortBio: e.target.value })}
                 placeholder="One sentence summary of stewardship..."
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-xs text-ivory focus:outline-none focus:border-gold-400"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-xs text-ink focus:outline-none focus:border-gold-500 shadow-xs"
               />
             </div>
           </div>
         </div>
 
         {/* Achievements & Honors */}
-        <div className="bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card space-y-4 font-sans">
-          <div className="flex items-center gap-2 border-b border-gold-500/20 pb-3">
-            <Award className="w-4 h-4 text-gold-400" />
-            <h2 className="text-lg font-editorial text-ivory">
-              Key Achievements & Stewardship Milestones
+        <div className="bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft space-y-4 font-sans">
+          <div className="flex items-center gap-2 border-b border-border pb-3">
+            <Award className="w-4 h-4 text-gold-600" />
+            <h2 className="text-lg font-editorial font-bold text-plum-900">
+              Key Achievements &amp; Stewardship Milestones
             </h2>
           </div>
 
@@ -437,12 +475,12 @@ export const AdminFounderCMS: React.FC = () => {
                     handleAddAchievement();
                   }
                 }}
-                className="flex-1 bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-xs sm:text-sm text-ivory focus:outline-none focus:border-gold-400"
+                className="flex-1 bg-white border border-border rounded-lg px-3.5 py-2 text-xs sm:text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
               />
               <button
                 type="button"
                 onClick={handleAddAchievement}
-                className="px-4 py-2 bg-gold-500 text-plum-950 rounded-lg text-xs font-medium hover:bg-gold-400 transition-colors shrink-0"
+                className="px-4 py-2 bg-plum-900 text-gold-300 font-semibold hover:bg-plum-800 rounded-lg text-xs transition-colors shadow-soft shrink-0"
               >
                 Add Achievement
               </button>
@@ -453,16 +491,16 @@ export const AdminFounderCMS: React.FC = () => {
                 founder.achievements.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between gap-2 px-3 py-2 bg-plum-900/40 border border-gold-500/20 rounded-lg text-xs text-ivory"
+                    className="flex items-center justify-between gap-2 px-3 py-2 bg-canvas border border-border rounded-lg text-xs text-ink shadow-xs"
                   >
                     <div className="flex items-center gap-2 truncate">
-                      <Sparkles className="w-3.5 h-3.5 text-gold-400 shrink-0" />
+                      <Sparkles className="w-3.5 h-3.5 text-gold-600 shrink-0" />
                       <span className="truncate">{item}</span>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleRemoveAchievement(idx)}
-                      className="text-rose-400 hover:text-rose-300 p-1 shrink-0"
+                      className="text-rose-600 hover:text-rose-800 p-1 shrink-0 transition-colors"
                       title="Delete achievement"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -470,7 +508,7 @@ export const AdminFounderCMS: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <div className="col-span-full py-4 text-center text-xs text-ivory/50">
+                <div className="col-span-full py-4 text-center text-xs text-ink-muted">
                   No achievements listed. Add prominent milestones above.
                 </div>
               )}
@@ -479,10 +517,10 @@ export const AdminFounderCMS: React.FC = () => {
         </div>
 
         {/* Qualifications */}
-        <div className="bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card space-y-4 font-sans">
-          <div className="flex items-center gap-2 border-b border-gold-500/20 pb-3">
-            <Sparkles className="w-4 h-4 text-gold-400" />
-            <h2 className="text-lg font-editorial text-ivory">Academic & Lineage Certifications</h2>
+        <div className="bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft space-y-4 font-sans">
+          <div className="flex items-center gap-2 border-b border-border pb-3">
+            <Sparkles className="w-4 h-4 text-gold-600" />
+            <h2 className="text-lg font-editorial font-bold text-plum-900">Academic &amp; Lineage Certifications</h2>
           </div>
 
           <div className="space-y-3">
@@ -498,12 +536,12 @@ export const AdminFounderCMS: React.FC = () => {
                     handleAddQualification();
                   }
                 }}
-                className="flex-1 bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-xs sm:text-sm text-ivory focus:outline-none focus:border-gold-400"
+                className="flex-1 bg-white border border-border rounded-lg px-3.5 py-2 text-xs sm:text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
               />
               <button
                 type="button"
                 onClick={handleAddQualification}
-                className="px-4 py-2 bg-gold-500 text-plum-950 rounded-lg text-xs font-medium hover:bg-gold-400 transition-colors shrink-0"
+                className="px-4 py-2 bg-plum-900 text-gold-300 font-semibold hover:bg-plum-800 rounded-lg text-xs transition-colors shadow-soft shrink-0"
               >
                 Add Credential
               </button>
@@ -514,20 +552,20 @@ export const AdminFounderCMS: React.FC = () => {
                 founder.qualifications.map((item, idx) => (
                   <span
                     key={idx}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-plum-900/60 border border-gold-500/30 rounded-lg text-xs text-gold-200"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-gold-50 border border-gold-300 rounded-lg text-xs text-gold-900 font-medium shadow-xs"
                   >
                     <span>{item}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveQualification(idx)}
-                      className="text-rose-400 hover:text-rose-300"
+                      className="text-rose-600 hover:text-rose-800 font-bold ml-1 transition-colors"
                     >
                       &times;
                     </button>
                   </span>
                 ))
               ) : (
-                <div className="text-xs text-ivory/50">No qualifications added.</div>
+                <div className="text-xs text-ink-muted">No qualifications added.</div>
               )}
             </div>
           </div>
@@ -538,7 +576,7 @@ export const AdminFounderCMS: React.FC = () => {
           <button
             type="submit"
             disabled={saving || uploadingImage}
-            className="px-8 py-3 rounded-lg text-sm font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-modal disabled:opacity-50"
+            className="px-8 py-3 rounded-lg text-sm font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft disabled:opacity-50"
           >
             {saving ? 'Saving Founder Profile...' : 'Save Founder Profile'}
           </button>

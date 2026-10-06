@@ -13,6 +13,7 @@ export type StorageFolder =
   | 'institute'
   | 'videos'
   | 'site-assets'
+  | 'student'
   | 'general';
 
 export interface StorageUploadOptions {

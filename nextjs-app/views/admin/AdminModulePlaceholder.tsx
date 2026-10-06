@@ -129,17 +129,17 @@ export const AdminModulePlaceholder: React.FC<AdminModulePlaceholderProps> = ({
           </table>
         </div>
 
-        {/* Phase 9 Boundary Notice Banner */}
+        {/* Records Summary */}
         <div className="p-4 bg-canvas border-t border-border/80 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-ink-muted">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>
-              <strong>Administrative Module Shell Ready:</strong> {sampleCount} records indexed in MongoDB collection.
+              {sampleCount} entries recorded.
             </span>
           </div>
 
-          <span className="text-[10px] font-mono bg-plum-900/10 text-plum-900 px-2 py-0.5 rounded font-semibold">
-            CRUD Actions Phase Scheduled
+          <span className="text-[10px] font-mono text-ink-faint">
+            Active
           </span>
         </div>
       </div>

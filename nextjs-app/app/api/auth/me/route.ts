@@ -6,11 +6,11 @@ import { requireSession } from '@/lib/auth/session';
 
 export const runtime = 'nodejs';
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     await connectDB();
 
-    const session = await requireSession();
+    const session = await requireSession(request);
     const user = await AuthService.getCurrentUser(session.id);
 
     return ApiResponse.success(

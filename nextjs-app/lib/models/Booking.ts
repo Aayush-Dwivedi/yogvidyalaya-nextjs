@@ -1,7 +1,7 @@
 import { Schema, model, Document, Types, models, Model } from 'mongoose';
 import { DeliveryMode } from '../types/content.types';
 
-export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'refunded';
+export type BookingStatus = 'new' | 'contacted' | 'confirmed' | 'completed' | 'cancelled' | 'pending' | 'refunded';
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded' | 'waived';
 export type BookingProgramType = 'course' | 'workshop';
 
@@ -14,12 +14,27 @@ export interface IBookingProgram {
 }
 
 export interface IBookingSchedule {
+  scheduleId?: string;
   date?: Date;
+  endDate?: Date;
+  startTime?: string;
+  endTime?: string;
   time?: string;
   batch?: string;
   duration?: string;
   mode?: DeliveryMode | string;
   venue?: string;
+  location?: string;
+}
+
+export interface IBookingAttendeeDetails {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  gender?: string;
+  age?: number;
+  city?: string;
+  message?: string;
 }
 
 export interface IBookingAmount {
@@ -40,10 +55,12 @@ export interface IBookingMetadata {
 
 export interface IBooking extends Document {
   bookingReference: string;
-  student: Types.ObjectId;
+  student?: Types.ObjectId;
   program: IBookingProgram;
   schedule: IBookingSchedule;
+  attendeeDetails?: IBookingAttendeeDetails;
   bookingStatus: BookingStatus;
+  status: BookingStatus;
   amount: IBookingAmount;
   paymentStatus: PaymentStatus;
   bookingDate: Date;
@@ -88,12 +105,30 @@ const BookingProgramSchema = new Schema<IBookingProgram>(
 
 const BookingScheduleSchema = new Schema<IBookingSchedule>(
   {
+    scheduleId: { type: String, trim: true },
     date: { type: Date },
+    endDate: { type: Date },
+    startTime: { type: String, trim: true },
+    endTime: { type: String, trim: true },
     time: { type: String, trim: true },
     batch: { type: String, trim: true },
     duration: { type: String, trim: true },
     mode: { type: String, trim: true },
     venue: { type: String, trim: true },
+    location: { type: String, trim: true },
+  },
+  { _id: false }
+);
+
+const AttendeeDetailsSchema = new Schema<IBookingAttendeeDetails>(
+  {
+    fullName: { type: String, trim: true },
+    email: { type: String, trim: true, lowercase: true },
+    phone: { type: String, trim: true },
+    gender: { type: String, trim: true },
+    age: { type: Number },
+    city: { type: String, trim: true },
+    message: { type: String, trim: true },
   },
   { _id: false }
 );
@@ -120,7 +155,7 @@ const BookingSchema = new Schema<IBooking>(
     student: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'Student reference is required'],
+      required: false,
       index: true,
     },
     program: {
@@ -131,10 +166,14 @@ const BookingSchema = new Schema<IBooking>(
       type: BookingScheduleSchema,
       default: () => ({}),
     },
+    attendeeDetails: {
+      type: AttendeeDetailsSchema,
+      default: () => ({}),
+    },
     bookingStatus: {
       type: String,
-      enum: ['pending', 'confirmed', 'cancelled', 'completed', 'refunded'],
-      default: 'confirmed',
+      enum: ['new', 'contacted', 'confirmed', 'completed', 'cancelled', 'pending', 'refunded'],
+      default: 'new',
       index: true,
     },
     amount: {
@@ -174,6 +213,15 @@ const BookingSchema = new Schema<IBooking>(
     toObject: { virtuals: true },
   }
 );
+
+// Virtual for alias `status` -> `bookingStatus`
+BookingSchema.virtual('status')
+  .get(function (this: IBooking) {
+    return this.bookingStatus;
+  })
+  .set(function (this: IBooking, val: BookingStatus) {
+    this.bookingStatus = val;
+  });
 
 // Indexes for high-performance querying
 BookingSchema.index({ student: 1, bookingStatus: 1 });

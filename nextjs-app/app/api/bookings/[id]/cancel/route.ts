@@ -14,7 +14,7 @@ export async function POST(
 ) {
   try {
     await connectDB();
-    const session = await requireSession();
+    const session = await requireSession(request);
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
 

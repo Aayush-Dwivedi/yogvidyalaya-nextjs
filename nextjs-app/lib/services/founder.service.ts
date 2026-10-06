@@ -90,31 +90,59 @@ export class FounderService {
   }
 
   static async updateFounder(id: string, data: Partial<IFounder>): Promise<IFounder> {
+    const queryId = Types.ObjectId.isValid(id) ? new Types.ObjectId(id) : id;
+
     if (data.slug) {
       data.slug = generateSlug(data.slug);
-      const existing = await Founder.findOne({ slug: data.slug, _id: { $ne: id } });
+      const existing = await Founder.findOne({ slug: data.slug, _id: { $ne: queryId } });
       if (existing) {
-        throw AppError.conflict(`Slug '${data.slug}' is already in use by another founder profile.`);
+        throw AppError.conflict(`Slug '${data.slug}' is already in use by another profile.`);
       }
     }
 
-    if (data.designation && !data.title) {
+    if (data.designation) {
       data.title = data.designation;
     } else if (data.title && !data.designation) {
       data.designation = data.title;
     }
-    if (data.biography && !data.bio) {
+
+    if (data.biography) {
       data.bio = data.biography;
     } else if (data.bio && !data.biography) {
       data.biography = data.bio;
     }
-    if (data.message && !data.quote) {
+
+    if (data.message) {
       data.quote = data.message;
     } else if (data.quote && !data.message) {
       data.message = data.quote;
     }
 
-    const updated = await Founder.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+    // Ensure image object is complete if provided
+    if (data.image) {
+      if (typeof data.image === 'string') {
+        data.image = {
+          url: data.image,
+          path: 'trainers/profile.jpg',
+          bucket: 'kalptaru-media',
+          alt: data.name || 'Trainer Profile',
+        } as any;
+      } else if (typeof data.image === 'object') {
+        data.image = {
+          ...data.image,
+          path: data.image.path && data.image.path.trim().length > 0 ? data.image.path.trim() : 'trainers/profile.jpg',
+          bucket: data.image.bucket || 'kalptaru-media',
+          alt: data.image.alt || data.name || 'Trainer Profile',
+        } as any;
+      }
+    }
+
+    const updated = await Founder.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { returnDocument: 'after', runValidators: true }
+    );
+
     if (!updated) {
       throw AppError.notFound(`Founder not found with ID: ${id}`);
     }

@@ -1,7 +1,14 @@
 'use client';
 
-import { DashboardOverview } from '@/views/dashboard/DashboardOverview';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function Page() {
-  return <DashboardOverview />;
+export default function DashboardPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/courses');
+  }, [router]);
+
+  return null;
 }

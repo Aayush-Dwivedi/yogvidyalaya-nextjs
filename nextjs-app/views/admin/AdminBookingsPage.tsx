@@ -31,6 +31,7 @@ export const AdminBookingsPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [paymentFilter, setPaymentFilter] = useState<string>('all');
   const [programTypeFilter, setProgramTypeFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<string>('');
 
   // Modals
   const [inspectBooking, setInspectBooking] = useState<Booking | null>(null);
@@ -52,6 +53,7 @@ export const AdminBookingsPage: React.FC = () => {
         status: statusFilter !== 'all' ? statusFilter : undefined,
         paymentStatus: paymentFilter !== 'all' ? paymentFilter : undefined,
         programType: programTypeFilter !== 'all' ? programTypeFilter : undefined,
+        date: dateFilter || undefined,
         limit: 50,
       });
       setBookings(res.items || []);
@@ -63,7 +65,7 @@ export const AdminBookingsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, statusFilter, paymentFilter, programTypeFilter]);
+  }, [searchQuery, statusFilter, paymentFilter, programTypeFilter, dateFilter]);
 
   useEffect(() => {
     fetchBookings();
@@ -115,9 +117,12 @@ export const AdminBookingsPage: React.FC = () => {
   };
 
   // Metrics summary
+  const newCount = bookings.filter((b) => b.bookingStatus === 'new').length;
+  const contactedCount = bookings.filter((b) => b.bookingStatus === 'contacted').length;
   const confirmedCount = bookings.filter((b) => b.bookingStatus === 'confirmed').length;
-  const pendingCount = bookings.filter((b) => b.bookingStatus === 'pending').length;
-  const cancelledCount = bookings.filter((b) => ['cancelled', 'refunded'].includes(b.bookingStatus)).length;
+  const closedCount = bookings.filter((b) =>
+    ['completed', 'cancelled', 'refunded'].includes(b.bookingStatus)
+  ).length;
 
   return (
     <div className="space-y-6">
@@ -125,13 +130,13 @@ export const AdminBookingsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[11px] font-mono tracking-widest uppercase text-gold-600 font-semibold block">
-            Admissions & Capacity Operations
+            Admissions &amp; Visitor Operations
           </span>
           <h1 className="font-editorial text-3xl text-plum-900 font-semibold">
             Bookings Ledger
           </h1>
           <p className="text-xs text-ink-muted mt-1">
-            Real-time enrollment registry, seat allocation capacity, and payment state monitoring.
+            Real-time visitor booking requests, batch allocation, and contact records.
           </p>
         </div>
 
@@ -148,7 +153,7 @@ export const AdminBookingsPage: React.FC = () => {
       {/* Metrics Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-surface border border-border p-4 rounded-xl shadow-soft">
-          <span className="text-[10px] font-mono uppercase text-ink-faint block">Total Enrolments</span>
+          <span className="text-[10px] font-mono uppercase text-ink-faint block">Total Requests</span>
           <span className="text-2xl font-editorial font-semibold text-plum-900 mt-1 block">
             {totalCount}
           </span>
@@ -156,27 +161,27 @@ export const AdminBookingsPage: React.FC = () => {
         </div>
 
         <div className="bg-surface border border-border p-4 rounded-xl shadow-soft">
-          <span className="text-[10px] font-mono uppercase text-ink-faint block">Confirmed Seats</span>
+          <span className="text-[10px] font-mono uppercase text-ink-faint block">New Requests</span>
+          <span className="text-2xl font-editorial font-semibold text-plum-900 mt-1 block">
+            {newCount}
+          </span>
+          <span className="text-[11px] text-gold-700/80">Awaiting contact</span>
+        </div>
+
+        <div className="bg-surface border border-border p-4 rounded-xl shadow-soft">
+          <span className="text-[10px] font-mono uppercase text-ink-faint block">Contacted / Confirmed</span>
           <span className="text-2xl font-editorial font-semibold text-emerald-700 mt-1 block">
-            {confirmedCount}
+            {contactedCount + confirmedCount}
           </span>
-          <span className="text-[11px] text-emerald-600/80">Active capacity reserved</span>
+          <span className="text-[11px] text-emerald-600/80">In communication / enrolled</span>
         </div>
 
         <div className="bg-surface border border-border p-4 rounded-xl shadow-soft">
-          <span className="text-[10px] font-mono uppercase text-ink-faint block">Pending Action</span>
-          <span className="text-2xl font-editorial font-semibold text-gold-600 mt-1 block">
-            {pendingCount}
+          <span className="text-[10px] font-mono uppercase text-ink-faint block">Completed / Cancelled</span>
+          <span className="text-2xl font-editorial font-semibold text-ink-muted mt-1 block">
+            {closedCount}
           </span>
-          <span className="text-[11px] text-gold-700/80">Awaiting desk review</span>
-        </div>
-
-        <div className="bg-surface border border-border p-4 rounded-xl shadow-soft">
-          <span className="text-[10px] font-mono uppercase text-ink-faint block">Cancelled / Released</span>
-          <span className="text-2xl font-editorial font-semibold text-rose-700 mt-1 block">
-            {cancelledCount}
-          </span>
-          <span className="text-[11px] text-rose-600/80">Capacity returned</span>
+          <span className="text-[11px] text-ink-faint">Concluded requests</span>
         </div>
       </div>
 
@@ -216,7 +221,7 @@ export const AdminBookingsPage: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by student name, email, booking ref (e.g. BK-2026), or program title..."
+            placeholder="Search by visitor name, email, phone, reference (e.g. KYV-2026-00124), or program title..."
             className="w-full pl-9 pr-3 py-2 bg-canvas border border-border rounded-lg outline-none focus:border-gold-500 shadow-sm"
           />
         </div>
@@ -229,12 +234,13 @@ export const AdminBookingsPage: React.FC = () => {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="bg-canvas border border-border rounded-lg px-3 py-2 outline-none focus:border-gold-500 shadow-sm"
           >
-            <option value="all">All Booking Statuses</option>
+            <option value="all">All Request Statuses</option>
+            <option value="new">New Request</option>
+            <option value="contacted">Contacted</option>
             <option value="confirmed">Confirmed</option>
-            <option value="pending">Pending</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
-            <option value="refunded">Refunded</option>
+            <option value="pending">Pending (Legacy)</option>
           </select>
 
           {/* Payment Status Filter */}
@@ -261,6 +267,27 @@ export const AdminBookingsPage: React.FC = () => {
             <option value="course">Courses Only</option>
             <option value="workshop">Workshops Only</option>
           </select>
+
+          {/* Date Filter */}
+          <div className="flex items-center gap-1.5 bg-canvas border border-border rounded-lg px-2.5 py-1.5 shadow-sm">
+            <span className="text-[11px] text-ink-muted">Date:</span>
+            <input
+              type="date"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className="bg-transparent outline-none text-xs text-ink cursor-pointer"
+            />
+            {dateFilter && (
+              <button
+                type="button"
+                onClick={() => setDateFilter('')}
+                className="text-ink-muted hover:text-ink text-[11px] font-bold px-1"
+                title="Clear date filter"
+              >
+                ×
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -279,11 +306,11 @@ export const AdminBookingsPage: React.FC = () => {
               <thead>
                 <tr className="bg-canvas border-b border-border text-ink-muted font-mono uppercase tracking-wider text-[11px]">
                   <th scope="col" className="py-3.5 px-4 font-semibold">Reference</th>
-                  <th scope="col" className="py-3.5 px-4 font-semibold">Student / Contact</th>
-                  <th scope="col" className="py-3.5 px-4 font-semibold">Program & Type</th>
-                  <th scope="col" className="py-3.5 px-4 font-semibold">Schedule & Batch</th>
+                  <th scope="col" className="py-3.5 px-4 font-semibold">Visitor / Contact</th>
+                  <th scope="col" className="py-3.5 px-4 font-semibold">Program &amp; Type</th>
+                  <th scope="col" className="py-3.5 px-4 font-semibold">Schedule &amp; Batch</th>
                   <th scope="col" className="py-3.5 px-4 font-semibold">Tuition / Payment</th>
-                  <th scope="col" className="py-3.5 px-4 font-semibold">Booking Status</th>
+                  <th scope="col" className="py-3.5 px-4 font-semibold">Request Status</th>
                   <th scope="col" className="py-3.5 px-4 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
@@ -304,17 +331,17 @@ export const AdminBookingsPage: React.FC = () => {
                       </span>
                     </td>
 
-                    {/* Student Info */}
+                    {/* Visitor Info */}
                     <td className="py-3.5 px-4">
                       <div className="font-medium text-plum-900">
-                        {bkg.student?.name || 'Sadhaka Guest'}
+                        {bkg.attendeeDetails?.fullName || bkg.student?.name || 'Visitor'}
                       </div>
                       <div className="text-[11px] text-ink-muted truncate max-w-[170px]">
-                        {bkg.student?.email}
+                        {bkg.attendeeDetails?.email || bkg.student?.email || '—'}
                       </div>
-                      {bkg.student?.phone && (
+                      {(bkg.attendeeDetails?.phone || bkg.student?.phone) && (
                         <div className="text-[10px] font-mono text-ink-faint">
-                          {bkg.student.phone}
+                          {bkg.attendeeDetails?.phone || bkg.student?.phone}
                         </div>
                       )}
                     </td>
@@ -349,20 +376,8 @@ export const AdminBookingsPage: React.FC = () => {
                       <div className="font-semibold text-plum-900">
                         {bkg.amount.displayAmount || `₹${bkg.amount.total.toLocaleString()}`}
                       </div>
-                      <span
-                        className={`text-[10px] font-mono uppercase px-1.5 py-0.5 rounded border inline-block mt-0.5 ${
-                          bkg.paymentStatus === 'paid'
-                            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                            : bkg.paymentStatus === 'waived'
-                            ? 'bg-sky-50 border-sky-200 text-sky-800'
-                            : bkg.paymentStatus === 'refunded'
-                            ? 'bg-purple-50 border-purple-200 text-purple-800'
-                            : bkg.paymentStatus === 'failed'
-                            ? 'bg-rose-50 border-rose-200 text-rose-800'
-                            : 'bg-amber-50 border-amber-200 text-amber-800'
-                        }`}
-                      >
-                        {bkg.paymentStatus}
+                      <span className="text-[10px] font-mono text-ink-faint block mt-0.5">
+                        Offline settlement
                       </span>
                     </td>
 
@@ -372,12 +387,14 @@ export const AdminBookingsPage: React.FC = () => {
                         variant={
                           bkg.bookingStatus === 'confirmed'
                             ? 'success'
+                            : bkg.bookingStatus === 'new'
+                            ? 'plum'
+                            : bkg.bookingStatus === 'contacted'
+                            ? 'gold'
+                            : bkg.bookingStatus === 'completed'
+                            ? 'earth'
                             : bkg.bookingStatus === 'cancelled'
                             ? 'warning'
-                            : bkg.bookingStatus === 'completed'
-                            ? 'plum'
-                            : bkg.bookingStatus === 'refunded'
-                            ? 'earth'
                             : 'neutral'
                         }
                         size="sm"
@@ -418,44 +435,74 @@ export const AdminBookingsPage: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* 1. INSPECT BOOKING / STUDENT / PROGRAM MODAL                             */}
+      {/* 1. INSPECT BOOKING / VISITOR / PROGRAM MODAL                             */}
       {/* ========================================================================= */}
       {inspectBooking && (
         <Modal
           isOpen={!!inspectBooking}
           onClose={() => setInspectBooking(null)}
-          title={`Booking Details — ${inspectBooking.bookingReference}`}
-          description={`Registered on ${new Date(inspectBooking.bookingDate).toLocaleString()}`}
+          title={`Booking Request — ${inspectBooking.bookingReference}`}
+          description={`Submitted on ${new Date(inspectBooking.bookingDate).toLocaleString()}`}
           size="lg"
         >
           <div className="space-y-5 text-xs text-ink">
-            {/* Student Account Card */}
+            {/* Visitor Contact Card */}
             <div className="bg-canvas border border-border p-4 rounded-xl space-y-2">
               <div className="flex items-center gap-2 text-plum-900 font-semibold font-editorial text-sm">
                 <User className="w-4 h-4 text-gold-600" />
-                <span>Student Profile</span>
+                <span>Visitor Information</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                 <div>
                   <span className="text-[10px] font-mono uppercase text-ink-faint block">Full Name</span>
-                  <span className="font-semibold text-plum-900">{inspectBooking.student?.name}</span>
+                  <span className="font-semibold text-plum-900">
+                    {inspectBooking.attendeeDetails?.fullName || inspectBooking.student?.name || 'Visitor'}
+                  </span>
                 </div>
                 <div>
                   <span className="text-[10px] font-mono uppercase text-ink-faint block">Email Address</span>
-                  <span className="font-mono text-ink">{inspectBooking.student?.email}</span>
+                  <a
+                    href={`mailto:${inspectBooking.attendeeDetails?.email || inspectBooking.student?.email || ''}`}
+                    className="font-mono text-gold-700 hover:underline"
+                  >
+                    {inspectBooking.attendeeDetails?.email || inspectBooking.student?.email || 'N/A'}
+                  </a>
                 </div>
                 <div>
                   <span className="text-[10px] font-mono uppercase text-ink-faint block">Contact Phone</span>
-                  <span className="font-mono text-ink">{inspectBooking.student?.phone || 'N/A'}</span>
+                  <a
+                    href={`tel:${inspectBooking.attendeeDetails?.phone || inspectBooking.student?.phone || ''}`}
+                    className="font-mono text-gold-700 hover:underline"
+                  >
+                    {inspectBooking.attendeeDetails?.phone || inspectBooking.student?.phone || 'N/A'}
+                  </a>
                 </div>
+                {inspectBooking.attendeeDetails?.city && (
+                  <div>
+                    <span className="text-[10px] font-mono uppercase text-ink-faint block">City</span>
+                    <span className="text-ink">{inspectBooking.attendeeDetails.city}</span>
+                  </div>
+                )}
+                {inspectBooking.attendeeDetails?.age && (
+                  <div>
+                    <span className="text-[10px] font-mono uppercase text-ink-faint block">Age</span>
+                    <span className="text-ink">{inspectBooking.attendeeDetails.age} years</span>
+                  </div>
+                )}
               </div>
+              {inspectBooking.attendeeDetails?.message && (
+                <div className="pt-2 border-t border-border/60">
+                  <span className="text-[10px] font-mono uppercase text-ink-faint block">Visitor Message</span>
+                  <p className="text-ink italic mt-0.5">{inspectBooking.attendeeDetails.message}</p>
+                </div>
+              )}
             </div>
 
             {/* Program & Schedule Card */}
             <div className="bg-canvas border border-border p-4 rounded-xl space-y-2">
               <div className="flex items-center gap-2 text-plum-900 font-semibold font-editorial text-sm">
                 <BookOpen className="w-4 h-4 text-gold-600" />
-                <span>Program & Schedule Allocation</span>
+                <span>Program &amp; Schedule Details</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 <div>
@@ -485,70 +532,30 @@ export const AdminBookingsPage: React.FC = () => {
             {/* Financial & Status State */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-canvas-warm/70 border border-border p-3.5 rounded-xl">
               <div>
-                <span className="text-[10px] font-mono uppercase text-ink-faint block">Tuition Fee</span>
+                <span className="text-[10px] font-mono uppercase text-ink-faint block">Tuition / Dakshina</span>
                 <span className="font-editorial text-base font-semibold text-plum-900">
                   {inspectBooking.amount.displayAmount || `₹${inspectBooking.amount.total.toLocaleString()}`}
                 </span>
               </div>
               <div>
-                <span className="text-[10px] font-mono uppercase text-ink-faint block">Payment Status</span>
-                <span className="font-mono uppercase font-bold text-xs text-plum-900">
-                  {inspectBooking.paymentStatus}
+                <span className="text-[10px] font-mono uppercase text-ink-faint block">Payment Mode</span>
+                <span className="font-mono text-xs text-ink-muted">
+                  Offline / Manual
                 </span>
               </div>
               <div>
-                <span className="text-[10px] font-mono uppercase text-ink-faint block">Booking Status</span>
+                <span className="text-[10px] font-mono uppercase text-ink-faint block">Request Status</span>
                 <span className="font-mono uppercase font-bold text-xs text-plum-900">
                   {inspectBooking.bookingStatus}
                 </span>
               </div>
               <div>
-                <span className="text-[10px] font-mono uppercase text-ink-faint block">Enrolled Date</span>
+                <span className="text-[10px] font-mono uppercase text-ink-faint block">Request Date</span>
                 <span className="text-xs text-ink font-medium">
                   {new Date(inspectBooking.bookingDate).toLocaleDateString()}
                 </span>
               </div>
             </div>
-
-            {/* Intake Questionnaire & Health Metadata */}
-            {inspectBooking.metadata && Object.keys(inspectBooking.metadata).length > 0 && (
-              <div className="border border-border rounded-xl p-4 space-y-2.5 bg-surface">
-                <div className="flex items-center gap-1.5 text-gold-700 font-mono uppercase text-[10px] font-semibold tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Student Sadhana Questionnaire & Health Conditions</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  {inspectBooking.metadata.sadhanaExperience && (
-                    <div>
-                      <span className="text-ink-faint block text-[10px] font-mono">Prior Sadhana Experience</span>
-                      <span className="text-ink font-medium">{inspectBooking.metadata.sadhanaExperience}</span>
-                    </div>
-                  )}
-                  {inspectBooking.metadata.dietaryPreferences && (
-                    <div>
-                      <span className="text-ink-faint block text-[10px] font-mono">Dietary Preference</span>
-                      <span className="text-ink font-medium">{inspectBooking.metadata.dietaryPreferences}</span>
-                    </div>
-                  )}
-                  {inspectBooking.metadata.healthConditions && (
-                    <div className="sm:col-span-2">
-                      <span className="text-ink-faint block text-[10px] font-mono">
-                        Health Limitations / Surgeries
-                      </span>
-                      <span className="text-ink">{inspectBooking.metadata.healthConditions}</span>
-                    </div>
-                  )}
-                  {inspectBooking.metadata.emergencyContactName && (
-                    <div className="sm:col-span-2">
-                      <span className="text-ink-faint block text-[10px] font-mono">Emergency Contact</span>
-                      <span className="text-ink font-medium">
-                        {inspectBooking.metadata.emergencyContactName} ({inspectBooking.metadata.emergencyContactPhone})
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
 
             {/* Notes / Cancellation Reason */}
             {inspectBooking.cancellationReason && (
@@ -604,7 +611,9 @@ export const AdminBookingsPage: React.FC = () => {
           isOpen={!!statusModalBooking}
           onClose={() => setStatusModalBooking(null)}
           title={`Update Status — ${statusModalBooking.bookingReference}`}
-          description={`Program: ${statusModalBooking.program.title} | Student: ${statusModalBooking.student?.name}`}
+          description={`Program: ${statusModalBooking.program.title} | Visitor: ${
+            statusModalBooking.attendeeDetails?.fullName || statusModalBooking.student?.name || 'Visitor'
+          }`}
           size="md"
         >
           <form onSubmit={handleUpdateStatus} className="space-y-4 text-xs text-ink">
@@ -612,11 +621,9 @@ export const AdminBookingsPage: React.FC = () => {
             <div className="bg-canvas border border-border p-3.5 rounded-xl flex items-start gap-2.5 text-[11px] text-ink-muted">
               <ShieldAlert className="w-4 h-4 text-gold-600 shrink-0 mt-0.5" />
               <div>
-                <strong className="text-plum-900">Server Capacity Automation:</strong> If you change status to{' '}
-                <span className="font-mono text-rose-700">cancelled</span> or{' '}
-                <span className="font-mono text-purple-700">refunded</span>, the occupied cohort seat is automatically
-                released. If you re-confirm a cancelled booking, the server atomically validates cohort availability before
-                permitting confirmation.
+                <strong className="text-plum-900">Batch Capacity:</strong> Changing status to{' '}
+                <span className="font-mono text-rose-700">cancelled</span> releases the occupied seat. Re-confirming a
+                request atomically checks availability before allocating the seat.
               </div>
             </div>
 
@@ -628,27 +635,27 @@ export const AdminBookingsPage: React.FC = () => {
                 onChange={(e) => setNewBookingStatus(e.target.value as BookingStatus)}
                 className="w-full bg-surface border border-border rounded-lg p-2.5 outline-none focus:border-gold-500 shadow-sm font-medium"
               >
+                <option value="new">New Request (Awaiting Contact)</option>
+                <option value="contacted">Contacted (In Communication)</option>
                 <option value="confirmed">Confirmed (Seat Reserved)</option>
-                <option value="pending">Pending (Awaiting Approval)</option>
-                <option value="completed">Completed (Attended & Finished)</option>
+                <option value="completed">Completed (Attended &amp; Finished)</option>
                 <option value="cancelled">Cancelled (Seat Released)</option>
-                <option value="refunded">Refunded (Dakshina Returned)</option>
+                <option value="pending">Pending (Legacy)</option>
               </select>
             </div>
 
             {/* Payment Status Select */}
             <div>
-              <label className="block text-ink font-medium mb-1">Payment State *</label>
+              <label className="block text-ink font-medium mb-1">Offline Payment State</label>
               <select
                 value={newPaymentStatus}
                 onChange={(e) => setNewPaymentStatus(e.target.value as PaymentStatus)}
                 className="w-full bg-surface border border-border rounded-lg p-2.5 outline-none focus:border-gold-500 shadow-sm font-medium"
               >
-                <option value="pending">Pending Settlement</option>
-                <option value="paid">Paid & Verified</option>
-                <option value="waived">Waived / Complimentary Grant</option>
+                <option value="pending">Pending Direct Settlement</option>
+                <option value="paid">Settled &amp; Verified</option>
+                <option value="waived">Waived / Complimentary</option>
                 <option value="refunded">Refunded</option>
-                <option value="failed">Payment Failed</option>
               </select>
             </div>
 

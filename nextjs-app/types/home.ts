@@ -64,4 +64,6 @@ export interface VideoItem {
   thumbnail: string;
   youtubeId: string;
   category: string;
+  description?: string;
+  views?: string;
 }

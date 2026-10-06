@@ -223,18 +223,18 @@ export const AdminBenefitsCMS: React.FC = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-plum-950/40 border border-gold-500/20 rounded-xl p-5 sm:p-6 backdrop-blur-sm shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft">
         <div>
           <div className="flex items-center gap-2.5 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-sans tracking-widest uppercase bg-gold-500/10 text-gold-400 border border-gold-500/30">
-              Transformational Benefits
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono tracking-widest uppercase bg-gold-50 text-gold-800 border border-gold-300 font-semibold">
+              Content
             </span>
-            <span className="text-xs text-ivory/50">• Public Website Live Sync</span>
+            <span className="text-xs text-ink-muted">• Public Website Live Sync</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-editorial font-normal text-ivory tracking-wide">
-            Benefits Management (CRUD)
+          <h1 className="text-2xl sm:text-3xl font-editorial font-bold text-plum-900 tracking-wide">
+            Benefits Management
           </h1>
-          <p className="text-xs sm:text-sm text-ivory/70 font-sans mt-1">
+          <p className="text-xs sm:text-sm text-ink-muted font-sans mt-1">
             Manage holistic benefits of classical yoga: title, description, icon, display order, and active visibility.
           </p>
         </div>
@@ -242,14 +242,14 @@ export const AdminBenefitsCMS: React.FC = () => {
         <div className="flex items-center gap-2.5">
           <button
             onClick={loadBenefits}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-gold-300 bg-plum-900/60 border border-gold-500/30 hover:bg-plum-900 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans text-ink hover:text-plum-900 bg-white border border-border hover:bg-canvas transition-colors shadow-xs font-medium"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <RefreshCw className="w-3.5 h-3.5 text-gold-600" />
             <span>Sync</span>
           </button>
           <button
             onClick={() => handleOpenModal()}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft"
           >
             <Plus className="w-4 h-4" />
             <span>Add New Benefit</span>
@@ -258,24 +258,24 @@ export const AdminBenefitsCMS: React.FC = () => {
       </div>
 
       {/* Benefits Table */}
-      <div className="bg-plum-950/40 border border-gold-500/20 rounded-xl overflow-hidden backdrop-blur-sm shadow-card">
+      <div className="bg-white border border-border rounded-xl overflow-hidden shadow-soft">
         <div className="overflow-x-auto">
           <table className="w-full text-left font-sans text-xs">
-            <thead className="bg-plum-900/60 border-b border-gold-500/20 text-gold-300">
+            <thead className="bg-canvas border-b border-border text-ink-muted font-mono uppercase tracking-wider text-[11px]">
               <tr>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider w-16 text-center">Order</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider w-16 text-center">Icon</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider">Benefit Title & Sanskrit Term</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider">Description</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider">Category</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider text-center">Active Status</th>
-                <th className="px-4 py-3 font-semibold uppercase tracking-wider text-right">Actions</th>
+                <th className="px-4 py-3 font-semibold w-16 text-center">Order</th>
+                <th className="px-4 py-3 font-semibold w-16 text-center">Icon</th>
+                <th className="px-4 py-3 font-semibold">Benefit Title &amp; Sanskrit Term</th>
+                <th className="px-4 py-3 font-semibold">Description</th>
+                <th className="px-4 py-3 font-semibold">Category</th>
+                <th className="px-4 py-3 font-semibold text-center">Active Status</th>
+                <th className="px-4 py-3 font-semibold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gold-500/10">
+            <tbody className="divide-y divide-border/70">
               {benefits.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-10 text-ivory/50">
+                  <td colSpan={7} className="text-center py-10 text-ink-muted">
                     No benefits found. Click "Add New Benefit" above to create one.
                   </td>
                 </tr>
@@ -288,34 +288,34 @@ export const AdminBenefitsCMS: React.FC = () => {
                   return (
                     <tr
                       key={benefitId || index}
-                      className={`hover:bg-plum-900/30 transition-colors ${
-                        !isActive ? 'opacity-50 bg-plum-950/20' : ''
+                      className={`hover:bg-canvas/50 transition-colors ${
+                        !isActive ? 'opacity-60 bg-canvas/30' : ''
                       }`}
                     >
-                      <td className="px-4 py-3.5 text-center font-mono text-gold-400 font-semibold">
+                      <td className="px-4 py-3.5 text-center font-mono text-plum-900 font-bold">
                         #{benefit.order !== undefined ? benefit.order : index + 1}
                       </td>
                       <td className="px-4 py-3.5 text-center">
-                        <div className="w-8 h-8 rounded-lg bg-plum-900/60 border border-gold-500/20 flex items-center justify-center mx-auto">
+                        <div className="w-8 h-8 rounded-lg bg-canvas border border-border flex items-center justify-center mx-auto shadow-xs">
                           {renderIcon(benefit.icon)}
                         </div>
                       </td>
                       <td className="px-4 py-3.5">
-                        <div className="font-editorial text-sm text-ivory font-medium">
+                        <div className="font-editorial text-sm text-plum-900 font-bold">
                           {benefit.title}
                         </div>
                         {benefit.sanskritTerm && (
-                          <div className="text-[11px] text-gold-300/80 font-sans italic">
+                          <div className="text-[11px] text-gold-700 font-sans italic font-medium">
                             {benefit.sanskritTerm}
                           </div>
                         )}
                         {benefit.scriptureRef && (
-                          <div className="text-[10px] text-ivory/40 font-mono">
+                          <div className="text-[10px] text-ink-muted font-mono">
                             Ref: {benefit.scriptureRef}
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-3.5 text-ivory/80 max-w-sm">
+                      <td className="px-4 py-3.5 text-ink-muted max-w-sm">
                         <p className="line-clamp-2 leading-relaxed">{benefit.description}</p>
                       </td>
                       <td className="px-4 py-3.5 whitespace-nowrap">
@@ -337,10 +337,10 @@ export const AdminBenefitsCMS: React.FC = () => {
                       <td className="px-4 py-3.5 text-center">
                         <button
                           onClick={() => handleToggleActive(benefit)}
-                          className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-all shadow-xs ${
                             isActive
-                              ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30'
-                              : 'bg-white/5 border border-white/10 text-ivory/50 hover:text-ivory'
+                              ? 'bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100'
+                              : 'bg-white border border-border text-ink-muted hover:text-plum-900 hover:bg-canvas'
                           }`}
                         >
                           {isActive ? 'Active' : 'Inactive'}
@@ -350,7 +350,7 @@ export const AdminBenefitsCMS: React.FC = () => {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => handleOpenModal(benefit)}
-                            className="p-1.5 text-gold-300 hover:text-gold-200 bg-plum-900/50 hover:bg-plum-900 border border-gold-500/20 rounded transition-colors"
+                            className="p-1.5 text-gold-700 hover:text-gold-900 bg-gold-50 hover:bg-gold-100 border border-gold-200 rounded transition-colors shadow-xs"
                             title="Edit"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
@@ -360,7 +360,7 @@ export const AdminBenefitsCMS: React.FC = () => {
                               setBenefitToDelete(benefit);
                               setDeleteModalOpen(true);
                             }}
-                            className="p-1.5 text-rose-300 hover:text-rose-200 bg-rose-950/40 hover:bg-rose-950 border border-rose-500/20 rounded transition-colors"
+                            className="p-1.5 text-rose-700 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded transition-colors shadow-xs"
                             title="Delete"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -388,7 +388,7 @@ export const AdminBenefitsCMS: React.FC = () => {
       >
         <form onSubmit={handleSaveBenefit} className="space-y-4 font-sans text-xs sm:text-sm">
           <div>
-            <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
               Benefit Title *
             </label>
             <input
@@ -397,13 +397,13 @@ export const AdminBenefitsCMS: React.FC = () => {
               value={editingBenefit?.title || ''}
               onChange={(e) => setEditingBenefit({ ...editingBenefit, title: e.target.value })}
               placeholder="e.g. Physical Wellness, Mental Poise, Stress Reduction"
-              className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Sanskrit Term
               </label>
               <input
@@ -413,12 +413,12 @@ export const AdminBenefitsCMS: React.FC = () => {
                   setEditingBenefit({ ...editingBenefit, sanskritTerm: e.target.value })
                 }
                 placeholder="e.g. Sharira Shuddhi"
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Category
               </label>
               <select
@@ -429,7 +429,7 @@ export const AdminBenefitsCMS: React.FC = () => {
                     category: e.target.value as any,
                   })
                 }
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs"
               >
                 <option value="physical">Physical</option>
                 <option value="mental">Mental</option>
@@ -440,7 +440,7 @@ export const AdminBenefitsCMS: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
               Description *
             </label>
             <textarea
@@ -451,12 +451,12 @@ export const AdminBenefitsCMS: React.FC = () => {
                 setEditingBenefit({ ...editingBenefit, description: e.target.value })
               }
               placeholder="Explain how regular sadhana brings this holistic physiological or psychic transformation..."
-              className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400"
+              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs resize-y"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
               Scripture Reference / Shloka Source
             </label>
             <input
@@ -466,13 +466,13 @@ export const AdminBenefitsCMS: React.FC = () => {
                 setEditingBenefit({ ...editingBenefit, scriptureRef: e.target.value })
               }
               placeholder="e.g. Hatha Yoga Pradipika (1.17)"
-              className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400 font-mono"
+              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm font-mono placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
             />
           </div>
 
           {/* Icon Selector */}
           <div>
-            <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
               Icon Key
             </label>
             <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
@@ -486,11 +486,11 @@ export const AdminBenefitsCMS: React.FC = () => {
                     onClick={() => setEditingBenefit({ ...editingBenefit, icon: item.name })}
                     className={`flex flex-col items-center gap-1 p-2 rounded-lg border text-center transition-all ${
                       isSelected
-                        ? 'bg-gold-500/20 border-gold-400 text-gold-300'
-                        : 'bg-plum-900/30 border-gold-500/10 text-ivory/60 hover:text-ivory'
+                        ? 'bg-gold-50 border-gold-400 text-gold-800 font-semibold shadow-xs'
+                        : 'bg-white border-border text-ink-muted hover:text-plum-900 hover:bg-canvas shadow-xs'
                     }`}
                   >
-                    <IconComponent className="w-5 h-5" />
+                    <IconComponent className="w-5 h-5 text-gold-600" />
                     <span className="text-[10px] truncate max-w-full">{item.name}</span>
                   </button>
                 );
@@ -500,7 +500,7 @@ export const AdminBenefitsCMS: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-4 pt-2">
             <div>
-              <label className="block text-xs font-sans text-gold-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                 Display Order
               </label>
               <input
@@ -509,7 +509,7 @@ export const AdminBenefitsCMS: React.FC = () => {
                 onChange={(e) =>
                   setEditingBenefit({ ...editingBenefit, order: Number(e.target.value) })
                 }
-                className="w-full bg-plum-900/50 border border-gold-500/30 rounded-lg px-3.5 py-2 text-ivory focus:outline-none focus:border-gold-400 font-mono"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink font-mono text-sm focus:outline-none focus:border-gold-500 shadow-xs"
               />
             </div>
 
@@ -521,28 +521,28 @@ export const AdminBenefitsCMS: React.FC = () => {
                   onChange={(e) =>
                     setEditingBenefit({ ...editingBenefit, active: e.target.checked })
                   }
-                  className="rounded border-gold-500/30 bg-plum-900 text-gold-500 focus:ring-gold-400"
+                  className="rounded border-border text-gold-600 focus:ring-gold-500"
                 />
-                <span className="text-xs text-ivory">Active on Public Website</span>
+                <span className="text-xs text-ink font-medium">Active on Public Website</span>
               </label>
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-gold-500/20">
+          <div className="flex justify-end gap-2 pt-4 border-t border-border">
             <button
               type="button"
               onClick={() => {
                 setModalOpen(false);
                 setEditingBenefit(null);
               }}
-              className="px-4 py-2 rounded-lg text-xs font-sans text-ivory/70 hover:text-ivory border border-white/10"
+              className="px-4 py-2 rounded-lg text-xs font-sans text-ink hover:text-plum-900 bg-white border border-border hover:bg-canvas shadow-xs font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2 rounded-lg text-xs font-sans font-medium bg-gold-500 text-plum-950 hover:bg-gold-400 transition-colors shadow-sm disabled:opacity-50"
+              className="px-5 py-2 rounded-lg text-xs font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Benefit'}
             </button>
@@ -558,19 +558,19 @@ export const AdminBenefitsCMS: React.FC = () => {
         size="sm"
       >
         <div className="space-y-4 font-sans text-sm">
-          <p className="text-ivory/80">
+          <p className="text-ink">
             Are you sure you want to permanently delete the benefit{' '}
-            <strong className="text-gold-300">"{benefitToDelete?.title}"</strong>?
+            <strong className="text-plum-900">"{benefitToDelete?.title}"</strong>?
           </p>
-          <p className="text-xs text-rose-300/80">
+          <p className="text-xs text-rose-600">
             This benefit card will be immediately removed from the public website.
           </p>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-2 border-t border-border">
             <button
               type="button"
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 rounded-lg text-xs text-ivory/70 hover:text-ivory border border-white/10"
+              className="px-4 py-2 rounded-lg text-xs font-sans text-ink hover:text-plum-900 bg-white border border-border hover:bg-canvas shadow-xs font-medium"
             >
               Cancel
             </button>
@@ -578,7 +578,7 @@ export const AdminBenefitsCMS: React.FC = () => {
               type="button"
               disabled={saving}
               onClick={confirmDelete}
-              className="px-4 py-2 rounded-lg text-xs bg-rose-600 hover:bg-rose-500 text-white font-medium shadow-sm disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-xs bg-rose-600 hover:bg-rose-500 text-white font-semibold shadow-soft disabled:opacity-50"
             >
               {saving ? 'Deleting...' : 'Yes, Delete'}
             </button>
