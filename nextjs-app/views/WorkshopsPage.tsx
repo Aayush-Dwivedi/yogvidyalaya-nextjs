@@ -375,7 +375,7 @@ export const WorkshopsPage: React.FC = () => {
           </p>
           <div className="pt-2">
             <LinkButton to="/contact/enquiry" variant="outline" size="md">
-              Inquire About Workshops
+              Enquire About Workshops
             </LinkButton>
           </div>
         </Container>

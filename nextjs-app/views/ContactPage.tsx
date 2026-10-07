@@ -25,7 +25,7 @@ export const ContactPage: React.FC = () => {
   const EMAIL_ADDRESS = 'shuchimohan@kalptaruyogvidyalaya.com';
   const PHYSICAL_ADDRESS = 'N114 Piyush Heights, Sector 89, Faridabad – 121002';
 
-  // Inquiry Form State
+  // Enquiry Form State
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -64,7 +64,7 @@ export const ContactPage: React.FC = () => {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || 'Failed to submit inquiry.');
+        throw new Error(data.message || 'Failed to submit enquiry.');
       }
 
       setSubmitted(true);
@@ -168,7 +168,7 @@ export const ContactPage: React.FC = () => {
                   Direct Contact Information
                 </h3>
                 <p className="text-xs sm:text-sm text-ink-muted mt-2 leading-relaxed">
-                  We welcome your inquiries and are always pleased to share details regarding classical yogic practices and therapeutic programs.
+                  We welcome your enquiries and are always pleased to share details regarding classical yogic practices and therapeutic programs.
                 </p>
               </div>
 
@@ -223,7 +223,7 @@ export const ContactPage: React.FC = () => {
                         {PHONE_NUMBER}
                       </p>
                       <p className="text-xs text-ink-muted mt-0.5">
-                        Available Monday to Saturday for calls &amp; WhatsApp inquiries.
+                        Available Monday to Saturday for calls &amp; WhatsApp enquiries.
                       </p>
                     </div>
                   </div>
@@ -246,7 +246,7 @@ export const ContactPage: React.FC = () => {
                         {EMAIL_ADDRESS}
                       </p>
                       <p className="text-xs text-ink-muted mt-0.5">
-                        For formal correspondence, institutional invitations, and inquiries.
+                        For formal correspondence, institutional invitations, and enquiries.
                       </p>
                     </div>
                   </div>
@@ -291,17 +291,17 @@ export const ContactPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: General Message & Inquiry Form (7 cols) */}
+            {/* Right Column: General Message & Enquiry Form (7 cols) */}
             <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
               <div>
                 <span className="text-xs uppercase tracking-widest-editorial text-gold-600 font-semibold block mb-1">
                   Send a Message
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-editorial text-plum-900">
-                  General Inquiry Form
+                  General Enquiry Form
                 </h3>
                 <p className="text-xs sm:text-sm text-ink-muted mt-2 leading-relaxed">
-                  Leave your inquiry below. Our team reviews every message and will respond promptly via phone, WhatsApp, or email.
+                  Leave your enquiry below. Our team reviews every message and will respond promptly via phone, WhatsApp, or email.
                 </p>
               </div>
 
@@ -314,7 +314,7 @@ export const ContactPage: React.FC = () => {
                     </div>
                     <div className="space-y-2">
                       <h4 className="text-2xl font-editorial text-plum-900">
-                        Inquiry Received with Gratitude
+                        Enquiry Received with Gratitude
                       </h4>
                       <p className="text-xs sm:text-sm text-ink-muted max-w-md mx-auto leading-relaxed">
                         Thank you for reaching out. We will get back to you shortly to assist you with curriculum, batch availability, and admission questions.
@@ -406,7 +406,7 @@ export const ContactPage: React.FC = () => {
                           onChange={(e) => setFormData({ ...formData, programInterest: e.target.value })}
                           className="w-full bg-white border border-gold-300/80 rounded-lg px-4 py-2.5 text-xs text-ink focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
                         >
-                          <option value="general">General Inquiry</option>
+                          <option value="general">General Enquiry</option>
                           <option value="course">Yoga Courses / Certification</option>
                           <option value="workshop">Workshops &amp; Special Sessions</option>
                           <option value="corporate">Corporate / Institutional Program</option>
@@ -431,7 +431,7 @@ export const ContactPage: React.FC = () => {
 
                     <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <p className="text-[11px] text-ink-muted leading-tight">
-                        We value your privacy. Your details are used strictly to reply to your inquiry.
+                        We value your privacy. Your details are used strictly to reply to your enquiry.
                       </p>
 
                       <button
@@ -440,10 +440,10 @@ export const ContactPage: React.FC = () => {
                         className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-plum-900 hover:bg-plum-800 disabled:opacity-60 text-gold-300 font-semibold text-xs transition-colors shadow-soft shrink-0"
                       >
                         {submitting ? (
-                          <span>Sending Inquiry...</span>
+                          <span>Sending Enquiry...</span>
                         ) : (
                           <>
-                            <span>Send Inquiry</span>
+                            <span>Send Enquiry</span>
                             <Send className="w-3.5 h-3.5" />
                           </>
                         )}

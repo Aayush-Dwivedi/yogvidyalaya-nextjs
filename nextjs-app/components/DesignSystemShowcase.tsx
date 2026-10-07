@@ -306,7 +306,7 @@ export const DesignSystemShowcase: React.FC = () => {
                   <Badge variant="dark" size="sm">Sanctuary</Badge>
                   <CardTitle className="text-gold-200">Residential Sadhana</CardTitle>
                   <CardDescription className="text-plum-100/80">
-                    Immersion in peaceful ashram environments dedicated entirely to self-inquiry and meditation.
+                    Immersion in peaceful ashram environments dedicated entirely to self-enquiry and meditation.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -330,7 +330,7 @@ export const DesignSystemShowcase: React.FC = () => {
             <SectionHeader
               eyebrow="Form System"
               title="Accessible & Restrained Inputs"
-              description="Clean ivory surfaces with subtle borders and antique gold focus indicators, designed for student enrollments and inquiries."
+              description="Clean ivory surfaces with subtle borders and antique gold focus indicators, designed for student enrollments and enquiries."
               align="left"
             />
 
@@ -381,7 +381,7 @@ export const DesignSystemShowcase: React.FC = () => {
                   variant="primary"
                   onClick={() => toast({ type: 'success', title: 'Form Validated', message: 'Input values processed cleanly.' })}
                 >
-                  Submit Inquiry
+                  Submit Enquiry
                 </Button>
               </div>
             </div>

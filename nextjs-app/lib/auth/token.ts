@@ -87,11 +87,14 @@ export async function verifyRefreshToken(token: string): Promise<RefreshTokenPay
  */
 export async function setAuthCookies(accessToken: string, refreshToken: string): Promise<void> {
   const cookieStore = await cookies();
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isSecure =
+    process.env.COOKIE_SECURE !== undefined
+      ? process.env.COOKIE_SECURE === 'true'
+      : process.env.NODE_ENV === 'production';
 
   cookieStore.set(ACCESS_COOKIE, accessToken, {
     httpOnly: true,
-    secure: isProduction,
+    secure: isSecure,
     sameSite: 'lax',
     maxAge: ACCESS_MAX_AGE,
     path: '/',
@@ -99,7 +102,7 @@ export async function setAuthCookies(accessToken: string, refreshToken: string):
 
   cookieStore.set(REFRESH_COOKIE, refreshToken, {
     httpOnly: true,
-    secure: isProduction,
+    secure: isSecure,
     sameSite: 'lax',
     maxAge: REFRESH_MAX_AGE,
     path: '/',

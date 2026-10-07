@@ -275,7 +275,7 @@ const TrainersContent: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 rounded-lg border border-border bg-white text-emerald-700 hover:bg-emerald-50 transition-colors"
-                        title="Inquire via WhatsApp"
+                        title="Enquire via WhatsApp"
                       >
                         <MessageCircle className="w-4 h-4" />
                       </a>
@@ -445,7 +445,7 @@ const TrainersContent: React.FC = () => {
                   size="sm"
                   className="flex-1 sm:flex-initial text-xs py-2"
                 >
-                  Inquire for Classes
+                  Enquire for Classes
                 </LinkButton>
                 <button
                   type="button"

@@ -6,7 +6,7 @@ import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimiter';
 
 export const runtime = 'nodejs';
 
-// POST /api/enquiries — Public General Visitor Inquiry
+// POST /api/enquiries — Public General Visitor Enquiry
 export async function POST(request: NextRequest) {
   try {
     const ip = getClientIp(request);

@@ -501,7 +501,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
                 <div>
                   <label className="block text-ink font-medium mb-1">
-                    Message or Health Inquiries (Optional)
+                    Message or Health Enquiries (Optional)
                   </label>
                   <textarea
                     rows={2}

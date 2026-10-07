@@ -81,7 +81,7 @@ export const AdminEnquiriesPage: React.FC = () => (
   <AdminModulePlaceholder
     moduleName="Enquiries"
     category="Communications"
-    description="Review incoming student applications, course questions, and general inquiries."
+    description="Review incoming student applications, course questions, and general enquiries."
     sampleColumns={['Sender Name', 'Contact Info', 'Program of Interest', 'Received Date', 'Status']}
     sampleCount={0}
   />
