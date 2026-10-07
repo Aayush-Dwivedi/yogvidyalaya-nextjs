@@ -37,10 +37,10 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/bookings — Decommissioned: Online visitor booking submission is decommissioned.
-// Visitors contact Kalptaru Yog Vidyalaya directly via Phone, Email, or WhatsApp.
+// Visitors contact Kalptaruu Yoga Vidhyalaya directly via Phone, Email, or WhatsApp.
 export async function POST(_request: NextRequest) {
   return ApiResponse.badRequest(
-    'Public online booking creation is decommissioned. Please contact Kalptaru Yog Vidyalaya directly.'
+    'Public online booking creation is decommissioned. Please contact Kalptaruu Yoga Vidhyalaya directly.'
   );
 }
 

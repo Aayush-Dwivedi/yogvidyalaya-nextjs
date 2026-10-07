@@ -14,14 +14,47 @@ import {
 } from '../sections';
 import { CmsService } from '../services/cmsService';
 
-export const HomePage: React.FC = () => {
-  const [homeData, setHomeData] = useState<any>(null);
+export interface HomePageProps {
+  initialHeroSlides?: any[];
+}
+
+export const HomePage: React.FC<HomePageProps> = ({ initialHeroSlides }) => {
+  const [homeData, setHomeData] = useState<any>(() => {
+    if (initialHeroSlides && initialHeroSlides.length > 0) {
+      return { heroSlides: initialHeroSlides };
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('kalptaru_cached_home_data');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.heroSlides && parsed.heroSlides.length > 0) {
+            return parsed;
+          }
+        }
+        const cachedSlides = localStorage.getItem('kalptaru_cached_hero_slides');
+        if (cachedSlides) {
+          const parsedSlides = JSON.parse(cachedSlides);
+          if (Array.isArray(parsedSlides) && parsedSlides.length > 0) {
+            return { heroSlides: parsedSlides };
+          }
+        }
+      } catch {}
+    }
+    return null;
+  });
 
   const loadHomeContent = async () => {
     try {
       const data = await CmsService.getHomeContent();
       if (data) {
         setHomeData(data);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('kalptaru_cached_home_data', JSON.stringify(data));
+          if (data.heroSlides) {
+            localStorage.setItem('kalptaru_cached_hero_slides', JSON.stringify(data.heroSlides));
+          }
+        }
       }
     } catch (err) {
       console.warn('Could not load aggregated home data from CMS:', err);
@@ -46,7 +79,7 @@ export const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col bg-[#1A0719]">
       {/* 1. Immersive Full-Viewport Hero Slideshow */}
       <HeroSection slides={homeData?.heroSlides} />
 

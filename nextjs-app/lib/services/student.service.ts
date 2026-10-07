@@ -96,7 +96,7 @@ export class StudentService {
         ? new Date(b.schedule.date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })
         : new Date(b.bookingDate || b.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
       time: b.schedule?.time || 'Scheduled Session',
-      venue: b.schedule?.venue || b.schedule?.location || 'Kalptaru Tapovan Shala',
+      venue: b.schedule?.venue || b.schedule?.location || 'Kalptaruu Tapovan Shala',
       status: b.bookingStatus as any,
       instructor: 'Acharya Mentor',
     }));

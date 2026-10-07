@@ -51,7 +51,6 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
           title="Explore Our Programs"
           description="Whether pursuing professional teacher certification, an intensive weekend immersion, corporate balance, or daily sadhana, each pathway is rooted in traditional integrity."
           align="asymmetric"
-          motif={<LotusMotif size={28} />}
           action={
             <LinkButton to="/programs/courses" variant="text" size="md" withArrow>
               View Full Curriculum Catalog
@@ -248,7 +247,6 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
               <div className="flex items-center space-x-2 text-gold-600 mb-1">
-                <LotusMotif size={20} />
                 <span className="text-xs uppercase tracking-widest-editorial font-semibold text-gold-700">
                   Faculty &amp; Instructors
                 </span>

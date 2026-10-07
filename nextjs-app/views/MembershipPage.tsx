@@ -7,6 +7,7 @@ import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
 import { LoadingState } from '../components/LoadingState';
 import { CornerFlourish, LotusMotif } from '../components/Motifs';
+import { AuricBackground } from '../components/AuricBackground';
 import { CmsService } from '../services/cmsService';
 import { CmsMembershipPlan } from '../types/cms';
 import {
@@ -53,7 +54,7 @@ export const MembershipPage: React.FC = () => {
               ],
               features: [
                 'Unlimited weekday practice access',
-                'Full access to the Kalptaru Yogic Library',
+                'Full access to the Kalptaruu Yogic Library',
                 'Monthly 1-on-1 alignment check-in with an Acharya',
                 '10% discount on all intensive weekend workshops',
               ],
@@ -105,7 +106,7 @@ export const MembershipPage: React.FC = () => {
       a: 'Yes, our memberships offer flexible shala attendance. While we encourage maintaining a fixed circadian rhythm for deeper sadhana, members can attend either batch on weekdays by notifying the reception desk.',
     },
     {
-      q: 'Are yoga mats and props provided at the Vidyalaya?',
+      q: 'Are yoga mats and props provided at the Vidhyalaya?',
       a: 'The shala provides organic cotton and natural rubber mats, wooden blocks, cotton straps, and bolsters. Sadhakas are welcome to bring their own personal mat and store it in our locker alcoves.',
     },
     {
@@ -120,11 +121,9 @@ export const MembershipPage: React.FC = () => {
 
   return (
     <div className="bg-canvas min-h-screen text-ink font-sans pb-24">
-      {/* 1. Hero Section */}
-      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 bg-[#1C0D1B] text-white overflow-hidden">
-        {/* Subtle radial ambient background glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.15),transparent_60%)] pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(90,30,80,0.25),transparent_65%)] pointer-events-none" />
+      {/* 1. Hero Section with Feelable Animated Auric Gradient */}
+      <section className="relative py-20 sm:py-28 bg-plum-950 text-white overflow-hidden">
+        <AuricBackground />
 
         <Container size="wide" className="relative z-10 text-center">
           {/* Breadcrumb Navigation */}
@@ -145,7 +144,7 @@ export const MembershipPage: React.FC = () => {
             <span>Daily Shala &amp; Ashram Passes</span>
           </div>
 
-          <h1 className="font-editorial text-3xl sm:text-5xl lg:text-6xl font-normal leading-tight text-white max-w-4xl mx-auto">
+          <h1 className="font-editorial text-3xl sm:text-5xl lg:text-6xl font-normal leading-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-[#FFF5DB] to-gold-300 max-w-4xl mx-auto">
             Continuous Sadhana Memberships
           </h1>
 
@@ -467,7 +466,7 @@ export const MembershipPage: React.FC = () => {
                 Experience a Complimentary Trial Sadhana
               </h2>
               <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans">
-                Unsure which batch suits your body alignment? Visit the Vidyalaya for an introductory assessment session with our lead instructor.
+                Unsure which batch suits your body alignment? Visit the Vidhyalaya for an introductory assessment session with our lead instructor.
               </p>
 
               <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">

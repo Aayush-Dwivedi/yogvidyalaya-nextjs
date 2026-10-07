@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Container } from '../components/Container';
 import { LotusMotif, OrnamentalDivider } from '../components/Motifs';
+import { AuricBackground } from '../components/AuricBackground';
 import {
   Phone,
   Mail,
@@ -83,9 +84,9 @@ export const ContactPage: React.FC = () => {
 
   return (
     <div className="w-full bg-canvas text-ink min-h-screen">
-      {/* 1. Hero Header */}
-      <section className="relative py-20 sm:py-24 bg-plum-950 text-ivory overflow-hidden border-b border-gold-500/30">
-        <div className="absolute inset-0 bg-radial-gradient from-plum-900/60 via-plum-950/80 to-plum-950 pointer-events-none" />
+      {/* 1. Hero Header with Feelable Animated Auric Gradient */}
+      <section className="relative py-20 sm:py-24 bg-plum-950 text-ivory overflow-hidden">
+        <AuricBackground />
 
         <Container size="wide" className="relative z-10">
           <div className="max-w-3xl space-y-4">
@@ -97,8 +98,8 @@ export const ContactPage: React.FC = () => {
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-editorial font-normal text-white leading-tight">
-              Connect with Kalptaru Yog Vidyalaya
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-editorial font-normal text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-[#FFF5DB] to-gold-300 leading-tight">
+              Connect with Kalptaruu Yoga Vidhyalaya
             </h1>
 
             <p className="text-sm sm:text-base text-white/80 font-sans leading-relaxed max-w-2xl font-light">
@@ -116,10 +117,6 @@ export const ContactPage: React.FC = () => {
 
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative z-10">
               <div className="space-y-3 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/20 text-gold-300 text-xs font-medium border border-gold-400/30">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Direct Enrollment &amp; Guidance</span>
-                </div>
                 <h2 className="text-2xl sm:text-3xl font-editorial text-white font-normal">
                   Interested in a Course or Workshop?
                 </h2>
@@ -160,9 +157,9 @@ export const ContactPage: React.FC = () => {
       {/* 3. Direct Contact Details & Form Grid */}
       <section className="py-16 sm:py-20 bg-canvas">
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
             {/* Left Column: Direct Contact Information (5 cols) */}
-            <div className="lg:col-span-5 space-y-8">
+            <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
               <div>
                 <span className="text-xs uppercase tracking-widest-editorial text-gold-600 font-semibold block mb-1">
                   Immediate Reach
@@ -200,7 +197,7 @@ export const ContactPage: React.FC = () => {
                         <ExternalLink className="w-3.5 h-3.5 text-emerald-700 group-hover:translate-x-0.5 transition-transform" />
                       </div>
                       <p className="text-sm font-semibold text-plum-950 mt-1">
-                        Official Kalptaru WhatsApp Group
+                        Official Kalptaruu WhatsApp Group
                       </p>
                       <p className="text-xs text-ink-muted mt-0.5">
                         Click to join our active group for direct support, updates, and admission chats.
@@ -266,7 +263,7 @@ export const ContactPage: React.FC = () => {
                         Institute Address
                       </span>
                       <p className="text-sm font-semibold text-plum-950 mt-1">
-                        Kalptaru Yog Vidyalaya
+                        Kalptaruu Yoga Vidhyalaya
                       </p>
                       <p className="text-xs text-ink-muted mt-1 leading-relaxed">
                         {PHYSICAL_ADDRESS}
@@ -295,19 +292,20 @@ export const ContactPage: React.FC = () => {
             </div>
 
             {/* Right Column: General Message & Inquiry Form (7 cols) */}
-            <div className="lg:col-span-7">
-              <div className="bg-canvas-warm/90 rounded-2xl p-6 sm:p-10 border border-gold-300/60 shadow-medium relative">
-                <div className="mb-8">
-                  <span className="text-xs uppercase tracking-widest-editorial text-gold-600 font-semibold block mb-1">
-                    Send a Message
-                  </span>
-                  <h3 className="text-2xl sm:text-3xl font-editorial text-plum-900">
-                    General Inquiry Form
-                  </h3>
-                  <p className="text-xs sm:text-sm text-ink-muted mt-2 leading-relaxed">
-                    Leave your inquiry below. Our team reviews every message and will respond promptly via phone, WhatsApp, or email.
-                  </p>
-                </div>
+            <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
+              <div>
+                <span className="text-xs uppercase tracking-widest-editorial text-gold-600 font-semibold block mb-1">
+                  Send a Message
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-editorial text-plum-900">
+                  General Inquiry Form
+                </h3>
+                <p className="text-xs sm:text-sm text-ink-muted mt-2 leading-relaxed">
+                  Leave your inquiry below. Our team reviews every message and will respond promptly via phone, WhatsApp, or email.
+                </p>
+              </div>
+
+              <div className="bg-canvas-warm/90 rounded-2xl p-6 sm:p-8 border border-gold-300/60 shadow-medium relative flex-1 flex flex-col justify-center">
 
                 {submitted ? (
                   <div className="text-center py-12 px-4 space-y-5 bg-white/70 rounded-xl border border-emerald-200">

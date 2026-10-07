@@ -5,6 +5,7 @@ import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
 import { LotusMotif } from '../components/Motifs';
+import { AuricBackground } from '../components/AuricBackground';
 import { CmsService } from '../services/cmsService';
 import { CmsWorkshop } from '../types/cms';
 import { LoadingState } from '../components/LoadingState';
@@ -67,9 +68,9 @@ export const WorkshopsPage: React.FC = () => {
 
   return (
     <div className="w-full bg-canvas text-ink min-h-screen">
-      {/* 1. Hero Header */}
-      <section className="relative py-20 sm:py-28 bg-plum-950 text-ivory overflow-hidden border-b border-gold-500/30">
-        <div className="absolute inset-0 bg-radial-gradient from-plum-900/60 via-plum-950/80 to-plum-950 pointer-events-none" />
+      {/* 1. Hero Header with Feelable Animated Auric Gradient */}
+      <section className="relative py-20 sm:py-28 bg-plum-950 text-ivory overflow-hidden">
+        <AuricBackground />
 
         <Container size="wide" className="relative z-10">
           <div className="max-w-3xl space-y-4">
@@ -81,7 +82,7 @@ export const WorkshopsPage: React.FC = () => {
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-editorial font-normal text-white leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-editorial font-normal text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-[#FFF5DB] to-gold-300 leading-tight">
               Workshops &amp; Special Sessions
             </h1>
 
@@ -367,7 +368,7 @@ export const WorkshopsPage: React.FC = () => {
         <Container size="default" className="text-center space-y-4">
           <LotusMotif size={36} className="text-gold-600 mx-auto" />
           <h2 className="text-2xl sm:text-3xl font-editorial text-plum-900">
-            Host a Workshop with Kalptaru Yog Vidyalaya
+            Host a Workshop with Kalptaruu Yoga Vidhyalaya
           </h2>
           <p className="text-xs sm:text-sm text-ink-muted max-w-xl mx-auto font-sans leading-relaxed">
             Mrs. Shuchi Mohan conducts specialized workshops on therapeutic yoga, postural alignment, and holistic wellness for institutions, organizations, and groups.

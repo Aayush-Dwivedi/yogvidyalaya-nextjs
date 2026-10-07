@@ -2,7 +2,6 @@ import React from 'react';
 import { Container } from '../../components/Container';
 import { LinkButton } from '../../components/LinkButton';
 import { CornerFlourish, LotusMotif } from '../../components/Motifs';
-import { Badge } from '../../components/Badge';
 
 export const AboutSection: React.FC = () => {
   return (
@@ -15,7 +14,7 @@ export const AboutSection: React.FC = () => {
             <div className="relative z-10 w-full sm:w-5/6 rounded-[2px] overflow-hidden border border-border shadow-card bg-surface p-1.5">
               <img
                 src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1000&q=85"
-                alt="Meditation and yoga practice at Kalptaru Yog Vidyalaya"
+                alt="Meditation and yoga practice at Kalptaruu Yoga Vidhyalaya"
                 className="w-full aspect-[4/5] object-cover rounded-[1px] filter brightness-[0.98]"
                 loading="lazy"
               />
@@ -40,11 +39,6 @@ export const AboutSection: React.FC = () => {
             {/* Floating Experience Badge */}
             <div className="absolute top-6 sm:-left-6 z-30 bg-plum-900 text-gold-200 p-4 rounded-[2px] shadow-modal border border-plum-950 max-w-[200px]">
               <div className="flex items-center space-x-2 text-gold-400 mb-1">
-                <img
-                  src="/logo.png"
-                  alt="Kalptaru Logo"
-                  className="w-5 h-5 rounded-full object-cover border border-gold-400/60 shadow-xs"
-                />
                 <span className="text-[10px] font-mono uppercase tracking-widest-editorial font-semibold">
                   Lineage
                 </span>
@@ -66,7 +60,7 @@ export const AboutSection: React.FC = () => {
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-editorial font-normal text-plum-900 leading-[1.14]">
-                Welcome to Kalptaru Yog Vidyalaya
+                Welcome to Kalptaruu Yoga Vidhyalaya
               </h2>
 
               <p className="text-sm sm:text-base text-ink-muted leading-relaxed font-sans font-light pt-2">
@@ -81,12 +75,9 @@ export const AboutSection: React.FC = () => {
             <div className="space-y-4 pt-2">
               {/* Authentic */}
               <div className="bg-surface border-l-2 border-l-gold-500 border-y border-r border-border p-4 rounded-[2px] transition-colors hover:border-gold-400/80">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-sm font-semibold tracking-wide text-plum-900 font-sans">
-                    Authentic
-                  </h3>
-                  <Badge variant="gold" size="sm">Authentic</Badge>
-                </div>
+                <h3 className="text-sm font-semibold tracking-wide text-plum-900 font-sans mb-1">
+                  Authentic
+                </h3>
                 <p className="text-xs text-ink-muted leading-relaxed font-sans">
                   Traditional yogic practices
                 </p>
@@ -94,12 +85,9 @@ export const AboutSection: React.FC = () => {
 
               {/* Expert */}
               <div className="bg-surface border-l-2 border-l-plum-800 border-y border-r border-border p-4 rounded-[2px] transition-colors hover:border-plum-700">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-sm font-semibold tracking-wide text-plum-900 font-sans">
-                    Expert
-                  </h3>
-                  <Badge variant="plum" size="sm">Expert</Badge>
-                </div>
+                <h3 className="text-sm font-semibold tracking-wide text-plum-900 font-sans mb-1">
+                  Expert
+                </h3>
                 <p className="text-xs text-ink-muted leading-relaxed font-sans">
                   Qualified instructors
                 </p>
@@ -107,12 +95,9 @@ export const AboutSection: React.FC = () => {
 
               {/* Holistic */}
               <div className="bg-surface border-l-2 border-l-earth-600 border-y border-r border-border p-4 rounded-[2px] transition-colors hover:border-earth-500">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-sm font-semibold tracking-wide text-plum-900 font-sans">
-                    Holistic
-                  </h3>
-                  <Badge variant="earth" size="sm">Holistic</Badge>
-                </div>
+                <h3 className="text-sm font-semibold tracking-wide text-plum-900 font-sans mb-1">
+                  Holistic
+                </h3>
                 <p className="text-xs text-ink-muted leading-relaxed font-sans">
                   Mind, body &amp; spirit
                 </p>

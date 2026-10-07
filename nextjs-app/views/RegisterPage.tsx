@@ -65,7 +65,7 @@ export const RegisterPage: React.FC = () => {
             Student Enrollment
           </span>
           <h2 className="font-editorial text-3xl font-bold tracking-tight text-plum-900">
-            Join Kalptaru Yog Vidyalaya
+            Join Kalptaruu Yoga Vidhyalaya
           </h2>
           <p className="text-xs text-ink-muted max-w-sm mx-auto leading-relaxed">
             Create your sadhaka account to enroll in classical certification courses and reserve shala practice sessions.

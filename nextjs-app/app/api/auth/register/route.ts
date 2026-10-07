@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 /**
  * Student Registration Endpoint — Decommissioned.
  *
- * Kalptaru Yog Vidyalaya uses a public booking request flow.
+ * Kalptaruu Yoga Vidhyalaya uses a public booking request flow.
  * Visitors do not need an account or login to book courses and workshops.
  */
 export async function POST(_request: NextRequest) {

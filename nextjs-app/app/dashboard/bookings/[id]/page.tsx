@@ -193,7 +193,7 @@ export default function BookingDetailPage() {
               <span>•</span>
               <span className="flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5 text-gold-600" />
-                {booking.schedule.venue || booking.schedule.location || 'Kalptaru Shala'}
+                {booking.schedule.venue || booking.schedule.location || 'Kalptaruu Shala'}
               </span>
               <span>•</span>
               <span className="capitalize">{booking.schedule.mode || 'In-person'}</span>

@@ -23,7 +23,7 @@ export const Footer: React.FC = () => {
     toast({
       type: 'gold',
       title: 'Namaste & Welcome',
-      message: 'You are now subscribed to the Kalptaru Yog Vidyalaya monthly journal.',
+      message: 'You are now subscribed to the Kalptaruu Yoga Vidhyalaya monthly journal.',
     });
     setEmail('');
   };
@@ -38,12 +38,12 @@ export const Footer: React.FC = () => {
             <Link href="/" className="flex items-center space-x-3 group">
               <img
                 src="/logo.png"
-                alt="Kalptaru Yog Vidyalaya Logo"
-                className="w-12 h-12 rounded-full object-cover border border-gold-400/80 shadow-soft group-hover:scale-[1.04] transition-transform shrink-0"
+                alt="Kalptaruu Yoga Vidhyalaya Logo"
+                className="w-12 h-12 rounded-full object-cover shadow-soft group-hover:scale-[1.04] transition-transform shrink-0"
               />
               <div className="flex flex-col">
                 <span className="font-editorial text-xl text-ivory tracking-wide font-normal">
-                  Kalptaru Yog Vidyalaya
+                  Kalptaruu Yoga Vidhyalaya
                 </span>
                 <span className="text-[9px] uppercase tracking-widest-editorial text-gold-400 font-semibold">
                   Traditional Yoga &amp; Wellness
@@ -156,7 +156,7 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar: Copyright & Legal */}
         <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-ivory/60 space-y-3 sm:space-y-0 pt-4">
           <p>
-            &copy; {new Date().getFullYear()} Kalptaru Yog Vidyalaya. All rights reserved.
+            &copy; {new Date().getFullYear()} Kalptaruu Yoga Vidhyalaya. All rights reserved.
           </p>
 
           <div className="flex items-center space-x-4">

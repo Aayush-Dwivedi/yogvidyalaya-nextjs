@@ -11,7 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Kalptaru Yog Vidyalaya Brand Palette
+        // Kalptaruu Yoga Vidhyalaya Brand Palette
         plum: {
           50: '#FBF5FB',
           100: '#F4E7F4',

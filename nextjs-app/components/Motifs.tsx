@@ -8,15 +8,15 @@ interface MotifProps {
 
 /**
  * Sacred Wish-Fulfilling Tree (Kalptaru) Emblem
- * Renders the official Kalpataru Yog Vidyalaya logo emblem.
+ * Renders the official Kalptaruu Yoga Vidhyalaya logo emblem.
  */
 export const KalptaruTree: React.FC<MotifProps> = ({ className, size = 64 }) => (
   <img
     src="/logo.png"
-    alt="Kalpataru Yog Vidyalaya Emblem"
+    alt="Kalptaruu Yoga Vidhyalaya Emblem"
     style={{ width: `${size}px`, height: `${size}px` }}
     className={cn(
-      'rounded-full object-cover shrink-0 select-none border border-gold-400/40 shadow-xs inline-block',
+      'rounded-full object-cover shrink-0 select-none shadow-xs inline-block',
       className
     )}
     loading="lazy"

@@ -29,8 +29,8 @@ export const AdminFounderCMS: React.FC = () => {
     slug: 'shuchi-mohan',
     bio: 'My professional journey began in Physiotherapy, where I developed clinical expertise in rehabilitation and patient care. Over time, my interest in holistic healing led me toward Yoga Therapy and its integrative applications.',
     biography:
-      'My professional journey began in Physiotherapy, where I developed clinical expertise in rehabilitation and patient care.\n\nOver time, my interest in holistic healing led me toward Yoga Therapy and its integrative applications.\n\nI further expanded my practice during my professional tenure at Morarji Desai National Institute of Yoga (MDNIY), where I gained institutional exposure through yoga therapy sessions and wellness programs conducted for uniformed personnel, along with engagements associated with various government ministries.\n\nMy work has also included invited wellness sessions and live programs in association with NCERT, as well as participation in national and international conferences and institutional events.\n\nI now carry this integrated approach of Physiotherapy and Yoga forward through my independent institute, Kalptaru Yog Vidyalaya.',
-    shortBio: 'Physiotherapist & Therapeutic Yoga Consultant, Founder & Lead Instructor of Kalptaru Yog Vidyalaya.',
+      'My professional journey began in Physiotherapy, where I developed clinical expertise in rehabilitation and patient care.\n\nOver time, my interest in holistic healing led me toward Yoga Therapy and its integrative applications.\n\nI further expanded my practice during my professional tenure at Morarji Desai National Institute of Yoga (MDNIY), where I gained institutional exposure through yoga therapy sessions and wellness programs conducted for uniformed personnel, along with engagements associated with various government ministries.\n\nMy work has also included invited wellness sessions and live programs in association with NCERT, as well as participation in national and international conferences and institutional events.\n\nI now carry this integrated approach of Physiotherapy and Yoga forward through my independent institute, Kalptaruu Yoga Vidhyalaya.',
+    shortBio: 'Physiotherapist & Therapeutic Yoga Consultant, Founder & Lead Instructor of Kalptaruu Yoga Vidhyalaya.',
     quote: 'The photographs featured here reflect my professional and institutional experience.',
     message: 'The photographs featured here reflect my professional and institutional experience.',
     image: {
@@ -49,7 +49,7 @@ export const AdminFounderCMS: React.FC = () => {
       'Yoga therapy & wellness programs for uniformed personnel at MDNIY',
       'Invited wellness sessions & live programs in association with NCERT',
       'Participation in national and international conferences & institutional events',
-      'Founder & Lead Instructor of Kalptaru Yog Vidyalaya',
+      'Founder & Lead Instructor of Kalptaruu Yoga Vidhyalaya',
     ],
     specializations: ['Therapeutic Yoga', 'Physiotherapy & Rehabilitation', 'Post-Cancer Recovery', 'Thyroid & Back Pain Special Care'],
     lineage: 'Traditional Yoga Practices Combined with Physiotherapy Expertise',

@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
 export async function GET() {
   return ApiResponse.success(
     {
-      name: 'Kalptaru Yog Vidyalaya Platform API',
+      name: 'Kalptaruu Yoga Vidhyalaya Platform API',
       version: '1.0.0',
       status: 'operational',
       documentation: 'https://kalptaruyog.org',
@@ -35,6 +35,6 @@ export async function GET() {
       },
       timestamp: new Date().toISOString(),
     },
-    'Kalptaru Yog Vidyalaya Platform API Root'
+    'Kalptaruu Yoga Vidhyalaya Platform API Root'
   );
 }

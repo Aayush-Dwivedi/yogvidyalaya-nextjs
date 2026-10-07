@@ -7,7 +7,6 @@ import { Badge } from '../../components/Badge';
 import { LinkButton } from '../../components/LinkButton';
 import { FEATURED_WORKSHOPS } from '../../services/homeData';
 import { FeaturedWorkshop } from '../../types/home';
-import { LotusMotif } from '../../components/Motifs';
 import { CmsService } from '../../services/cmsService';
 import { CmsWorkshop } from '../../types/cms';
 
@@ -55,7 +54,6 @@ export const FeaturedWorkshopsSection: React.FC<FeaturedWorkshopsSectionProps> =
           title="Featured Workshops"
           description="Specialized yoga therapy and wellness workshops designed for specific health conditions and holistic self-care."
           align="asymmetric"
-          motif={<LotusMotif size={28} />}
           action={
             <LinkButton to="/programs/workshops" variant="text" size="md" withArrow>
               View All Workshops

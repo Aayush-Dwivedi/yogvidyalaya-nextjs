@@ -7,7 +7,7 @@ import { IStorageImage, ISEOMetadata } from '../types/content.types';
 export const StorageImageSchema = new Schema<IStorageImage>(
   {
     url: { type: String, required: true, trim: true },
-    path: { type: String, required: true, trim: true },
+    path: { type: String, default: 'media/image.jpg', trim: true },
     bucket: { type: String, default: 'kalptaru-media', trim: true },
     size: { type: Number },
     mimeType: { type: String, trim: true },

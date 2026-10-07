@@ -25,7 +25,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
         <div className="relative mb-4">
           <img
             src="/logo.png"
-            alt="Kalptaru Logo"
+            alt="Kalptaruu Logo"
             className="w-14 h-14 rounded-full object-cover border-2 border-gold-500/60 shadow-soft animate-pulse"
           />
           <div className="absolute inset-0 rounded-full border border-gold-300/40 animate-ping opacity-25 pointer-events-none" />

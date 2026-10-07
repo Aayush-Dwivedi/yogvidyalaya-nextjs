@@ -179,7 +179,7 @@ export const PurchasesView: React.FC = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="font-editorial text-lg text-plum-900 font-bold">
-                    Kalptaru Yog Vidyalaya
+                    Kalptaruu Yoga Vidhyalaya
                   </h3>
                   <p className="text-[11px] text-ink-muted">Classical Gurukula Institute</p>
                 </div>

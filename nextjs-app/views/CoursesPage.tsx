@@ -5,6 +5,7 @@ import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
 import { KalptaruTree } from '../components/Motifs';
+import { AuricBackground } from '../components/AuricBackground';
 import { CmsService } from '../services/cmsService';
 import { CmsCourse } from '../types/cms';
 import { LoadingState } from '../components/LoadingState';
@@ -76,17 +77,17 @@ export const CoursesPage: React.FC = () => {
 
   return (
     <div className="w-full bg-canvas text-ink min-h-screen">
-      {/* 1. Hero Header */}
-      <section className="relative py-20 sm:py-28 bg-plum-950 text-ivory overflow-hidden border-b border-gold-500/30">
-        <div className="absolute inset-0 bg-radial-gradient from-plum-900/60 via-plum-950/80 to-plum-950 pointer-events-none" />
+      {/* 1. Hero Header with Feelable Animated Auric Gradient */}
+      <section className="relative py-20 sm:py-28 bg-plum-950 text-ivory overflow-hidden">
+        <AuricBackground />
 
         <Container size="wide" className="relative z-10">
           <div className="max-w-3xl space-y-4">
             <div className="flex items-center space-x-3">
               <img
                 src="/logo.png"
-                alt="Kalptaru Logo"
-                className="w-6 h-6 rounded-full object-cover border border-gold-400/60 shadow-xs shrink-0"
+                alt="Kalptaruu Logo"
+                className="w-6 h-6 rounded-full object-cover shadow-xs shrink-0"
               />
               <span className="w-8 h-px bg-gold-400" />
               <span className="text-xs uppercase tracking-widest-editorial text-gold-300 font-semibold">
@@ -94,7 +95,7 @@ export const CoursesPage: React.FC = () => {
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-editorial font-normal text-white leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-editorial font-normal text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-[#FFF5DB] to-gold-300 leading-tight">
               Courses &amp; Teacher Training
             </h1>
 
@@ -180,7 +181,7 @@ export const CoursesPage: React.FC = () => {
         <Container size="wide">
           {loading ? (
             <div className="py-24">
-              <LoadingState message="Loading certified yoga curriculums from Vidyalaya..." />
+              <LoadingState message="Loading certified yoga curriculums from Vidhyalaya..." />
             </div>
           ) : filteredCourses.length === 0 ? (
             <div className="text-center py-20 bg-surface border border-border rounded-xl p-8 max-w-lg mx-auto shadow-card">
@@ -447,8 +448,8 @@ export const CoursesPage: React.FC = () => {
         <Container size="default" className="text-center space-y-4">
           <img
             src="/logo.png"
-            alt="Kalptaru Logo"
-            className="w-12 h-12 rounded-full object-cover border border-gold-500/50 shadow-soft mx-auto"
+            alt="Kalptaruu Logo"
+            className="w-12 h-12 rounded-full object-cover shadow-soft mx-auto"
           />
           <h2 className="text-2xl sm:text-3xl font-editorial text-plum-900">
             Need Guidance Choosing Your Program?

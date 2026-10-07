@@ -84,7 +84,7 @@ export const AdminWorkshopsPage: React.FC = () => {
         capacity: workshop.capacity || { total: 25, booked: 0 },
         price: workshop.price || { amount: 3500, currency: 'INR', displayPrice: '₹3,500' },
         location: workshop.location || {
-          venue: 'Kalptaru Yog Vidyalaya',
+          venue: 'Kalptaruu Yoga Vidhyalaya',
           city: 'Faridabad',
           address: 'N114 Piyush Heights, Sector 89, Faridabad – 121002',
         },
@@ -111,7 +111,7 @@ export const AdminWorkshopsPage: React.FC = () => {
         duration: '1 Hr',
         mode: 'in-person',
         location: {
-          venue: 'Kalptaru Yog Vidyalaya',
+          venue: 'Kalptaruu Yoga Vidhyalaya',
           city: 'Faridabad',
           address: 'N114 Piyush Heights, Sector 89, Faridabad – 121002',
           mapUrl: '',
@@ -123,7 +123,7 @@ export const AdminWorkshopsPage: React.FC = () => {
         instructor: {
           name: 'Mrs. Shuchi Mohan',
           title: 'Physiotherapist & Therapeutic Yoga Consultant',
-          bio: 'Founder & Lead Instructor of Kalptaru Yog Vidyalaya',
+          bio: 'Founder & Lead Instructor of Kalptaruu Yoga Vidhyalaya',
         },
         prerequisites: ['Open to all age groups'],
         status: 'published',
@@ -839,7 +839,7 @@ export const AdminWorkshopsPage: React.FC = () => {
                         },
                       })
                     }
-                    placeholder="e.g. Kalptaru Main Yoga Shala"
+                    placeholder="e.g. Kalptaruu Main Yoga Shala"
                     className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
                   />
                 </div>
@@ -856,7 +856,7 @@ export const AdminWorkshopsPage: React.FC = () => {
                         ...editingWorkshop,
                         location: {
                           ...editingWorkshop?.location,
-                          venue: editingWorkshop?.location?.venue || 'Kalptaru Shala',
+                          venue: editingWorkshop?.location?.venue || 'Kalptaruu Shala',
                           city: e.target.value,
                         },
                       })
@@ -879,7 +879,7 @@ export const AdminWorkshopsPage: React.FC = () => {
                       ...editingWorkshop,
                       location: {
                         ...editingWorkshop?.location,
-                        venue: editingWorkshop?.location?.venue || 'Kalptaru Shala',
+                        venue: editingWorkshop?.location?.venue || 'Kalptaruu Shala',
                         address: e.target.value,
                       },
                     })
@@ -1084,7 +1084,7 @@ export const AdminWorkshopsPage: React.FC = () => {
                       seo: { ...editingWorkshop?.seo, metaTitle: e.target.value },
                     })
                   }
-                  placeholder="e.g. Pranayama & Breath Intensive Workshop | Kalptaru Yog Vidyalaya"
+                  placeholder="e.g. Pranayama & Breath Intensive Workshop | Kalptaruu Yoga Vidhyalaya"
                   className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 text-xs shadow-xs"
                 />
               </div>

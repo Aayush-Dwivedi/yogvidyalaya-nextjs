@@ -8,7 +8,7 @@ export class InstituteService {
     let institute = await Institute.findOne();
     if (!institute) {
       institute = await Institute.create({
-        name: 'Kalptaru Yog Vidyalaya',
+        name: 'Kalptaruu Yoga Vidhyalaya',
         tagline: 'Ancient Wisdom for Modern Transformation',
         mission:
           'To preserve, practice, and disseminate the authentic, sacred disciplines of classical yoga, bringing radiant health, inner equanimity, and spiritual elevation to sincere seekers worldwide.',

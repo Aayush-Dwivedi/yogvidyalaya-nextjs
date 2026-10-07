@@ -19,10 +19,10 @@ export class EmailService {
    * Generates the visitor confirmation email content according to client specification.
    */
   static formatVisitorEmail(data: BookingEmailData): { subject: string; text: string } {
-    const subject = `Your Kalptaru Yog Vidyalaya Booking Request — ${data.bookingReference}`;
+    const subject = `Your Kalptaruu Yoga Vidhyalaya Booking Request — ${data.bookingReference}`;
     const text = `Dear ${data.visitorName},
 
-Thank you for your interest in Kalptaru Yog Vidyalaya.
+Thank you for your interest in Kalptaruu Yoga Vidhyalaya.
 
 We have received your booking request.
 
@@ -38,7 +38,7 @@ ${data.scheduleDetails}
 We will contact you shortly regarding your enrollment and further details.
 
 Regards,
-Kalptaru Yog Vidyalaya
+Kalptaruu Yoga Vidhyalaya
 
 Phone:
 ${this.VIDYALAYA_PHONE}

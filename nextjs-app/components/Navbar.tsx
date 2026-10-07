@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '../utils/cn';
-import { LinkButton } from './LinkButton';
 import { useAuth } from '../context/AuthContext';
 
 interface NavItemChild {
@@ -116,38 +115,49 @@ export const Navbar: React.FC = () => {
   return (
     <header
       ref={navRef}
-      style={{ backgroundColor: '#FDFBF7' }}
       className={cn(
-        'sticky top-0 z-50 w-full transition-all duration-300 border-b border-border bg-[#FDFBF7]',
+        'fixed top-0 inset-x-0 z-50 w-full transition-all duration-300 text-ivory',
         isScrolled
-          ? 'shadow-card py-3 sm:py-3.5'
-          : 'shadow-soft py-4 sm:py-4.5'
+          ? 'shadow-card py-3 sm:py-3.5 animate-auric-navbar backdrop-blur-md border-b border-gold-500/25'
+          : pathname === '/'
+            ? 'shadow-none py-4 sm:py-5 border-none bg-gradient-to-b from-[#1A0719]/90 via-[#1A0719]/40 to-transparent backdrop-blur-[2px]'
+            : 'shadow-soft py-3.5 sm:py-4 animate-auric-navbar border-none'
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          {/* Brand Identity / Logo */}
-          <Link
-            href="/"
-            className="flex items-center space-x-3 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 rounded-[2px]"
-          >
-            <img
-              src="/logo.png"
-              alt="Kalptaru Yog Vidyalaya Logo"
-              className="w-11 h-11 rounded-full object-cover border border-gold-500/60 shadow-soft group-hover:scale-[1.04] transition-transform shrink-0"
-            />
-            <div className="flex flex-col">
-              <span className="font-editorial text-lg sm:text-xl text-plum-900 tracking-wide font-normal leading-tight group-hover:text-plum-800 transition-colors">
-                Kalptaru Yog Vidyalaya
-              </span>
-              <span className="text-[9px] uppercase tracking-widest-editorial text-gold-700 font-semibold">
-                Traditional Yoga & Wellness
-              </span>
-            </div>
-          </Link>
+      {/* ─── SCROLLED BORDER GLOW ONLY (NO LINE BETWEEN HEADER AND HERO SECTION) ─── */}
+      {isScrolled && (
+        <div className="absolute bottom-0 inset-x-0 h-[1px] auric-border-glow opacity-85 pointer-events-none" />
+      )}
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2" aria-label="Main Navigation">
+      <div className="w-full max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-12 xl:px-16">
+        <div className="flex items-center justify-between relative">
+          {/* Brand Identity / Logo (Left) */}
+          <div className="flex items-center shrink-0">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 rounded-[2px]"
+            >
+              <div className="relative shrink-0">
+                <img
+                  src="/logo.png"
+                  alt="Kalptaruu Yoga Vidhyalaya Logo"
+                  className="w-11 h-11 rounded-full object-cover shadow-soft ring-1 ring-gold-400/40 group-hover:ring-gold-300 group-hover:scale-[1.04] transition-all"
+                />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-gold-400/20 to-plum-500/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-editorial text-lg sm:text-xl text-white tracking-wide font-normal leading-tight group-hover:text-gold-200 transition-colors">
+                  Kalptaruu Yoga Vidhyalaya
+                </span>
+                <span className="text-[9px] uppercase tracking-widest-editorial text-gold-400 font-semibold">
+                  Traditional Yoga &amp; Wellness
+                </span>
+              </div>
+            </Link>
+          </div>
+
+          {/* Desktop Navigation Links (DEAD CENTER OF HEADER) */}
+          <nav className="hidden lg:flex items-center justify-center space-x-1 xl:space-x-2 absolute left-1/2 -translate-x-1/2" aria-label="Main Navigation">
             {NAV_ITEMS.map((item) => {
               if (item.children) {
                 const isOpen = activeDropdown === item.label;
@@ -165,17 +175,17 @@ export const Navbar: React.FC = () => {
                       onClick={() => setActiveDropdown(isOpen ? null : item.label)}
                       aria-expanded={isOpen}
                       className={cn(
-                        'flex items-center gap-1.5 px-3 py-2 text-xs font-sans font-medium uppercase tracking-wide-editorial rounded-[2px] transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-gold-500',
-                        isChildActive
-                          ? 'text-plum-900 font-semibold'
-                          : 'text-ink-muted hover:text-plum-900 hover:bg-surface-subtle/80'
+                        'flex items-center gap-1.5 px-3 py-2 text-xs font-sans font-medium uppercase tracking-wide-editorial rounded-md transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 cursor-pointer',
+                        isChildActive || isOpen
+                          ? 'text-gold-300 font-semibold'
+                          : 'text-white/90 hover:text-gold-300'
                       )}
                     >
                       <span>{item.label}</span>
                       <svg
                         className={cn(
-                          'w-3.5 h-3.5 text-gold-600 transition-transform duration-200',
-                          isOpen && 'rotate-180 text-plum-900'
+                          'w-3.5 h-3.5 text-gold-400 transition-transform duration-200',
+                          isOpen && 'rotate-180 text-gold-300'
                         )}
                         fill="none"
                         viewBox="0 0 24 24"
@@ -185,10 +195,13 @@ export const Navbar: React.FC = () => {
                       </svg>
                     </button>
 
-                    {/* Dropdown Menu */}
+                    {/* Animated Auric Dropdown Menu */}
                     {isOpen && (
                       <div className="absolute top-full left-0 w-72 pt-2 animate-fade-in z-50">
-                        <div className="bg-white border-t-2 border-t-gold-500 border border-border shadow-modal rounded-[2px] p-2 space-y-1">
+                        <div className="relative animate-auric-dropdown border border-gold-400/40 shadow-[0_16px_40px_rgba(0,0,0,0.7),0_0_24px_rgba(216,178,110,0.18)] rounded-[4px] p-2 space-y-1 overflow-hidden backdrop-blur-xl">
+                          {/* Top Animated Pure Gold Shimmer Accent */}
+                          <div className="absolute top-0 inset-x-0 h-[2px] auric-border-glow" />
+
                           {item.children.map((child) => {
                             const isCurrent = isRouteActive(child.href);
                             return (
@@ -196,20 +209,20 @@ export const Navbar: React.FC = () => {
                                 key={child.href}
                                 href={child.href}
                                 className={cn(
-                                   'block px-3.5 py-2.5 rounded-[2px] transition-colors group',
-                                   isCurrent
-                                     ? 'bg-plum-50 text-plum-950 font-medium'
-                                     : 'text-ink hover:bg-canvas-warm hover:text-plum-950'
-                                 )}
+                                  'block px-3.5 py-2.5 rounded-[3px] transition-colors group',
+                                  isCurrent
+                                    ? 'bg-plum-950 border border-gold-400/40 text-gold-300 font-semibold'
+                                    : 'text-white/90 hover:bg-plum-800/80 hover:text-gold-200'
+                                )}
                               >
                                 <div className="flex items-center justify-between">
                                   <span className="font-sans text-xs tracking-wide font-medium">{child.label}</span>
                                   {isCurrent && (
-                                    <span className="w-1.5 h-1.5 rounded-full bg-gold-600 shrink-0" />
+                                    <span className="w-1.5 h-1.5 rounded-full bg-gold-400 shadow-[0_0_8px_rgba(216,178,110,0.8)] shrink-0" />
                                   )}
                                 </div>
                                 {child.description && (
-                                  <p className="text-[11px] text-ink-muted mt-0.5 leading-snug line-clamp-1 group-hover:text-ink">
+                                  <p className="text-[11px] text-white/60 mt-0.5 leading-snug line-clamp-1 group-hover:text-gold-100/90">
                                     {child.description}
                                   </p>
                                 )}
@@ -229,13 +242,16 @@ export const Navbar: React.FC = () => {
                   key={item.label}
                   href={item.href!}
                   className={cn(
-                    'px-3 py-2 text-xs font-sans uppercase tracking-wide-editorial rounded-[2px] transition-colors',
+                    'px-3 py-2 text-xs font-sans uppercase tracking-wide-editorial rounded-md transition-colors relative',
                     isCurrent
-                      ? 'text-plum-900 font-semibold border-b border-gold-500'
-                      : 'text-ink-muted hover:text-plum-900 hover:bg-surface-subtle/80'
+                      ? 'text-gold-300 font-semibold'
+                      : 'text-white/90 hover:text-gold-300'
                   )}
                 >
-                  {item.label}
+                  <span>{item.label}</span>
+                  {isCurrent && (
+                    <span className="absolute bottom-0 inset-x-2.5 h-[2px] bg-gold-400 rounded-full shadow-[0_0_8px_rgba(216,178,110,0.8)]" />
+                  )}
                 </Link>
               );
             })}
@@ -246,14 +262,25 @@ export const Navbar: React.FC = () => {
             {isAuthenticated && (user?.role === 'admin' || user?.role === 'super_admin') ? (
               <Link
                 href="/admin"
-                className="inline-flex items-center text-xs uppercase tracking-wide-editorial text-plum-900 font-semibold px-3 py-2 border border-gold-500/70 rounded bg-gold-50/60 hover:bg-gold-50 transition-colors shadow-soft"
+                className="inline-flex items-center text-xs uppercase tracking-wide-editorial text-plum-950 font-semibold px-4 py-2 rounded-full bg-gold-400 hover:bg-gold-300 transition-colors shadow-soft"
               >
                 Admin Dashboard
               </Link>
             ) : (
-              <LinkButton href="/contact" variant="primary" size="sm">
-                Admissions Enquiry
-              </LinkButton>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold text-plum-950 bg-white hover:bg-gold-200 transition-all shadow-soft group cursor-pointer"
+              >
+                <span>Admissions</span>
+                <svg
+                  className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+              </Link>
             )}
           </div>
 
@@ -261,7 +288,7 @@ export const Navbar: React.FC = () => {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? 'Close navigation drawer' : 'Open navigation drawer'}
-            className="lg:hidden p-2 text-plum-900 hover:text-plum-700 focus:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 rounded-[2px]"
+            className="lg:hidden p-2 text-white hover:text-gold-300 hover:bg-gold-500/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 rounded-full transition-colors"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {mobileMenuOpen ? (
@@ -274,22 +301,24 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Drawer Navigation Overlay */}
+      {/* Mobile Drawer Navigation Overlay with Living Auric Atmosphere */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 top-[72px] z-40 lg:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-plum-950/40 backdrop-blur-sm animate-backdrop"
+            className="fixed inset-0 bg-plum-950/60 backdrop-blur-md animate-backdrop"
             onClick={() => setMobileMenuOpen(false)}
           />
 
-          {/* Content Panel */}
+          {/* Content Panel with living auric animated gradient */}
           <nav
-            style={{ backgroundColor: '#FDFBF7' }}
-            className="relative bg-[#FDFBF7] border-b border-border shadow-modal max-h-[calc(100vh-72px)] overflow-y-auto px-6 py-6 space-y-6"
+            className="relative animate-auric-drawer border-b border-gold-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.8)] max-h-[calc(100vh-72px)] overflow-y-auto px-6 py-6 space-y-6 text-white backdrop-blur-xl"
           >
+            {/* Top drawer accent glow */}
+            <div className="absolute top-0 inset-x-0 h-[2px] auric-border-glow pointer-events-none" />
+
             <div className="space-y-3">
-              <span className="text-[10px] uppercase tracking-widest-editorial text-gold-600 font-semibold block border-b border-border/60 pb-1.5">
+              <span className="text-[10px] uppercase tracking-widest-editorial text-gold-400 font-semibold block border-b border-gold-500/20 pb-1.5">
                 Navigation
               </span>
 
@@ -300,20 +329,20 @@ export const Navbar: React.FC = () => {
                     const isAnyChildActive = item.children.some((child) => isRouteActive(child.href));
 
                     return (
-                      <div key={item.label} className="border-b border-border/50 py-1">
+                      <div key={item.label} className="border-b border-white/10 py-1">
                         <button
                           type="button"
                           onClick={() => toggleMobileSubmenu(item.label)}
                           className={cn(
-                            'flex items-center justify-between w-full py-2 text-sm font-sans tracking-wide text-left transition-colors',
-                            isAnyChildActive ? 'text-plum-900 font-semibold' : 'text-charcoal'
+                            'flex items-center justify-between w-full py-2 text-sm font-sans tracking-wide text-left transition-colors cursor-pointer',
+                            isAnyChildActive ? 'text-gold-300 font-semibold' : 'text-white/85 hover:text-gold-300'
                           )}
                         >
                           <span>{item.label}</span>
                           <svg
                             className={cn(
-                              'w-4 h-4 text-gold-600 transition-transform duration-200',
-                              isExpanded && 'rotate-180'
+                              'w-4 h-4 text-gold-400 transition-transform duration-200',
+                              isExpanded && 'rotate-180 text-gold-300'
                             )}
                             fill="none"
                             viewBox="0 0 24 24"
@@ -324,7 +353,7 @@ export const Navbar: React.FC = () => {
                         </button>
 
                         {isExpanded && (
-                          <div className="pl-3 pr-1 py-1 space-y-2 border-l border-gold-400/40 ml-2 mb-2 animate-fade-in">
+                          <div className="pl-3 pr-1 py-1 space-y-2 border-l-2 border-gold-400/50 bg-plum-950/40 rounded-r-sm ml-2 mb-2 animate-fade-in">
                             {item.children.map((child) => (
                               <Link
                                 key={child.href}
@@ -332,8 +361,8 @@ export const Navbar: React.FC = () => {
                                 className={cn(
                                   'block py-1.5 text-xs font-sans tracking-wide transition-colors',
                                   isRouteActive(child.href)
-                                    ? 'text-plum-900 font-semibold'
-                                    : 'text-ink-muted hover:text-plum-900'
+                                    ? 'text-gold-300 font-semibold'
+                                    : 'text-white/70 hover:text-gold-200'
                                 )}
                               >
                                 {child.label}
@@ -350,10 +379,10 @@ export const Navbar: React.FC = () => {
                       key={item.label}
                       href={item.href!}
                       className={cn(
-                        'block py-2.5 text-sm font-sans tracking-wide border-b border-border/50 transition-colors',
+                        'block py-2.5 text-sm font-sans tracking-wide border-b border-white/10 transition-colors',
                         isRouteActive(item.href!)
-                          ? 'text-plum-900 font-semibold'
-                          : 'text-charcoal hover:text-plum-900'
+                          ? 'text-gold-300 font-semibold'
+                          : 'text-white/85 hover:text-gold-300'
                       )}
                     >
                       {item.label}
@@ -364,15 +393,24 @@ export const Navbar: React.FC = () => {
             </div>
 
             {/* Mobile Navigation CTA */}
-            <div className="pt-6 border-t border-border space-y-2.5">
+            <div className="pt-6 border-t border-gold-500/20 space-y-2.5">
               {isAuthenticated && (user?.role === 'admin' || user?.role === 'super_admin') ? (
-                <LinkButton href="/admin" variant="primary" size="md" className="w-full">
+                <Link
+                  href="/admin"
+                  className="w-full flex items-center justify-center px-5 py-3 rounded-full text-sm font-semibold text-plum-950 bg-gold-400 hover:bg-gold-300 transition-colors"
+                >
                   Admin Dashboard
-                </LinkButton>
+                </Link>
               ) : (
-                <LinkButton href="/contact" variant="primary" size="md" className="w-full">
-                  Admissions Enquiry
-                </LinkButton>
+                <Link
+                  href="/contact"
+                  className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full text-sm font-semibold text-plum-950 bg-white hover:bg-gold-200 transition-colors"
+                >
+                  <span>Admissions Enquiry</span>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M7 17L17 7M17 7H7M17 7V17" />
+                  </svg>
+                </Link>
               )}
             </div>
           </nav>

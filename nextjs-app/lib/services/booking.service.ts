@@ -148,7 +148,7 @@ export class BookingService {
       const existing = await Booking.findOne(duplicateQuery);
       if (existing) {
         throw AppError.conflict(
-          `An active booking request (${existing.bookingReference}) already exists for this email or phone for "${course.title}". Kalptaru will contact you shortly.`
+          `An active booking request (${existing.bookingReference}) already exists for this email or phone for "${course.title}". Kalptaruu will contact you shortly.`
         );
       }
 
@@ -234,7 +234,7 @@ export class BookingService {
         scheduleData.time ||
         targetSchedule?.time ||
         (targetSchedule?.startTime ? `${targetSchedule.startTime} – ${targetSchedule.endTime}` : course.schedule || '6:00 AM – 8:30 AM');
-      scheduleData.venue = scheduleData.venue || targetSchedule?.venue || targetSchedule?.location || 'Kalptaru Tapovan Shala';
+      scheduleData.venue = scheduleData.venue || targetSchedule?.venue || targetSchedule?.location || 'Kalptaruu Tapovan Shala';
       scheduleData.location = scheduleData.location || scheduleData.venue;
     } else if (dto.programType === 'workshop') {
       const workshop = await Workshop.findById(dto.programId);
@@ -283,7 +283,7 @@ export class BookingService {
       const existing = await Booking.findOne(duplicateQuery);
       if (existing) {
         throw AppError.conflict(
-          `An active booking request (${existing.bookingReference}) already exists for this email or phone for "${workshop.title}". Kalptaru will contact you shortly.`
+          `An active booking request (${existing.bookingReference}) already exists for this email or phone for "${workshop.title}". Kalptaruu will contact you shortly.`
         );
       }
 
@@ -814,8 +814,8 @@ export class BookingService {
             time: s.time || (s.startTime ? `${s.startTime} – ${s.endTime}` : course.schedule || '6:00 AM – 8:30 AM'),
             duration: s.duration || course.duration,
             mode: s.mode || course.mode || 'in-person',
-            venue: s.venue || s.location || 'Kalptaru Tapovan Shala',
-            location: s.location || s.venue || 'Kalptaru Tapovan Shala',
+            venue: s.venue || s.location || 'Kalptaruu Tapovan Shala',
+            location: s.location || s.venue || 'Kalptaruu Tapovan Shala',
             totalCapacity: cap,
             enrolled: activeCount,
             availableSeats: avail,
@@ -833,7 +833,7 @@ export class BookingService {
             startTime: '06:00 AM',
             endTime: '08:30 AM',
             mode: course.mode || 'in-person',
-            venue: 'Kalptaru Tapovan Shala',
+            venue: 'Kalptaruu Tapovan Shala',
           },
           {
             id: `course-${course._id}-evening`,

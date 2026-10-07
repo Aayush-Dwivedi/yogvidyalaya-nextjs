@@ -10,27 +10,27 @@ import {
 export const HERO_SLIDES: HeroSlide[] = [
   {
     id: 'slide-1',
-    image: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1920&q=85',
+    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85',
     subtitle: 'Traditional Yoga & Wellness',
-    title: 'Kalptaru Yog Vidyalaya',
+    title: 'Kalptaruu Yoga Vidhyalaya',
     description:
       'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
     quote: 'Affiliated by Indian Yoga Association',
   },
   {
     id: 'slide-2',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1920&q=85',
+    image: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1400&q=85',
     subtitle: 'Traditional Yoga & Wellness',
-    title: 'Kalptaru Yog Vidyalaya',
+    title: 'Kalptaruu Yoga Vidhyalaya',
     description:
       'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
     quote: 'Affiliated by Indian Yoga Association',
   },
   {
     id: 'slide-3',
-    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1920&q=85',
+    image: 'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?auto=format&fit=crop&w=1400&q=85',
     subtitle: 'Traditional Yoga & Wellness',
-    title: 'Kalptaru Yog Vidyalaya',
+    title: 'Kalptaruu Yoga Vidhyalaya',
     description:
       'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
     quote: 'Affiliated by Indian Yoga Association',
@@ -98,7 +98,7 @@ export const FEATURED_COURSES: FeaturedCourse[] = [
     shortDescription:
       'A carefully designed program that makes the profound benefits of authentic yoga accessible.',
     curriculumHighlights: ['Authentic Yogic Practices', 'Physiotherapy & Alignment', 'Breath & Mind Awareness'],
-    certification: 'Kalptaru Yog Vidyalaya Certification',
+    certification: 'Kalptaruu Yoga Vidhyalaya Certification',
   },
   {
     id: 'crs-2',
@@ -112,7 +112,7 @@ export const FEATURED_COURSES: FeaturedCourse[] = [
     shortDescription:
       'Certificate course providing a strong foundation in traditional yogasanas with correct alignment.',
     curriculumHighlights: ['Traditional Yogasanas', 'Correct Alignment', 'Safe Methodology'],
-    certification: 'Kalptaru Yog Vidyalaya Certification',
+    certification: 'Kalptaruu Yoga Vidhyalaya Certification',
   },
   {
     id: 'crs-3',
@@ -177,7 +177,7 @@ export const WHY_YOGA_BENEFITS: BenefitItem[] = [
     sanskritTerm: 'Inner Union',
     description:
       'A path that builds: Strength in the body - Stillness in the mind - Balance in emotions - Clarity in decisions - Peace in the soul.',
-    scriptureRef: 'Vidyalaya Essence',
+    scriptureRef: 'Vidhyalaya Essence',
   },
 ];
 

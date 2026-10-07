@@ -132,7 +132,7 @@ export class AdminService {
       time:
         b.schedule?.time ||
         (b.schedule?.startTime ? `${b.schedule.startTime} – ${b.schedule.endTime}` : 'Scheduled Time'),
-      venue: b.schedule?.venue || b.schedule?.location || 'Kalptaru Shala',
+      venue: b.schedule?.venue || b.schedule?.location || 'Kalptaruu Shala',
       status: b.bookingStatus as any,
       amount: b.amount?.displayAmount || `₹${b.amount?.total || 0}`,
     }));

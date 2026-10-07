@@ -33,6 +33,10 @@ import {
   RefreshCw,
   Eye,
   Sliders,
+  Link2,
+  Sun,
+  Camera,
+  Check,
 } from 'lucide-react';
 
 export const AdminHomepageCMS: React.FC = () => {
@@ -109,29 +113,76 @@ export const AdminHomepageCMS: React.FC = () => {
   // HERO SLIDE ACTIONS
   // ==========================================
 
+  const GOLDEN_PRESETS = [
+    {
+      name: 'Mountain Sunset',
+      desc: 'Sunset mountain pavilion meditation (Mockup match)',
+      url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85',
+    },
+    {
+      name: 'Beach Sunset',
+      desc: 'Golden hour sunset silhouette on beach',
+      url: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1400&q=85',
+    },
+    {
+      name: 'Golden Sunlight',
+      desc: 'Tranquil outdoor nature yoga asana',
+      url: 'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?auto=format&fit=crop&w=1400&q=85',
+    },
+    {
+      name: 'Morning Radiance',
+      desc: 'Pranayama in tranquil morning golden glow',
+      url: 'https://images.unsplash.com/photo-1510894347713-fc3ed6fdf539?auto=format&fit=crop&w=1400&q=85',
+    },
+  ];
+
   const handleOpenSlideModal = (slide?: CmsHeroSlide) => {
     if (slide) {
-      setEditingSlide({ ...slide });
+      const rawImage = slide.image;
+      const imageUrl = (typeof rawImage === 'string' ? rawImage : rawImage?.url) || '';
+      setEditingSlide({
+        ...slide,
+        image: {
+          url: imageUrl,
+          path: typeof rawImage === 'object' ? rawImage?.path || 'media/hero.jpg' : 'media/hero.jpg',
+          bucket: typeof rawImage === 'object' ? rawImage?.bucket || 'kalptaru-media' : 'kalptaru-media',
+          alt: slide.heading || 'Hero slide',
+        },
+      });
     } else {
       setEditingSlide({
-        heading: '',
-        subheading: '',
-        description: '',
-        quote: '',
-        ctaText: 'Explore Programs',
-        ctaUrl: '/programs',
-        secondaryCtaText: 'Admissions Enquiry',
-        secondaryCtaUrl: '/contact/enquiry',
+        heading: 'Kalptaruu Yoga Vidhyalaya',
+        subheading: 'Traditional Yoga & Wellness',
+        description:
+          'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
+        quote: 'Affiliated by Indian Yoga Association',
+        ctaText: 'Explore Courses',
+        ctaUrl: '/programs/courses',
+        secondaryCtaText: 'Contact Us',
+        secondaryCtaUrl: '/contact',
         order: slides.length + 1,
         active: true,
         image: {
-          url: '',
-          path: '',
-          alt: '',
+          url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85',
+          path: 'media/hero.jpg',
+          bucket: 'kalptaru-media',
+          alt: 'Kalptaruu Yoga Vidhyalaya',
         },
       });
     }
     setSlideModalOpen(true);
+  };
+
+  const handleImageUrlChange = (url: string) => {
+    setEditingSlide((prev) => ({
+      ...prev,
+      image: {
+        url: url.trim(),
+        path: url.trim().replace(/^https?:\/\/[^\/]+\//, '').slice(0, 50) || 'media/hero.jpg',
+        bucket: 'external',
+        alt: prev?.heading || 'Hero slide image',
+      },
+    }));
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,20 +191,44 @@ export const AdminHomepageCMS: React.FC = () => {
 
     try {
       setUploadingImage(true);
-      // Supabase Storage upload via backend storage service
-      const res = await MediaService.uploadImage(file, 'hero', editingSlide?.heading || file.name);
-      setEditingSlide((prev) => ({
-        ...prev,
-        image: {
-          url: res.url,
-          path: res.path,
-          bucket: res.bucket,
-          size: res.size,
-          mimeType: res.mimeType,
-          alt: res.alt || file.name,
-        },
-      }));
-      showToast('Image uploaded successfully!');
+      // Try backend upload
+      try {
+        const res = await MediaService.uploadImage(file, 'hero', editingSlide?.heading || file.name);
+        if (res && res.url) {
+          setEditingSlide((prev) => ({
+            ...prev,
+            image: {
+              url: res.url,
+              path: res.path || `hero/${file.name}`,
+              bucket: res.bucket || 'kalptaru-media',
+              size: res.size,
+              mimeType: res.mimeType,
+              alt: res.alt || file.name,
+            },
+          }));
+          showToast('Image uploaded successfully!');
+          return;
+        }
+      } catch (uploadErr) {
+        console.warn('Backend upload unavailable, using base64 preview:', uploadErr);
+      }
+
+      // Fallback: Read as Data URL
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result as string;
+        setEditingSlide((prev) => ({
+          ...prev,
+          image: {
+            url: dataUrl,
+            path: `uploads/${file.name}`,
+            bucket: 'local',
+            alt: file.name,
+          },
+        }));
+        showToast('Image loaded successfully!');
+      };
+      reader.readAsDataURL(file);
     } catch (err: any) {
       console.error(err);
       showToast(err.message || 'Failed to upload image', 'error');
@@ -164,26 +239,137 @@ export const AdminHomepageCMS: React.FC = () => {
 
   const handleSaveSlide = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingSlide?.heading || !editingSlide.description || !editingSlide.image?.url) {
-      showToast('Heading, description, and an uploaded image are required.', 'error');
+    const rawImage = editingSlide?.image;
+    const imageUrl = (typeof rawImage === 'string' ? rawImage : rawImage?.url)?.trim();
+
+    if (!editingSlide?.heading || !editingSlide.description || !imageUrl) {
+      showToast('Heading, description, and an image are required.', 'error');
       return;
     }
 
     try {
       setSaving(true);
       const slideId = editingSlide._id || editingSlide.id;
+      const payload = {
+        ...editingSlide,
+        heading: editingSlide.heading.trim(),
+        subheading: editingSlide.subheading?.trim() || 'Traditional Yoga & Wellness',
+        description: editingSlide.description.trim(),
+        quote: editingSlide.quote?.trim() || 'Affiliated by Indian Yoga Association',
+        image: {
+          url: imageUrl,
+          path: typeof rawImage === 'object' && rawImage?.path ? rawImage.path : 'media/hero.jpg',
+          bucket: typeof rawImage === 'object' && rawImage?.bucket ? rawImage.bucket : 'kalptaru-media',
+          alt: editingSlide.heading.trim(),
+        },
+        ctaText: editingSlide.ctaText?.trim() || 'Explore Courses',
+        ctaUrl: editingSlide.ctaUrl?.trim() || '/programs/courses',
+        secondaryCtaText: editingSlide.secondaryCtaText?.trim() || 'Contact Us',
+        secondaryCtaUrl: editingSlide.secondaryCtaUrl?.trim() || '/contact',
+      };
+
       if (slideId) {
-        await CmsService.updateHeroSlide(slideId, editingSlide);
+        await CmsService.updateHeroSlide(slideId, payload);
         showToast('Hero slide updated successfully!');
       } else {
-        await CmsService.createHeroSlide(editingSlide);
+        await CmsService.createHeroSlide(payload);
         showToast('New hero slide created successfully!');
       }
+
       setSlideModalOpen(false);
       setEditingSlide(null);
       await loadData();
+
+      // Trigger public site live revalidation & immediately cache to localStorage
+      if (typeof window !== 'undefined') {
+        try {
+          const freshSlides = await CmsService.getHeroSlides(true);
+          if (freshSlides && freshSlides.length > 0) {
+            localStorage.setItem('kalptaru_cached_hero_slides', JSON.stringify(freshSlides));
+          }
+        } catch {}
+        window.dispatchEvent(new CustomEvent('kalptaru-cms-updated'));
+        window.dispatchEvent(new Event('storage'));
+      }
     } catch (err: any) {
       showToast(err.message || 'Failed to save hero slide', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSeedDefaultSlides = async () => {
+    try {
+      setSaving(true);
+      const defaults = [
+        {
+          heading: 'Kalptaruu Yoga Vidhyalaya',
+          subheading: 'Traditional Yoga & Wellness',
+          description:
+            'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
+          quote: 'Affiliated by Indian Yoga Association',
+          ctaText: 'Explore Courses',
+          ctaUrl: '/programs/courses',
+          secondaryCtaText: 'Contact Us',
+          secondaryCtaUrl: '/contact',
+          order: 1,
+          active: true,
+          image: {
+            url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85',
+            path: 'presets/mountain-sunset.jpg',
+            bucket: 'presets',
+          },
+        },
+        {
+          heading: 'Kalptaruu Yoga Vidhyalaya',
+          subheading: 'Traditional Yoga & Wellness',
+          description:
+            'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
+          quote: 'Affiliated by Indian Yoga Association',
+          ctaText: 'Explore Courses',
+          ctaUrl: '/programs/courses',
+          secondaryCtaText: 'Contact Us',
+          secondaryCtaUrl: '/contact',
+          order: 2,
+          active: true,
+          image: {
+            url: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1400&q=85',
+            path: 'presets/beach-sunset.jpg',
+            bucket: 'presets',
+          },
+        },
+        {
+          heading: 'Kalptaruu Yoga Vidhyalaya',
+          subheading: 'Traditional Yoga & Wellness',
+          description:
+            'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
+          quote: 'Affiliated by Indian Yoga Association',
+          ctaText: 'Explore Courses',
+          ctaUrl: '/programs/courses',
+          secondaryCtaText: 'Contact Us',
+          secondaryCtaUrl: '/contact',
+          order: 3,
+          active: true,
+          image: {
+            url: 'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?auto=format&fit=crop&w=1400&q=85',
+            path: 'presets/golden-sunlight.jpg',
+            bucket: 'presets',
+          },
+        },
+      ];
+
+      for (const s of defaults) {
+        await CmsService.createHeroSlide(s as any);
+      }
+      showToast('Loaded 3 default golden hero slides successfully!');
+      await loadData();
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('kalptaru-cms-updated'));
+        window.dispatchEvent(new Event('storage'));
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to populate default slides', 'error');
     } finally {
       setSaving(false);
     }
@@ -252,7 +438,12 @@ export const AdminHomepageCMS: React.FC = () => {
     e.preventDefault();
     try {
       setSaving(true);
-      await CmsService.updateHomepageCta(homepageCta);
+      const payload = {
+        ...homepageCta,
+        primaryCtaUrl: homepageCta.primaryCtaUrl || '/programs/courses',
+        secondaryCtaUrl: homepageCta.secondaryCtaUrl || '/contact/enquiry',
+      };
+      await CmsService.updateHomepageCta(payload);
       showToast('Homepage CTA updated successfully! Public website reflects new CTA.');
     } catch (err: any) {
       showToast(err.message || 'Failed to update Homepage CTA', 'error');
@@ -456,29 +647,57 @@ export const AdminHomepageCMS: React.FC = () => {
             <div>
               <h2 className="text-lg font-editorial font-bold text-plum-900">Hero Slides Carousel</h2>
               <p className="text-xs text-ink-muted font-sans">
-                Active slides appear in sequential order in the main public hero carousel.
+                Active slides appear in sequential order inside the sacred rotating circular hero frame on the homepage.
               </p>
             </div>
-            <button
-              onClick={() => handleOpenSlideModal()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-bold bg-gold-500 hover:bg-gold-400 text-plum-950 transition-colors shadow-soft self-start sm:self-auto"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add New Hero Slide</span>
-            </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={handleSeedDefaultSlides}
+                disabled={saving}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors border border-gold-400/30 shadow-soft"
+                title="Seed 3 curated golden sunset slides into database"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Restore Golden Presets</span>
+              </button>
+              <button
+                onClick={() => handleOpenSlideModal()}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-bold bg-gold-500 hover:bg-gold-400 text-plum-950 transition-colors shadow-soft"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add New Hero Slide</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-3">
             {slides.length === 0 ? (
-              <div className="text-center py-12 bg-white border border-border rounded-xl shadow-soft">
-                <Layers className="w-10 h-10 text-gold-500/50 mx-auto mb-3" />
-                <p className="text-sm text-ink-muted font-sans">No hero slides found.</p>
-                <button
-                  onClick={() => handleOpenSlideModal()}
-                  className="mt-3 text-xs text-gold-700 hover:text-gold-900 font-semibold underline"
-                >
-                  Create first hero slide
-                </button>
+              <div className="text-center py-12 bg-white border border-border rounded-xl shadow-soft space-y-3">
+                <Layers className="w-10 h-10 text-gold-500/50 mx-auto" />
+                <div>
+                  <p className="text-sm text-ink-muted font-sans font-medium">No hero slides found in database.</p>
+                  <p className="text-xs text-ink-faint font-sans mt-0.5">
+                    You can add a custom slide or instantly load the 3 golden sunset defaults.
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-3 pt-2">
+                  <button
+                    onClick={handleSeedDefaultSlides}
+                    disabled={saving}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-sans font-bold bg-gold-500 hover:bg-gold-400 text-plum-950 shadow-soft"
+                  >
+                    <Sun className="w-3.5 h-3.5" />
+                    <span>Load 3 Golden Sunset Slides</span>
+                  </button>
+                  <button
+                    onClick={() => handleOpenSlideModal()}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-sans font-semibold bg-canvas text-ink hover:text-plum-900 border border-border"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Create Custom Slide</span>
+                  </button>
+                </div>
               </div>
             ) : (
               slides.map((slide, index) => {
@@ -492,23 +711,42 @@ export const AdminHomepageCMS: React.FC = () => {
                         : 'bg-surface-subtle border-border opacity-70'
                     }`}
                   >
-                    {/* Thumbnail & Title */}
+                    {/* Sacred Circular Hero Frame & Details */}
                     <div className="flex items-start gap-4">
-                      <div className="w-24 h-16 sm:w-32 sm:h-20 rounded-lg overflow-hidden border border-border shrink-0 bg-canvas relative shadow-xs">
-                        {slide.image?.url ? (
-                          <img
-                            src={slide.image.url}
-                            alt={slide.heading}
-                            className="w-full h-full object-cover"
+                      {/* Authentic Hero Frame Preview */}
+                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full shrink-0 flex items-center justify-center bg-[#1A0719] p-1 border border-gold-400/40 shadow-soft group">
+                        <svg
+                          className="absolute -inset-1 w-[calc(100%+0.5rem)] h-[calc(100%+0.5rem)] pointer-events-none animate-orbit-rotate"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle
+                            cx="50"
+                            cy="50"
+                            r="48"
+                            stroke="#DAA53B"
+                            strokeWidth="0.8"
+                            strokeDasharray="3 3"
+                            fill="none"
+                            opacity="0.5"
                           />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-ink-faint text-xs">
-                            No image
-                          </div>
-                        )}
-                        <span className="absolute top-1 left-1 bg-plum-900/90 text-[10px] text-gold-300 font-mono font-bold px-1.5 py-0.5 rounded shadow-xs">
-                          #{slide.order || index + 1}
-                        </span>
+                          <circle cx="50" cy="2" r="2.5" fill="#DAA53B" />
+                        </svg>
+                        <div className="w-full h-full rounded-full overflow-hidden border border-gold-400/60 relative bg-[#1A0719]">
+                          {slide.image?.url ? (
+                            <img
+                              src={slide.image.url}
+                              alt={slide.heading}
+                              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gold-400/50 text-[10px]">
+                              No image
+                            </div>
+                          )}
+                          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-plum-950/90 text-[9px] text-gold-300 font-mono font-bold px-1.5 py-0.2 rounded-full border border-gold-400/30">
+                            #{slide.order || index + 1}
+                          </span>
+                        </div>
                       </div>
 
                       <div className="space-y-1">
@@ -528,11 +766,26 @@ export const AdminHomepageCMS: React.FC = () => {
                         <p className="text-xs text-ink-muted font-sans line-clamp-1 max-w-xl">
                           {slide.description}
                         </p>
-                        <div className="flex items-center gap-3 text-[11px] text-ink-faint font-sans pt-1">
-                          <span>Primary CTA: <strong className="text-plum-900 font-semibold">{slide.ctaText}</strong> ({slide.ctaUrl})</span>
-                          {slide.image?.bucket && (
-                            <span className="font-mono text-[10px] text-ink-muted">
-                              {slide.image.path}
+                        {slide.quote && (
+                          <p className="text-[11px] text-ink-faint italic font-editorial">
+                            &ldquo;{slide.quote}&rdquo;
+                          </p>
+                        )}
+                        <div className="flex flex-wrap items-center gap-3 text-[11px] text-ink-faint font-sans pt-1">
+                          <span>
+                            Primary CTA:{' '}
+                            <strong className="text-plum-900 font-semibold">
+                              {slide.ctaText || 'Explore Courses'}
+                            </strong>{' '}
+                            <span className="text-ink-muted">({slide.ctaUrl || '/programs/courses'})</span>
+                          </span>
+                          {slide.secondaryCtaText && (
+                            <span>
+                              Secondary:{' '}
+                              <strong className="text-plum-900 font-semibold">
+                                {slide.secondaryCtaText}
+                              </strong>{' '}
+                              <span className="text-ink-muted">({slide.secondaryCtaUrl || '/contact'})</span>
                             </span>
                           )}
                         </div>
@@ -670,17 +923,6 @@ export const AdminHomepageCMS: React.FC = () => {
                       className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500"
                     />
                   </div>
-                  <div>
-                    <label className="block text-[11px] text-ink-muted font-medium mb-1">Destination URL</label>
-                    <input
-                      type="text"
-                      value={homepageCta.primaryCtaUrl || ''}
-                      onChange={(e) =>
-                        setHomepageCta({ ...homepageCta, primaryCtaUrl: e.target.value })
-                      }
-                      className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink font-mono focus:outline-none focus:border-gold-500"
-                    />
-                  </div>
                 </div>
 
                 <div className="space-y-3 p-3.5 bg-canvas border border-border rounded-lg">
@@ -696,17 +938,6 @@ export const AdminHomepageCMS: React.FC = () => {
                         setHomepageCta({ ...homepageCta, secondaryCtaText: e.target.value })
                       }
                       className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] text-ink-muted font-medium mb-1">Destination URL</label>
-                    <input
-                      type="text"
-                      value={homepageCta.secondaryCtaUrl || ''}
-                      onChange={(e) =>
-                        setHomepageCta({ ...homepageCta, secondaryCtaUrl: e.target.value })
-                      }
-                      className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink font-mono focus:outline-none focus:border-gold-500"
                     />
                   </div>
                 </div>
@@ -1069,166 +1300,297 @@ export const AdminHomepageCMS: React.FC = () => {
           setEditingSlide(null);
         }}
         title={editingSlide?._id || editingSlide?.id ? 'Edit Hero Slide' : 'Add New Hero Slide'}
-        size="lg"
+        size="xl"
       >
-        <form onSubmit={handleSaveSlide} className="space-y-4 font-sans text-xs sm:text-sm">
-          {/* Image Upload Area (Supabase Storage) */}
-          <div className="space-y-2 p-3.5 bg-canvas border border-border rounded-lg">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-plum-900 uppercase tracking-wider">
-                Hero Background Image
-              </label>
-              <span className="text-[10px] text-ink-muted">High-res WebP/JPG (1920x1080 recommended)</span>
+        <form onSubmit={handleSaveSlide} className="space-y-6 font-sans text-xs sm:text-sm">
+          {/* ── 1. HERO FRAME VISUAL STUDIO ── */}
+          <div className="bg-canvas border border-border rounded-xl p-4 sm:p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
+              <div>
+                <h3 className="text-sm font-editorial font-bold text-plum-900 flex items-center gap-2">
+                  <Sun className="w-4 h-4 text-gold-500" />
+                  <span>Sacred Circular Hero Frame Photo</span>
+                </h3>
+                <p className="text-[11px] text-ink-muted">
+                  The photo will appear inside the golden celestial circular orbit frame on the public homepage.
+                </p>
+              </div>
+              <span className="text-[10px] text-gold-700 bg-gold-50 border border-gold-200 px-2 py-0.5 rounded-full font-mono font-medium self-start sm:self-auto">
+                1:1 Aspect Frame
+              </span>
             </div>
 
-            {editingSlide?.image?.url ? (
-              <div className="relative rounded-lg overflow-hidden border border-border max-h-48 group shadow-xs">
-                <img
-                  src={editingSlide.image.url}
-                  alt={editingSlide.heading || 'Hero slide preview'}
-                  className="w-full h-44 object-cover"
-                />
-                <div className="absolute inset-0 bg-plum-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                  <label className="cursor-pointer px-3 py-1.5 bg-gold-500 text-plum-950 rounded text-xs font-bold hover:bg-gold-400 shadow-soft">
-                    Replace Image
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+              {/* Left Column: Live Sacred Circular Frame Preview */}
+              <div className="md:col-span-5 flex flex-col items-center justify-center p-4 bg-gradient-to-b from-[#1A0719] to-[#2A0725] rounded-xl border border-gold-500/30 shadow-modal">
+                <div className="relative w-44 h-44 sm:w-52 sm:h-52 flex items-center justify-center">
+                  {/* Rotating Celestial Orbit Ring */}
+                  <svg
+                    className="absolute -inset-2.5 w-[calc(100%+1.25rem)] h-[calc(100%+1.25rem)] pointer-events-none animate-orbit-rotate z-0"
+                    viewBox="0 0 300 300"
+                  >
+                    <circle
+                      cx="150"
+                      cy="150"
+                      r="142"
+                      stroke="#DAA53B"
+                      strokeWidth="1"
+                      strokeDasharray="4 4"
+                      fill="none"
+                      opacity="0.5"
                     />
+                    <circle cx="150" cy="8" r="5" stroke="#DAA53B" strokeWidth="1.5" fill="#2A0725" />
+                    <circle cx="150" cy="8" r="1.5" fill="#DAA53B" />
+                    <circle cx="250" cy="250" r="4" stroke="#DAA53B" strokeWidth="1" fill="#2A0725" />
+                    <circle cx="250" cy="250" r="1.5" fill="#DAA53B" />
+                  </svg>
+
+                  {/* Circular Image Window */}
+                  <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-gold-400/80 shadow-[0_0_30px_rgba(218,165,59,0.35)] bg-[#1A0719] z-10 flex items-center justify-center">
+                    {editingSlide?.image?.url ? (
+                      <img
+                        src={editingSlide.image.url}
+                        alt={editingSlide.heading || 'Hero slide preview'}
+                        className="w-full h-full object-cover object-center"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-gold-300/60 p-4 text-center">
+                        <Camera className="w-8 h-8 mb-1.5 text-gold-400" />
+                        <span className="text-[11px]">Select or upload photo</span>
+                      </div>
+                    )}
+                    {/* Soft radial vignette */}
+                    <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,transparent_60%,rgba(26,7,25,0.45)_95%)] pointer-events-none" />
+                  </div>
+                </div>
+
+                <div className="mt-3 text-center">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold-400/10 border border-gold-400/30 text-gold-300 text-[10px] font-mono tracking-wider uppercase">
+                    <Sun className="w-3 h-3 text-gold-400" />
+                    Public Frame Preview
+                  </span>
+                </div>
+              </div>
+
+              {/* Right Column: 3 Photo Methods */}
+              <div className="md:col-span-7 space-y-4">
+                {/* Method 1: Curated Golden Sunset Presets */}
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-plum-900 uppercase tracking-wider block">
+                    Option A: Recommended Golden Sunset Presets (1-Click)
                   </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {GOLDEN_PRESETS.map((preset, idx) => {
+                      const isSelected = editingSlide?.image?.url === preset.url;
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleImageUrlChange(preset.url)}
+                          className={`flex items-center gap-2 p-2 rounded-lg border text-left transition-all ${
+                            isSelected
+                              ? 'bg-plum-900 text-gold-200 border-gold-400 ring-2 ring-gold-400/30 shadow-soft'
+                              : 'bg-white hover:bg-gold-50/50 text-ink border-border hover:border-gold-300 shadow-xs'
+                          }`}
+                        >
+                          <img
+                            src={preset.url}
+                            alt={preset.name}
+                            className="w-9 h-9 rounded-full object-cover border border-gold-400/60 shrink-0"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <div className="text-[11px] font-bold truncate leading-tight">
+                              {preset.name}
+                            </div>
+                            <div className="text-[9px] opacity-70 truncate font-sans">
+                              {preset.desc}
+                            </div>
+                          </div>
+                          {isSelected && <Check className="w-3.5 h-3.5 text-gold-400 shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="absolute bottom-1 right-2 bg-plum-950/80 px-2 py-0.5 rounded text-[10px] text-gold-300 font-mono">
-                  {editingSlide.image.path || 'Upload Image'}
+
+                {/* Method 2: Direct Image URL */}
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold text-plum-900 uppercase tracking-wider block">
+                    Option B: Direct Photo URL (WebP, JPG, CDN)
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-muted">
+                      <Link2 className="w-3.5 h-3.5" />
+                    </div>
+                    <input
+                      type="url"
+                      value={editingSlide?.image?.url || ''}
+                      onChange={(e) => handleImageUrlChange(e.target.value)}
+                      placeholder="https://images.unsplash.com/... or your image URL"
+                      className="w-full bg-white border border-border rounded-lg pl-9 pr-3 py-2 text-xs text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs font-mono"
+                    />
+                  </div>
+                </div>
+
+                {/* Method 3: File Upload */}
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold text-plum-900 uppercase tracking-wider block">
+                    Option C: Upload from Computer
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="inline-flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-canvas border border-border rounded-lg text-xs font-medium text-plum-900 cursor-pointer shadow-xs transition-colors">
+                      <Upload className="w-3.5 h-3.5 text-gold-600" />
+                      <span>{uploadingImage ? 'Uploading image...' : 'Choose Image File'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={uploadingImage}
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+                    <span className="text-[10px] text-ink-muted">
+                      JPG, PNG, or WebP (max 5MB)
+                    </span>
+                  </div>
                 </div>
               </div>
-            ) : (
-              <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-lg cursor-pointer bg-white hover:bg-canvas transition-colors">
-                <Upload className="w-8 h-8 text-gold-600 mb-2" />
-                <span className="text-xs text-plum-900 font-semibold">
-                  {uploadingImage ? 'Uploading...' : 'Click to upload image'}
-                </span>
-                <span className="text-[11px] text-ink-muted mt-1">
-                  Upload image (JPEG, PNG, or WebP. Max 5MB)
-                </span>
+            </div>
+          </div>
+
+          {/* ── 2. SLIDE CONTENT & HEADINGS ── */}
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-plum-900 mb-1">
+                  Slide Heading *
+                </label>
                 <input
-                  type="file"
-                  accept="image/*"
-                  disabled={uploadingImage}
-                  onChange={handleImageUpload}
-                  className="hidden"
+                  type="text"
+                  required
+                  value={editingSlide?.heading || ''}
+                  onChange={(e) => setEditingSlide({ ...editingSlide, heading: e.target.value })}
+                  placeholder="e.g. Kalptaruu Yoga Vidhyalaya"
+                  className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs font-editorial font-bold text-base"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-plum-900 mb-1">
+                  Subheading / Badge
+                </label>
+                <input
+                  type="text"
+                  value={editingSlide?.subheading || ''}
+                  onChange={(e) => setEditingSlide({ ...editingSlide, subheading: e.target.value })}
+                  placeholder="e.g. Traditional Yoga & Wellness"
+                  className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs font-sans"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-plum-900 mb-1">
+                Slide Description *
               </label>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-plum-900 mb-1">Slide Heading *</label>
-              <input
-                type="text"
+              <textarea
+                rows={2}
                 required
-                value={editingSlide?.heading || ''}
-                onChange={(e) => setEditingSlide({ ...editingSlide, heading: e.target.value })}
-                placeholder="e.g. Kalptaru Yog Vidyalaya"
-                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs"
+                value={editingSlide?.description || ''}
+                onChange={(e) => setEditingSlide({ ...editingSlide, description: e.target.value })}
+                placeholder="Detailed description of the yogic discipline or sanctuary approach..."
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs resize-y font-sans"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-plum-900 mb-1">Subheading / Badge</label>
+              <label className="block text-xs font-bold text-plum-900 mb-1">
+                Sacred Quote / Lineage Reference
+              </label>
               <input
                 type="text"
-                value={editingSlide?.subheading || ''}
-                onChange={(e) => setEditingSlide({ ...editingSlide, subheading: e.target.value })}
-                placeholder="e.g. Traditional Yoga & Wellness"
-                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs"
+                value={editingSlide?.quote || ''}
+                onChange={(e) => setEditingSlide({ ...editingSlide, quote: e.target.value })}
+                placeholder='e.g. "Affiliated by Indian Yoga Association"'
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs font-editorial italic"
               />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-bold text-plum-900 mb-1">Slide Description *</label>
-            <textarea
-              rows={2}
-              required
-              value={editingSlide?.description || ''}
-              onChange={(e) => setEditingSlide({ ...editingSlide, description: e.target.value })}
-              placeholder="Detailed description of the slide philosophy or sanctuary..."
-              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs resize-y"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-plum-900 mb-1">Sacred Quote / Shloka Reference</label>
-            <input
-              type="text"
-              value={editingSlide?.quote || ''}
-              onChange={(e) => setEditingSlide({ ...editingSlide, quote: e.target.value })}
-              placeholder='e.g. "Yogas chitta vritti nirodha — Yoga is the stilling of the mind."'
-              className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs font-editorial"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-plum-900 mb-1">Primary CTA Button</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={editingSlide?.ctaText || ''}
-                  onChange={(e) => setEditingSlide({ ...editingSlide, ctaText: e.target.value })}
-                  placeholder="Button Label"
-                  className="w-1/2 bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500"
-                />
-                <input
-                  type="text"
-                  value={editingSlide?.ctaUrl || ''}
-                  onChange={(e) => setEditingSlide({ ...editingSlide, ctaUrl: e.target.value })}
-                  placeholder="URL (/programs)"
-                  className="w-1/2 bg-white border border-border rounded px-3 py-1.5 text-xs text-ink font-mono focus:outline-none focus:border-gold-500"
-                />
+            {/* CTA Buttons */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div className="space-y-2 p-3 bg-canvas border border-border rounded-lg">
+                <h4 className="text-xs font-bold text-plum-900 uppercase tracking-wider">
+                  Primary Action Button
+                </h4>
+                <div>
+                  <label className="block text-[11px] text-ink-muted mb-0.5">Button Label</label>
+                  <input
+                    type="text"
+                    value={editingSlide?.ctaText || ''}
+                    onChange={(e) => setEditingSlide({ ...editingSlide, ctaText: e.target.value })}
+                    placeholder="Explore Courses"
+                    className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-ink-muted mb-0.5">Button URL</label>
+                  <input
+                    type="text"
+                    value={editingSlide?.ctaUrl || ''}
+                    onChange={(e) => setEditingSlide({ ...editingSlide, ctaUrl: e.target.value })}
+                    placeholder="/programs/courses"
+                    className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 font-mono"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-bold text-plum-900 mb-1">Secondary CTA Button</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={editingSlide?.secondaryCtaText || ''}
-                  onChange={(e) =>
-                    setEditingSlide({ ...editingSlide, secondaryCtaText: e.target.value })
-                  }
-                  placeholder="Button Label"
-                  className="w-1/2 bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500"
-                />
-                <input
-                  type="text"
-                  value={editingSlide?.secondaryCtaUrl || ''}
-                  onChange={(e) =>
-                    setEditingSlide({ ...editingSlide, secondaryCtaUrl: e.target.value })
-                  }
-                  placeholder="URL"
-                  className="w-1/2 bg-white border border-border rounded px-3 py-1.5 text-xs text-ink font-mono focus:outline-none focus:border-gold-500"
-                />
+              <div className="space-y-2 p-3 bg-canvas border border-border rounded-lg">
+                <h4 className="text-xs font-bold text-plum-900 uppercase tracking-wider">
+                  Secondary Action Button
+                </h4>
+                <div>
+                  <label className="block text-[11px] text-ink-muted mb-0.5">Button Label</label>
+                  <input
+                    type="text"
+                    value={editingSlide?.secondaryCtaText || ''}
+                    onChange={(e) =>
+                      setEditingSlide({ ...editingSlide, secondaryCtaText: e.target.value })
+                    }
+                    placeholder="Contact Us"
+                    className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-ink-muted mb-0.5">Button URL</label>
+                  <input
+                    type="text"
+                    value={editingSlide?.secondaryCtaUrl || ''}
+                    onChange={(e) =>
+                      setEditingSlide({ ...editingSlide, secondaryCtaUrl: e.target.value })
+                    }
+                    placeholder="/contact"
+                    className="w-full bg-white border border-border rounded px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 font-mono"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-3 border-t border-border">
-            <label className="flex items-center gap-2 cursor-pointer">
+          {/* ── 3. ACTIONS & ACTIVE TOGGLE ── */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-border">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={editingSlide?.active ?? true}
                 onChange={(e) => setEditingSlide({ ...editingSlide, active: e.target.checked })}
-                className="rounded border-border text-gold-600 focus:ring-gold-500"
+                className="w-4 h-4 rounded border-border text-gold-600 focus:ring-gold-500"
               />
-              <span className="text-xs text-ink font-medium">Slide is Active on Public Site</span>
+              <span className="text-xs text-plum-900 font-semibold">
+                Slide is Active on Public Homepage
+              </span>
             </label>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-end">
               <button
                 type="button"
                 onClick={() => {
@@ -1242,9 +1604,16 @@ export const AdminHomepageCMS: React.FC = () => {
               <button
                 type="submit"
                 disabled={saving || uploadingImage}
-                className="px-5 py-2 rounded-lg text-xs font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg text-xs font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft disabled:opacity-50"
               >
-                {saving ? 'Saving...' : 'Save Hero Slide'}
+                {saving ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Saving Slide...</span>
+                  </>
+                ) : (
+                  <span>Save Hero Slide</span>
+                )}
               </button>
             </div>
           </div>

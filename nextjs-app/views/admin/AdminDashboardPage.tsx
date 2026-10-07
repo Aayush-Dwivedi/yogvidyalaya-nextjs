@@ -94,7 +94,7 @@ export const AdminDashboardPage: React.FC = () => {
             Dashboard
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted mt-1">
-            Here&apos;s what&apos;s happening at Kalptaru Yog Vidyalaya.
+            Here&apos;s what&apos;s happening at Kalptaruu Yoga Vidhyalaya.
           </p>
         </div>
 
@@ -448,7 +448,7 @@ export const AdminDashboardPage: React.FC = () => {
             <div className="flex justify-end gap-2 pt-2">
               {selectedEnquiry.email && (
                 <a
-                  href={`mailto:${selectedEnquiry.email}?subject=Re: Kalptaru Yog Vidyalaya`}
+                  href={`mailto:${selectedEnquiry.email}?subject=Re: Kalptaruu Yoga Vidhyalaya`}
                   className="px-4 py-2 text-xs font-semibold bg-plum-900 text-gold-200 rounded hover:bg-plum-800 transition-colors inline-flex items-center gap-1.5"
                 >
                   <Mail className="w-3.5 h-3.5" /> Reply

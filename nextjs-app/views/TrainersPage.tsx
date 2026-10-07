@@ -7,6 +7,7 @@ import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
 import { LotusMotif, CornerFlourish } from '../components/Motifs';
+import { AuricBackground } from '../components/AuricBackground';
 import { CmsService } from '../services/cmsService';
 import { CmsFounder } from '../types/cms';
 import { LoadingState } from '../components/LoadingState';
@@ -89,9 +90,9 @@ const TrainersContent: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col bg-canvas-warm min-h-screen">
-      {/* 1. Header Banner */}
-      <section className="relative py-16 sm:py-24 bg-plum-950 text-white border-b border-gold-500/20 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-plum-900 via-plum-950 to-plum-950 opacity-90" />
+      {/* 1. Header Banner with Feelable Animated Auric Gradient */}
+      <section className="relative py-16 sm:py-24 bg-plum-950 text-white overflow-hidden">
+        <AuricBackground />
         
         <Container size="wide" className="relative z-10 text-center space-y-4 max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono tracking-widest uppercase mb-2">
@@ -99,7 +100,7 @@ const TrainersContent: React.FC = () => {
             <span>Faculty &amp; Master Acharyas</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-editorial font-bold text-white tracking-wide">
+          <h1 className="text-3xl sm:text-5xl font-editorial font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-[#FFF5DB] to-gold-300 tracking-wide">
             Our Experienced Trainers &amp; Guides
           </h1>
 
@@ -433,7 +434,7 @@ const TrainersContent: React.FC = () => {
                 </Link>
               ) : (
                 <span className="text-xs text-ink-muted">
-                  Faculty Member at Kalptaru Yog Vidyalaya
+                  Faculty Member at Kalptaruu Yoga Vidhyalaya
                 </span>
               )}
 
@@ -467,7 +468,7 @@ const TrainersContent: React.FC = () => {
             Learn Under Direct Personal Mentorship
           </h2>
           <p className="text-xs sm:text-sm text-ink-muted leading-relaxed font-sans">
-            Every course and session at Kalptaru Yog Vidyalaya is guided with personal posture corrections, anatomical awareness, and individualized modifications for safe progress.
+            Every course and session at Kalptaruu Yoga Vidhyalaya is guided with personal posture corrections, anatomical awareness, and individualized modifications for safe progress.
           </p>
           <div className="pt-2">
             <LinkButton to="/contact" variant="primary" size="md">

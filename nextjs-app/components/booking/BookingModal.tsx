@@ -74,7 +74,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [selectedBatch, setSelectedBatch] = useState<string>('Morning Batch');
   const [selectedTime, setSelectedTime] = useState<string>('06:00 AM – 08:30 AM');
   const [selectedMode, setSelectedMode] = useState<string>('in-person');
-  const [selectedVenue, setSelectedVenue] = useState<string>('Kalptaru Shala');
+  const [selectedVenue, setSelectedVenue] = useState<string>('Kalptaruu Shala');
   const [selectedDate, setSelectedDate] = useState<string>('');
 
   // Visitor Details (No login required)
@@ -105,7 +105,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         setSelectedBatch(program.schedule || 'Morning Gurukula Batch');
         setSelectedTime(program.time || '06:00 AM – 08:30 AM');
         setSelectedMode(program.mode || 'in-person');
-        setSelectedVenue('Kalptaru Shala');
+        setSelectedVenue('Kalptaruu Shala');
         setSelectedDate('');
       } else {
         setSelectedBatch('Workshop Immersion');
@@ -136,7 +136,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   (available.startTime ? `${available.startTime} – ${available.endTime}` : '06:00 AM – 08:30 AM')
               );
               setSelectedMode(available.mode || 'in-person');
-              setSelectedVenue(available.venue || available.location || 'Kalptaru Shala');
+              setSelectedVenue(available.venue || available.location || 'Kalptaruu Shala');
               if (available.date) {
                 try {
                   setSelectedDate(new Date(available.date).toISOString().split('T')[0]);
@@ -252,8 +252,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           <div className="flex items-center gap-3">
             <img
               src="/logo.png"
-              alt="Kalptaru Yog Vidyalaya Logo"
-              className="w-9 h-9 rounded-full object-cover border border-gold-400/50 shadow-soft shrink-0"
+              alt="Kalptaruu Yoga Vidhyalaya Logo"
+              className="w-9 h-9 rounded-full object-cover shadow-soft shrink-0"
             />
             <div>
               <span className="text-[10px] font-mono tracking-widest uppercase text-gold-400/90 font-semibold block">
@@ -375,7 +375,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                             setSelectedBatch(sched.batch);
                             setSelectedTime(sched.time || `${sched.startTime} – ${sched.endTime}`);
                             setSelectedMode(sched.mode);
-                            setSelectedVenue(sched.venue || sched.location || 'Kalptaru Shala');
+                            setSelectedVenue(sched.venue || sched.location || 'Kalptaruu Shala');
                             if (sched.date) {
                               try {
                                 setSelectedDate(new Date(sched.date).toISOString().split('T')[0]);
@@ -634,7 +634,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <div className="p-3 bg-canvas-warm/70 border border-border rounded-xl flex items-start gap-2.5 text-xs text-ink-muted">
                 <Info className="w-3.5 h-3.5 text-gold-600 shrink-0 mt-0.5" />
                 <p>
-                  Upon submission, you will receive a unique booking reference number. Kalptaru Yog Vidyalaya will contact you directly regarding your enrollment and payment.
+                  Upon submission, you will receive a unique booking reference number. Kalptaruu Yoga Vidhyalaya will contact you directly regarding your enrollment and payment.
                 </p>
               </div>
 

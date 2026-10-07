@@ -58,6 +58,9 @@ export interface IInstitute extends Document {
     coverImage?: IStorageImage;
   };
   description?: string;
+  eyebrow?: string;
+  affiliationText?: string;
+  pillars?: { title: string; subtitle?: string; description: string }[];
   images?: IStorageImage[];
   homepageCta?: {
     badge?: string;
@@ -100,7 +103,7 @@ const InstituteSchema = new Schema<IInstitute>(
       type: String,
       required: [true, 'Institute name is required'],
       trim: true,
-      default: 'Kalptaru Yog Vidyalaya',
+      default: 'Kalptaruu Yoga Vidhyalaya',
     },
     tagline: {
       type: String,
@@ -161,6 +164,15 @@ const InstituteSchema = new Schema<IInstitute>(
     },
     seo: { type: SEOMetadataSchema },
     description: { type: String, trim: true, default: '' },
+    eyebrow: { type: String, trim: true, default: 'Sanctuary of Traditional Yoga & Clinical Physiotherapy' },
+    affiliationText: { type: String, trim: true, default: 'Affiliated with Indian Yoga Association (IYA)' },
+    pillars: [
+      {
+        title: { type: String, trim: true },
+        subtitle: { type: String, trim: true },
+        description: { type: String, trim: true },
+      },
+    ],
     images: [{ type: StorageImageSchema }],
     homepageCta: {
       badge: { type: String, default: 'Traditional Yoga & Wellness' },

@@ -181,3 +181,145 @@
 .animate-fade-in      { animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-backdrop     { animation: backdropFade 0.25s ease-out forwards; }
 .animate-pulse-subtle { animation: pulseSubtle 3s ease-in-out infinite; }
+
+/* ─── Vibrant Feelable Gradient & Auric Flow Animations ────────────────────── */
+@keyframes auricGradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes auricFloatOne {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.75;
+  }
+  33% {
+    transform: translate(90px, -55px) scale(1.25);
+    opacity: 0.95;
+  }
+  66% {
+    transform: translate(-50px, 45px) scale(0.95);
+    opacity: 0.70;
+  }
+}
+
+@keyframes auricFloatTwo {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.70;
+  }
+  33% {
+    transform: translate(-80px, 70px) scale(1.28);
+    opacity: 0.95;
+  }
+  66% {
+    transform: translate(60px, -45px) scale(0.92);
+    opacity: 0.65;
+  }
+}
+
+@keyframes auricFloatThree {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.65;
+  }
+  50% {
+    transform: translate(65px, 50px) scale(1.20);
+    opacity: 0.90;
+  }
+}
+
+@keyframes auricShimmerBorder {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Base Flowing Gradient Canvas for Hero & Atmospheric Sections (Logo Purple #2A0725 & #1A0719 ONLY) */
+.animate-auric-canvas {
+  background: linear-gradient(135deg, #1A0719 0%, #2A0725 35%, #240920 65%, #1A0719 100%) !important;
+  background-size: 200% 200% !important;
+  animation: auricGradientFlow 10s ease-in-out infinite !important;
+}
+
+/* Floating Aura Orbs with Feelable Motion and Velocity */
+.animate-aura-1 {
+  animation: auricFloatOne 8s ease-in-out infinite !important;
+  will-change: transform, opacity;
+}
+
+.animate-aura-2 {
+  animation: auricFloatTwo 10s ease-in-out infinite !important;
+  will-change: transform, opacity;
+}
+
+.animate-aura-3 {
+  animation: auricFloatThree 7s ease-in-out infinite !important;
+  will-change: transform, opacity;
+}
+
+/* Living Gradient Flow Utility */
+.animate-auric-flow {
+  background-size: 200% 200% !important;
+  animation: auricGradientFlow 8s ease infinite !important;
+}
+
+/* Navbar Animated Gradient Surface (Pure Logo Purple #2A0725 & #1A0719) */
+.animate-auric-navbar {
+  background: linear-gradient(135deg, rgba(26, 7, 25, 0.98) 0%, rgba(42, 7, 37, 0.96) 50%, rgba(26, 7, 25, 0.98) 100%) !important;
+  background-size: 200% 200% !important;
+  animation: auricGradientFlow 10s ease infinite !important;
+}
+
+/* Dropdown Menu Animated Gradient Surface (Pure Logo Purple) */
+.animate-auric-dropdown {
+  background: linear-gradient(145deg, rgba(26, 7, 25, 0.98) 0%, rgba(42, 7, 37, 0.97) 50%, rgba(26, 7, 25, 0.98) 100%) !important;
+  background-size: 200% 200% !important;
+  animation: auricGradientFlow 8s ease infinite !important;
+}
+
+/* Mobile Drawer Animated Gradient Surface (Pure Logo Purple) */
+.animate-auric-drawer {
+  background: linear-gradient(160deg, rgba(26, 7, 25, 0.99) 0%, rgba(42, 7, 37, 0.98) 50%, rgba(26, 7, 25, 0.99) 100%) !important;
+  background-size: 200% 200% !important;
+  animation: auricGradientFlow 9s ease infinite !important;
+}
+
+/* Flowing Pure Golden Radiant Accent Border from Logo (#DAA53B) */
+.auric-border-glow {
+  background: linear-gradient(90deg, rgba(218, 165, 59, 0.2), rgba(225, 185, 95, 0.9), rgba(218, 165, 59, 0.4), rgba(225, 185, 95, 0.9), rgba(218, 165, 59, 0.2));
+  background-size: 200% 100%;
+  animation: auricShimmerBorder 5s ease infinite;
+}
+
+/* Celestial Sacred Orbit Slow Continuous Rotation */
+@keyframes celestialOrbitRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-orbit-rotate {
+  animation: celestialOrbitRotate 50s linear infinite !important;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+
+

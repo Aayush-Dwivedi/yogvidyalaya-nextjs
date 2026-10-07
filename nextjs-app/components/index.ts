@@ -17,3 +17,4 @@ export * from './EmptyState';
 export * from './Motifs';
 export * from './KalptaruLogo';
 export * from './DesignSystemShowcase';
+export * from './AuricBackground';

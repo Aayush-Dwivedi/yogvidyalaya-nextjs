@@ -92,7 +92,7 @@ export const AdminMembershipPage: React.FC = () => {
         ],
         features: [
           'Unlimited weekday shala practice access',
-          'Full access to the Kalptaru Yogic Library',
+          'Full access to the Kalptaruu Yogic Library',
           'Monthly 1-on-1 alignment review with lead Acharya',
           '10% discount on all weekend workshops & retreats',
         ],

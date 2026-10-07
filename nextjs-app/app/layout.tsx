@@ -3,16 +3,16 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Kalptaru Yog Vidyalaya — Ancient Wisdom, Modern Journey',
-    template: '%s | Kalptaru Yog Vidyalaya',
+    default: 'Kalptaruu Yoga Vidhyalaya — Ancient Wisdom, Modern Journey',
+    template: '%s | Kalptaruu Yoga Vidhyalaya',
   },
   description:
-    'Kalptaru Yog Vidyalaya offers authentic yoga courses, workshops, and residential programs rooted in ancient Indian tradition. Enroll today and begin your sadhana.',
+    'Kalptaruu Yoga Vidhyalaya offers authentic yoga courses, workshops, and residential programs rooted in ancient Indian tradition. Enroll today and begin your sadhana.',
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   ),
   openGraph: {
-    siteName: 'Kalptaru Yog Vidyalaya',
+    siteName: 'Kalptaruu Yoga Vidhyalaya',
     type: 'website',
     locale: 'en_IN',
   },

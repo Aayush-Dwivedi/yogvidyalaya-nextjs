@@ -95,8 +95,8 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
           <div className="flex items-center space-x-2.5">
             <img
               src="/logo.png"
-              alt="Kalptaru Yog Vidyalaya Logo"
-              className="w-8 h-8 rounded-full object-cover border border-gold-500/60 shadow-soft"
+              alt="Kalptaruu Yoga Vidhyalaya Logo"
+              className="w-8 h-8 rounded-full object-cover shadow-soft"
             />
             <span className="font-editorial text-lg text-plum-900 font-bold">
               Student Portal
@@ -140,12 +140,12 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
               <Link href="/dashboard" className="flex items-center space-x-3 group">
                 <img
                   src="/logo.png"
-                  alt="Kalptaru Yog Vidyalaya Logo"
-                  className="w-10 h-10 rounded-full object-cover border border-gold-500/60 shadow-soft group-hover:scale-105 transition-transform shrink-0"
+                  alt="Kalptaruu Yoga Vidhyalaya Logo"
+                  className="w-10 h-10 rounded-full object-cover shadow-soft group-hover:scale-105 transition-transform shrink-0"
                 />
                 <div>
                   <h2 className="font-editorial text-lg text-plum-900 font-bold leading-tight">
-                    Kalptaru Yog
+                    Kalptaruu Yoga
                   </h2>
                   <p className="text-[10px] uppercase font-mono tracking-widest text-gold-600">
                     Student Portal

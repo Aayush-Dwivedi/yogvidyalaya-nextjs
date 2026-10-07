@@ -1367,7 +1367,7 @@ export const AdminCoursesPage: React.FC = () => {
                       seo: { ...editingCourse?.seo, metaTitle: e.target.value },
                     })
                   }
-                  placeholder="e.g. 200-Hour Yoga Teacher Training | Kalptaru Yog Vidyalaya"
+                  placeholder="e.g. 200-Hour Yoga Teacher Training | Kalptaruu Yoga Vidhyalaya"
                   className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs"
                 />
               </div>

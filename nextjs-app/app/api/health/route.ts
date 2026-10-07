@@ -12,6 +12,6 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV,
     },
-    'Kalptaru Yog Vidyalaya API — healthy'
+    'Kalptaruu Yoga Vidhyalaya API — healthy'
   );
 }

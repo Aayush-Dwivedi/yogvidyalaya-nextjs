@@ -7,7 +7,6 @@ import { Badge } from '../../components/Badge';
 import { LinkButton } from '../../components/LinkButton';
 import { FEATURED_COURSES } from '../../services/homeData';
 import { FeaturedCourse } from '../../types/home';
-import { KalptaruTree } from '../../components/Motifs';
 import { CmsService } from '../../services/cmsService';
 import { CmsCourse } from '../../types/cms';
 
@@ -55,7 +54,6 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
           title="Featured Courses"
           description="A carefully designed curriculum providing a strong foundation in traditional yogasanas with correct alignment."
           align="asymmetric"
-          motif={<KalptaruTree size={32} />}
           action={
             <LinkButton to="/programs/courses" variant="text" size="md" withArrow>
               Browse Complete Course Catalog
@@ -84,7 +82,7 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
               c.price?.displayPrice ||
               (typeof c.price === 'string' ? c.price : c.price?.amount ? `₹${c.price.amount.toLocaleString()}` : '');
 
-            const certDisplay = c.certification || 'Kalptaru Yog Vidyalaya Certification';
+            const certDisplay = c.certification || 'Kalptaruu Yoga Vidhyalaya Certification';
 
             return (
               <div

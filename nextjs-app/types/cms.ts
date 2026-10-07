@@ -41,11 +41,18 @@ export interface CmsInstitute {
   name: string;
   tagline: string;
   description?: string;
+  eyebrow?: string;
+  affiliationText?: string;
   mission: string;
   vision: string;
   philosophy: string;
   history?: string;
   establishedYear?: number;
+  pillars?: Array<{
+    title: string;
+    subtitle?: string;
+    description: string;
+  }>;
   branding?: {
     logo?: StorageImage;
     favicon?: string;

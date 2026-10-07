@@ -318,7 +318,7 @@ export const BookingsView: React.FC = () => {
                       <div className="flex items-center gap-1">
                         <MapPin className="w-3.5 h-3.5 text-gold-600 shrink-0" />
                         <span className="truncate max-w-[140px]">
-                          {bkg.schedule.venue || bkg.schedule.location || 'Kalptaru Shala'}
+                          {bkg.schedule.venue || bkg.schedule.location || 'Kalptaruu Shala'}
                         </span>
                       </div>
                       <div className="text-[10px] text-ink-faint capitalize pl-4">
@@ -468,7 +468,7 @@ export const BookingsView: React.FC = () => {
                   <span>•</span>
                   <span>Mode: {selectedBooking.schedule.mode || 'In-person'}</span>
                   <span>•</span>
-                  <span>Venue: {selectedBooking.schedule.venue || selectedBooking.schedule.location || 'Kalptaru Shala'}</span>
+                  <span>Venue: {selectedBooking.schedule.venue || selectedBooking.schedule.location || 'Kalptaruu Shala'}</span>
                 </div>
               </div>
 

@@ -195,7 +195,7 @@ export const AdminTrainersPage: React.FC = () => {
         bio:
           editingTrainer.bio?.trim() ||
           editingTrainer.shortBio?.trim() ||
-          'Experienced yoga instructor at Kalptaru Yog Vidyalaya.',
+          'Experienced yoga instructor at Kalptaruu Yoga Vidhyalaya.',
         shortBio: editingTrainer.shortBio?.trim() || editingTrainer.bio?.trim() || '',
         experienceYears: Number(editingTrainer.experienceYears) || 0,
         qualifications: editingTrainer.qualifications || [],

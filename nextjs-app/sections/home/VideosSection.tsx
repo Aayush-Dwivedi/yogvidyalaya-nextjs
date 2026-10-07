@@ -6,47 +6,49 @@ import { SectionHeader } from '../../components/SectionHeader';
 import { Badge } from '../../components/Badge';
 import { LinkButton } from '../../components/LinkButton';
 import { Modal } from '../../components/Modal';
-import { FEATURED_VIDEOS } from '../../services/homeData';
 import { VideoItem } from '../../types/home';
 import { CmsVideo } from '../../types/cms';
-import { KalptaruTree } from '../../components/Motifs';
 import { CmsService } from '../../services/cmsService';
 
 export interface VideosSectionProps {
   videos?: (VideoItem | CmsVideo)[];
 }
 
-const normalizeVideos = (items: any[]): VideoItem[] => {
-  const normalized: VideoItem[] = items.map((v, idx) => ({
-    id: v._id || v.id || `video-${idx}`,
-    title: v.title || 'Live Yoga Interactive Session',
-    youtubeId:
-      v.youtubeId ||
-      (v.url?.includes('v=') ? v.url.split('v=')[1]?.substring(0, 11) : '') ||
-      (v.url?.includes('youtu.be/') ? v.url.split('youtu.be/')[1]?.substring(0, 11) : '') ||
-      FEATURED_VIDEOS[idx % FEATURED_VIDEOS.length]?.youtubeId ||
-      'dQw4w9WgXcQ',
-    thumbnail:
-      v.thumbnail ||
-      (v.youtubeId ? `https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg` : '') ||
-      FEATURED_VIDEOS[idx % FEATURED_VIDEOS.length]?.thumbnail ||
-      '',
-    category: v.category || 'Discourse',
-    duration: v.duration || '25:00',
-    speaker: v.speaker || v.instructor || 'Mrs. Shuchi Mohan',
-    description: v.description || '',
-    views: v.views || '1.2K',
-  }));
+const extractVideoId = (v: any): string => {
+  if (v.youtubeVideoId && v.youtubeVideoId.length === 11) return v.youtubeVideoId;
+  if (v.youtubeId && v.youtubeId.length === 11) return v.youtubeId;
+  const rawUrl = v.youtubeUrl || v.url || '';
+  const match = rawUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+  return match ? match[1] : '';
+};
 
-  while (normalized.length < 3) {
-    normalized.push(FEATURED_VIDEOS[normalized.length]);
-  }
-  return normalized;
+const normalizeVideos = (items: any[]): VideoItem[] => {
+  if (!Array.isArray(items)) return [];
+  return items
+    .filter((v) => v && (v.status === undefined || v.status === 'published'))
+    .map((v, idx) => {
+      const yId = extractVideoId(v);
+      return {
+        id: v._id || v.id || `video-${idx}`,
+        title: v.title || 'Live Yoga Interactive Session',
+        youtubeId: yId,
+        thumbnail:
+          v.thumbnail?.url ||
+          v.thumbnail ||
+          (yId ? `https://img.youtube.com/vi/${yId}/hqdefault.jpg` : ''),
+        category: v.category || 'Discourse',
+        duration: v.duration || 'Session',
+        speaker: v.speaker || v.instructor || 'Mrs. Shuchi Mohan',
+        description: v.description || '',
+        views: v.views || '',
+      };
+    })
+    .filter((v) => v.title && (v.youtubeId || v.thumbnail));
 };
 
 export const VideosSection: React.FC<VideosSectionProps> = ({ videos: propVideos }) => {
   const [videos, setVideos] = useState<VideoItem[]>(() =>
-    propVideos && propVideos.length > 0 ? normalizeVideos(propVideos) : FEATURED_VIDEOS
+    propVideos && propVideos.length > 0 ? normalizeVideos(propVideos) : []
   );
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
 
@@ -59,12 +61,16 @@ export const VideosSection: React.FC<VideosSectionProps> = ({ videos: propVideos
   useEffect(() => {
     const fetchLiveVideos = async () => {
       try {
-        const homeData = await CmsService.getHomeContent();
-        if (homeData?.featuredVideos && homeData.featuredVideos.length > 0) {
-          setVideos(normalizeVideos(homeData.featuredVideos));
+        const live = await CmsService.getVideos('published');
+        if (live && live.length > 0) {
+          const featured = live.filter((v) => v.featured);
+          const toUse = featured.length > 0 ? featured : live;
+          setVideos(normalizeVideos(toUse));
+        } else {
+          setVideos([]);
         }
       } catch (err) {
-        console.warn('Using default featured videos:', err);
+        setVideos([]);
       }
     };
 
@@ -85,6 +91,10 @@ export const VideosSection: React.FC<VideosSectionProps> = ({ videos: propVideos
     };
   }, [propVideos]);
 
+  if (!videos || videos.length === 0) {
+    return null;
+  }
+
   const [mainVideo, ...supportingVideos] = videos;
 
   return (
@@ -95,7 +105,6 @@ export const VideosSection: React.FC<VideosSectionProps> = ({ videos: propVideos
           title="Expert Yoga Session for NCERT Platform"
           description="Live Yoga & Interactive Session with Experts"
           align="asymmetric"
-          motif={<KalptaruTree size={32} />}
           action={
             <LinkButton to="/videos" variant="text" size="md" withArrow>
               View All Videos

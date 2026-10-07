@@ -42,7 +42,7 @@ export const DesignSystemShowcase: React.FC = () => {
           <div className="flex items-center space-x-3">
             <KalptaruTree size={28} className="text-gold-400" />
             <span className="font-editorial text-lg tracking-wide text-ivory">
-              Kalptaru Yog Vidyalaya
+              Kalptaruu Yoga Vidhyalaya
             </span>
           </div>
           <div className="flex items-center space-x-2">
@@ -96,7 +96,7 @@ export const DesignSystemShowcase: React.FC = () => {
             <SectionHeader
               eyebrow="Color Architecture"
               title="Semantic Brand Tokens"
-              description="A calibrated palette drawn from the Kalptaru emblem. Pure blacks and neon accents are replaced with nuanced plum, antique gold, and warm ivory neutrals."
+              description="A calibrated palette drawn from the Kalptaruu emblem. Pure blacks and neon accents are replaced with nuanced plum, antique gold, and warm ivory neutrals."
               align="asymmetric"
               motif={<KalptaruTree size={32} />}
             />
@@ -401,7 +401,7 @@ export const DesignSystemShowcase: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 items-center text-center">
               <div className="p-4 bg-canvas-warm border border-border/60 rounded-[2px] flex flex-col items-center">
                 <KalptaruTree size={54} />
-                <span className="text-xs text-ink-muted mt-3 font-medium">Kalptaru Tree</span>
+                <span className="text-xs text-ink-muted mt-3 font-medium">Kalptaruu Tree</span>
               </div>
 
               <div className="p-4 bg-canvas-warm border border-border/60 rounded-[2px] flex flex-col items-center">
@@ -519,7 +519,7 @@ export const DesignSystemShowcase: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Institute Admission Guidelines"
-        description="Principles of respect, purity, and dedication at Kalptaru Yog Vidyalaya."
+        description="Principles of respect, purity, and dedication at Kalptaruu Yoga Vidhyalaya."
       >
         <div className="space-y-3 font-sans text-xs text-ink-muted leading-relaxed">
           <p>
@@ -547,7 +547,7 @@ export const DesignSystemShowcase: React.FC = () => {
         <Container size="wide">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <span className="font-editorial text-plum-900 text-sm">
-              Kalptaru Yog Vidyalaya &bull; Design System Foundation
+              Kalptaruu Yoga Vidhyalaya &bull; Design System Foundation
             </span>
             <span className="text-[11px] text-ink-faint">
               Traditional Yoga &amp; Wellness

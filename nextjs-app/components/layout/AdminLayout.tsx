@@ -25,6 +25,7 @@ import {
   ChevronDown,
   Menu,
   X,
+  ExternalLink,
 } from 'lucide-react';
 
 interface SubMenuItem {
@@ -160,12 +161,12 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
           <div className="flex items-center space-x-2.5">
             <img
               src="/logo.png"
-              alt="Kalptaru Yog Vidyalaya Logo"
-              className="w-8 h-8 rounded-full object-cover border border-gold-400/60 shadow-xs shrink-0"
+              alt="Kalptaruu Yoga Vidhyalaya Logo"
+              className="w-8 h-8 rounded-full object-cover shadow-xs shrink-0"
             />
             <div>
               <span className="font-editorial text-lg text-white font-bold leading-tight block">
-                Kalptaru Yog Vidyalaya
+                Kalptaruu Yoga Vidhyalaya
               </span>
               <span className="text-[10px] font-mono tracking-widest uppercase text-gold-400 font-semibold">
                 Admin
@@ -174,6 +175,15 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
           </div>
         </div>
 
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold text-plum-950 bg-gold-400 hover:bg-gold-300 transition-colors shrink-0"
+        >
+          <ExternalLink className="w-3 h-3" />
+          <span>Live Site</span>
+        </a>
       </header>
 
       {/* Mobile Drawer Backdrop */}
@@ -198,12 +208,12 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
               <Link href="/admin" className="flex items-center space-x-3 group">
                 <img
                   src="/logo.png"
-                  alt="Kalptaru Yog Vidyalaya Logo"
-                  className="w-9 h-9 rounded-full object-cover border border-gold-400/70 shadow-soft group-hover:scale-105 transition-transform shrink-0"
+                  alt="Kalptaruu Yoga Vidhyalaya Logo"
+                  className="w-9 h-9 rounded-full object-cover shadow-soft group-hover:scale-105 transition-transform shrink-0"
                 />
                 <div>
                   <h2 className="font-editorial text-base text-white font-bold leading-tight">
-                    Kalptaru Yog
+                    Kalptaruu Yoga
                   </h2>
                   <p className="text-[9px] uppercase font-mono tracking-widest text-gold-400 font-bold">
                     Admin
@@ -325,6 +335,17 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
             </span>
           </div>
 
+          <div className="flex items-center space-x-3">
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-plum-950 bg-gold-400 hover:bg-gold-300 transition-colors shadow-xs"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>View Live Website</span>
+            </a>
+          </div>
         </header>
 
         {/* Workspace Content Canvas */}

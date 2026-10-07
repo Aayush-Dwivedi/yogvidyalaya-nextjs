@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Container } from '../components/Container';
 import { LotusMotif, OrnamentalDivider, CornerFlourish } from '../components/Motifs';
+import { AuricBackground } from '../components/AuricBackground';
 import { Badge } from '../components/Badge';
 import { CmsService } from '../services/cmsService';
 import { CmsGalleryImage, CmsGalleryCategory } from '../types/cms';
@@ -71,7 +72,7 @@ const DEFAULT_GALLERY: DisplayPhoto[] = [
   {
     id: 'g-6',
     title: 'Classical Sanskrit Chanting & Satsang',
-    caption: 'Vedic mantras resonating through the sanctified atmosphere of Kalptaru Yog Vidyalaya.',
+    caption: 'Vedic mantras resonating through the sanctified atmosphere of Kalptaruu Yoga Vidhyalaya.',
     category: 'Satsang',
     image: 'https://images.unsplash.com/photo-1524863479829-916d8e77f114?auto=format&fit=crop&w=1200&q=85',
     date: 'Annual Gathering',
@@ -114,7 +115,7 @@ export const GalleryPage: React.FC = () => {
       if (images && images.length > 0) {
         const mapped: DisplayPhoto[] = images.map((img: any, idx: number) => ({
           id: img._id || img.id || `img-${idx}`,
-          title: img.title || 'Kalptaru Moment',
+          title: img.title || 'Kalptaruu Moment',
           caption: img.caption || img.description || '',
           category:
             (typeof img.category === 'object' ? img.category?.name : img.category) || 'Tradition',
@@ -196,9 +197,9 @@ export const GalleryPage: React.FC = () => {
 
   return (
     <div className="w-full bg-canvas text-ink min-h-screen">
-      {/* 1. Hero Header */}
-      <section className="relative py-20 sm:py-24 bg-plum-950 text-ivory overflow-hidden border-b border-gold-500/30">
-        <div className="absolute inset-0 bg-radial-gradient from-plum-900/60 via-plum-950/80 to-plum-950 pointer-events-none" />
+      {/* 1. Hero Header with Feelable Animated Auric Gradient */}
+      <section className="relative py-20 sm:py-24 bg-plum-950 text-ivory overflow-hidden">
+        <AuricBackground />
 
         <Container size="wide" className="relative z-10">
           <div className="max-w-3xl space-y-4">
@@ -210,12 +211,12 @@ export const GalleryPage: React.FC = () => {
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-editorial font-normal text-white leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-editorial font-normal text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-[#FFF5DB] to-gold-300 leading-tight">
               Moments of Sadhana &amp; Community
             </h1>
 
             <p className="text-sm sm:text-base text-white/80 font-sans leading-relaxed max-w-2xl font-light">
-              Glimpses into student sadhana, therapeutic workshops, teacher training immersions, and events at Kalptaru Yog Vidyalaya.
+              Glimpses into student sadhana, therapeutic workshops, teacher training immersions, and events at Kalptaruu Yoga Vidhyalaya.
             </p>
 
             <div className="pt-2 flex items-center gap-2 text-xs text-gold-300 font-mono">

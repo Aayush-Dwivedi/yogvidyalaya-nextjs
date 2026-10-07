@@ -520,7 +520,7 @@ export const AdminBookingsPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[10px] font-mono uppercase text-ink-faint block">Venue / Campus</span>
-                  <span className="text-ink">{inspectBooking.schedule.venue || 'Kalptaru Tapovan Shala'}</span>
+                  <span className="text-ink">{inspectBooking.schedule.venue || 'Kalptaruu Tapovan Shala'}</span>
                 </div>
                 <div>
                   <span className="text-[10px] font-mono uppercase text-ink-faint block">Delivery Format</span>

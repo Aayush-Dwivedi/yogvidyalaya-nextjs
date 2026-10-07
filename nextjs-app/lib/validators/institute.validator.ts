@@ -62,6 +62,17 @@ export const updateInstituteSchema = {
       })
       .optional(),
     description: z.string().trim().optional(),
+    eyebrow: z.string().trim().optional(),
+    affiliationText: z.string().trim().optional(),
+    pillars: z
+      .array(
+        z.object({
+          title: z.string().trim(),
+          subtitle: z.string().trim().optional(),
+          description: z.string().trim(),
+        })
+      )
+      .optional(),
     images: z.array(storageImageSchema).optional(),
     homepageCta: z
       .object({

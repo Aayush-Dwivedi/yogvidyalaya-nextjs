@@ -5,6 +5,7 @@ import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
 import { LotusMotif, CornerFlourish } from '../components/Motifs';
+import { AuricBackground } from '../components/AuricBackground';
 import { CmsService } from '../services/cmsService';
 import { CmsFounder } from '../types/cms';
 import {
@@ -58,7 +59,7 @@ export const FounderPage: React.FC = () => {
   const bio =
     founder?.biography ||
     founder?.bio ||
-    'My professional journey began in Physiotherapy, where I developed clinical expertise in rehabilitation and patient care. Over time, my interest in holistic healing led me toward Yoga Therapy and its integrative applications.\n\nI further expanded my practice during my professional tenure at Morarji Desai National Institute of Yoga (MDNIY), where I gained institutional exposure through yoga therapy sessions and wellness programs conducted for uniformed personnel, along with engagements associated with various government ministries.\n\nMy work has also included invited wellness sessions and live programs in association with NCERT, as well as participation in national and international conferences and institutional events. I now carry this integrated approach of Physiotherapy and Yoga forward through my independent institute, Kalptaru Yog Vidyalaya.';
+    'My professional journey began in Physiotherapy, where I developed clinical expertise in rehabilitation and patient care. Over time, my interest in holistic healing led me toward Yoga Therapy and its integrative applications.\n\nI further expanded my practice during my professional tenure at Morarji Desai National Institute of Yoga (MDNIY), where I gained institutional exposure through yoga therapy sessions and wellness programs conducted for uniformed personnel, along with engagements associated with various government ministries.\n\nMy work has also included invited wellness sessions and live programs in association with NCERT, as well as participation in national and international conferences and institutional events. I now carry this integrated approach of Physiotherapy and Yoga forward through my independent institute, Kalptaruu Yoga Vidhyalaya.';
 
   const quote =
     founder?.quote ||
@@ -88,7 +89,7 @@ export const FounderPage: React.FC = () => {
           'Yoga therapy & wellness programs for uniformed personnel at MDNIY',
           'Invited wellness sessions & live programs in association with NCERT',
           'Participation in national and international conferences & institutional events',
-          'Founder & Lead Instructor of Kalptaru Yog Vidyalaya',
+          'Founder & Lead Instructor of Kalptaruu Yoga Vidhyalaya',
         ];
 
   const specializations =
@@ -103,20 +104,20 @@ export const FounderPage: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col bg-canvas-warm">
-      {/* 1. Header Banner */}
-      <section className="relative py-16 sm:py-24 bg-plum-950 text-white border-b border-gold-500/20 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-plum-900 via-plum-950 to-plum-950 opacity-95" />
+      {/* 1. Header Banner with Feelable Animated Auric Gradient */}
+      <section className="relative py-16 sm:py-20 lg:py-24 bg-plum-950 text-white overflow-hidden">
+        <AuricBackground />
 
         <Container size="wide" className="relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Narrative */}
-            <div className="lg:col-span-7 space-y-5 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono tracking-widest uppercase">
+            <div className="lg:col-span-7 flex flex-col justify-center space-y-5 sm:space-y-6 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono tracking-widest uppercase self-center lg:self-start">
                 <LotusMotif size={16} className="text-gold-400" />
                 <span>Founder Stewardship &amp; Lineage</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-editorial font-bold text-white tracking-wide">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-editorial font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-[#FFF5DB] to-gold-300 tracking-tight leading-[1.1]">
                 {name}
               </h1>
 
@@ -124,35 +125,35 @@ export const FounderPage: React.FC = () => {
                 {title}
               </p>
 
-              <p className="text-xs sm:text-sm text-ivory/80 font-sans leading-relaxed max-w-2xl font-light">
+              <p className="text-sm sm:text-base text-ivory/85 font-sans leading-relaxed max-w-2xl font-light">
                 Bridging traditional yogic sadhana with modern evidence-based clinical rehabilitation. Dedicated to authentic, sustainable physical and psychological wellness.
               </p>
 
-              <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4">
-                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-plum-900/80 border border-gold-400/30 text-xs font-mono text-gold-300">
-                  <Award className="w-4 h-4 text-gold-400" />
+              <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3">
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-plum-900/90 border border-gold-400/30 text-xs font-mono text-gold-300 shadow-xs">
+                  <Award className="w-4 h-4 text-gold-400 shrink-0" />
                   <span>{experienceYears}+ Years Clinical &amp; Yogic Practice</span>
                 </div>
 
-                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-plum-900/80 border border-gold-400/30 text-xs font-mono text-gold-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-plum-900/90 border border-gold-400/30 text-xs font-mono text-gold-300 shadow-xs">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>MDNIY &amp; NCERT Experience</span>
                 </div>
               </div>
             </div>
 
             {/* Right Portrait */}
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-sm sm:max-w-md aspect-[4/5] rounded-2xl overflow-hidden border-2 border-gold-400/60 shadow-modal bg-plum-900 p-2">
+            <div className="lg:col-span-5 flex justify-center lg:justify-end items-center">
+              <div className="relative w-full max-w-[320px] sm:max-w-[360px] lg:max-w-[390px] aspect-[4/5] rounded-2xl overflow-hidden border-2 border-gold-400/60 shadow-[0_0_50px_rgba(218,165,59,0.25)] bg-plum-900 p-2">
                 <img
                   src={photoUrl}
                   alt={name}
                   className="w-full h-full object-cover rounded-xl filter brightness-95"
                 />
-                <div className="absolute top-4 left-4">
+                <div className="absolute top-4 left-4 pointer-events-none">
                   <CornerFlourish position="top-left" className="text-gold-400" />
                 </div>
-                <div className="absolute bottom-4 right-4">
+                <div className="absolute bottom-4 right-4 pointer-events-none">
                   <CornerFlourish position="bottom-right" className="text-gold-400" />
                 </div>
               </div>
@@ -216,17 +217,23 @@ export const FounderPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Consultation CTA */}
-              <div className="pt-6 flex flex-wrap gap-4">
-                <LinkButton to="/contact" variant="primary" size="md">
-                  <MessageCircle className="w-4 h-4 mr-2" />
+              {/* Consultation CTA Buttons (Aligned & Proportioned) */}
+              <div className="pt-6 flex flex-wrap items-center gap-4">
+                <a
+                  href="/contact"
+                  className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 text-plum-950 font-sans font-semibold text-xs sm:text-sm shadow-soft hover:from-gold-200 hover:to-gold-300 hover:scale-[1.02] transition-all cursor-pointer whitespace-nowrap"
+                >
+                  <MessageCircle className="w-4 h-4 shrink-0" />
                   <span>Connect with Mrs. Shuchi Mohan</span>
-                </LinkButton>
+                </a>
 
-                <LinkButton to="/trainers" variant="secondary" size="md">
+                <a
+                  href="/trainers"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full border border-plum-900/30 hover:border-gold-500 text-plum-900 bg-white hover:bg-gold-50/50 font-sans font-semibold text-xs sm:text-sm transition-all shadow-xs cursor-pointer whitespace-nowrap group"
+                >
                   <span>View All Faculty Members</span>
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </LinkButton>
+                  <ArrowRight className="w-4 h-4 shrink-0 transition-transform group-hover:translate-x-1" />
+                </a>
               </div>
             </div>
 

@@ -34,7 +34,7 @@ export const KalptaruLogo: React.FC<KalptaruLogoProps> = ({
   variant = 'light',
   className,
   imageOnly = false,
-  alt = 'Kalptaru Yog Vidyalaya Logo',
+  alt = 'Kalptaruu Yoga Vidhyalaya Logo',
 }) => {
   const logoImage = (
     <img
@@ -44,7 +44,7 @@ export const KalptaruLogo: React.FC<KalptaruLogoProps> = ({
       height={size}
       style={{ width: `${size}px`, height: `${size}px` }}
       className={cn(
-        'rounded-full object-cover shrink-0 select-none shadow-soft transition-transform group-hover:scale-105 border border-gold-400/40',
+        'rounded-full object-cover shrink-0 select-none shadow-soft transition-transform group-hover:scale-105',
         className
       )}
       loading="eager"
@@ -69,7 +69,7 @@ export const KalptaruLogo: React.FC<KalptaruLogoProps> = ({
               : 'text-ivory group-hover:text-gold-200'
           )}
         >
-          Kalptaru Yog Vidyalaya
+          Kalptaruu Yoga Vidhyalaya
         </span>
         <span
           className={cn(

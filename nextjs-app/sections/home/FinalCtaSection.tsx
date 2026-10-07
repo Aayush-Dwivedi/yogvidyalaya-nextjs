@@ -68,8 +68,8 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({ cta: propCta }
           <div className="mb-2">
             <img
               src="/logo.png"
-              alt="Kalptaru Yog Vidyalaya Logo"
-              className="w-16 h-16 rounded-full object-cover border-2 border-gold-400/80 shadow-modal mx-auto"
+              alt="Kalptaruu Yoga Vidhyalaya Logo"
+              className="w-16 h-16 rounded-full object-cover shadow-modal mx-auto"
             />
           </div>
           <Badge variant="dark" size="sm" dot>
