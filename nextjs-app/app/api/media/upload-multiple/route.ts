@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
       return ApiResponse.badRequest('No valid files uploaded. Attach files with field name "files".');
     }
 
-    if (files.length > 10) {
-      return ApiResponse.badRequest('A maximum of 10 files can be uploaded simultaneously.');
+    if (files.length > 50) {
+      return ApiResponse.badRequest('A maximum of 50 files can be uploaded simultaneously.');
     }
 
     const uploadedAssets = await Promise.all(

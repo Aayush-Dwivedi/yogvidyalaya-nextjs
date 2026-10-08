@@ -16,6 +16,7 @@ export interface PagePlaceholderProps {
   description: string;
   breadcrumbs: BreadcrumbItem[];
   phaseNotice?: string;
+  align?: 'left' | 'center';
 }
 
 export const PagePlaceholder: React.FC<PagePlaceholderProps> = ({
@@ -24,17 +25,25 @@ export const PagePlaceholder: React.FC<PagePlaceholderProps> = ({
   description,
   breadcrumbs,
   phaseNotice,
+  align = 'left',
 }) => {
+  const isCenter = align === 'center';
+
   return (
     <div className="w-full bg-canvas text-ink min-h-screen">
       {/* ─── 1. HERO HEADER WITH FEELABLE ANIMATED AURIC GRADIENT ─── */}
       <section className="relative py-20 sm:py-28 bg-plum-950 text-ivory overflow-hidden">
         <AuricBackground />
 
-        <Container size="wide" className="relative z-10">
-          <div className="max-w-3xl space-y-4">
+        <Container size="wide" className={`relative z-10 ${isCenter ? 'text-center' : ''}`}>
+          <div className={`space-y-4 ${isCenter ? 'max-w-3xl mx-auto text-center' : 'max-w-3xl'}`}>
             {/* Breadcrumb Navigation */}
-            <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase">
+            <nav
+              aria-label="Breadcrumb"
+              className={`flex items-center space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase ${
+                isCenter ? 'justify-center' : ''
+              }`}
+            >
               <Link href="/" className="hover:text-gold-300 transition-colors">
                 Home
               </Link>
@@ -52,9 +61,7 @@ export const PagePlaceholder: React.FC<PagePlaceholderProps> = ({
               ))}
             </nav>
 
-            <div className="flex items-center space-x-3 pt-2">
-              <LotusMotif size={24} className="text-gold-400 shrink-0" />
-              <span className="w-8 h-px bg-gold-400" />
+            <div className={`flex items-center pt-2 ${isCenter ? 'justify-center' : ''}`}>
               <span className="text-xs uppercase tracking-widest-editorial text-gold-300 font-semibold">
                 {eyebrow}
               </span>
@@ -64,7 +71,7 @@ export const PagePlaceholder: React.FC<PagePlaceholderProps> = ({
               {title}
             </h1>
 
-            <p className="text-sm sm:text-base text-white/80 font-sans leading-relaxed max-w-2xl font-light">
+            <p className={`text-sm sm:text-base text-white/80 font-sans leading-relaxed max-w-2xl font-light ${isCenter ? 'mx-auto' : ''}`}>
               {description}
             </p>
           </div>

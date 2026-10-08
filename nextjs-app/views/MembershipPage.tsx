@@ -127,20 +127,19 @@ export const MembershipPage: React.FC = () => {
 
         <Container size="wide" className="relative z-10 text-center">
           {/* Breadcrumb Navigation */}
-          <nav className="flex items-center justify-center space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase mb-6">
+          <nav aria-label="Breadcrumb" className="flex items-center justify-center space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase mb-4">
             <Link href="/" className="hover:text-gold-300 transition-colors">
               Home
             </Link>
-            <span>/</span>
-            <Link href="/programs/courses" className="hover:text-gold-300 transition-colors">
+            <span className="text-gold-500/60">/</span>
+            <Link href="/programs" className="hover:text-gold-300 transition-colors">
               Programs
             </Link>
-            <span>/</span>
-            <span className="text-white font-semibold">Membership</span>
+            <span className="text-gold-500/60">/</span>
+            <span className="text-gold-200 font-semibold">Membership</span>
           </nav>
 
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono uppercase tracking-widest mb-6">
-            <LotusMotif size={16} />
+          <div className="inline-flex items-center px-3.5 py-1.5 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono uppercase tracking-widest mb-6">
             <span>Daily Shala &amp; Ashram Passes</span>
           </div>
 
@@ -215,7 +214,7 @@ export const MembershipPage: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
               {filteredPlans.map((plan) => {
                 const planId = plan._id || plan.id || plan.slug;
                 const isPopular = Boolean(plan.popular);
@@ -223,7 +222,7 @@ export const MembershipPage: React.FC = () => {
                 return (
                   <div
                     key={planId}
-                    className={`bg-white rounded-2xl border flex flex-col justify-between transition-all duration-300 relative overflow-hidden shadow-soft hover:shadow-card hover:-translate-y-1 ${
+                    className={`bg-white rounded-xl border flex flex-col justify-between transition-all duration-300 relative overflow-hidden shadow-soft hover:shadow-card hover:-translate-y-1 ${
                       isPopular
                         ? 'border-gold-500 ring-2 ring-gold-500/20 shadow-md'
                         : 'border-border hover:border-plum-900/40'
@@ -231,36 +230,35 @@ export const MembershipPage: React.FC = () => {
                   >
                     {/* Popular ribbon */}
                     {isPopular && (
-                      <div className="bg-gradient-to-r from-gold-600 via-gold-500 to-gold-600 text-plum-950 font-sans text-[11px] font-bold py-1.5 px-4 text-center tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-xs">
-                        <Sparkles className="w-3.5 h-3.5" />
+                      <div className="bg-gradient-to-r from-gold-600 via-gold-500 to-gold-600 text-plum-950 font-sans text-[10px] font-bold py-1 px-3 text-center tracking-wider uppercase shadow-xs">
                         <span>Most Revered Pathway</span>
                       </div>
                     )}
 
-                    <div className="p-6 sm:p-8 flex-1 flex flex-col">
+                    <div className="p-5 sm:p-6 flex-1 flex flex-col">
                       {/* Plan Header */}
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        <span className="text-[10px] font-mono uppercase tracking-widest font-semibold px-2.5 py-1 rounded-md bg-canvas-warm text-gold-800 border border-gold-300/60">
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="text-[10px] font-mono uppercase tracking-widest font-semibold px-2 py-0.5 rounded-md bg-canvas-warm text-gold-800 border border-gold-300/60">
                           {plan.billingCycle}
                         </span>
                         {plan.price.discountPercentage ? (
-                          <span className="text-[11px] font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                             Save {plan.price.discountPercentage}%
                           </span>
                         ) : null}
                       </div>
 
-                      <h3 className="font-editorial text-2xl sm:text-3xl text-plum-900 font-bold leading-tight">
+                      <h3 className="font-editorial text-xl sm:text-2xl text-plum-900 font-bold leading-tight">
                         {plan.title}
                       </h3>
 
-                      <p className="text-xs sm:text-sm text-ink-muted font-sans mt-3 leading-relaxed">
+                      <p className="text-xs text-ink-muted font-sans mt-2 leading-relaxed">
                         {plan.description}
                       </p>
 
                       {/* Pricing Display */}
-                      <div className="mt-6 pt-6 border-t border-border flex items-baseline gap-2">
-                        <span className="font-editorial text-4xl sm:text-5xl font-bold text-plum-950">
+                      <div className="mt-4 pt-4 border-t border-border flex items-baseline gap-1.5">
+                        <span className="font-editorial text-3xl sm:text-4xl font-bold text-plum-950">
                           ₹{plan.price.amount.toLocaleString('en-IN')}
                         </span>
                         <span className="text-xs text-ink-muted font-mono">
@@ -275,7 +273,7 @@ export const MembershipPage: React.FC = () => {
 
                       {/* Batches Preview */}
                       {plan.batches && plan.batches.length > 0 && (
-                        <div className="mt-6 p-3.5 bg-canvas-warm/80 rounded-xl border border-border/70 space-y-2">
+                        <div className="mt-4 p-3 bg-canvas-warm/80 rounded-lg border border-border/70 space-y-1.5">
                           <p className="text-[10px] font-mono uppercase tracking-wider text-gold-800 font-bold flex items-center gap-1.5">
                             <Clock className="w-3.5 h-3.5 text-gold-600" />
                             <span>Included Shala Batches</span>
@@ -292,14 +290,14 @@ export const MembershipPage: React.FC = () => {
                       )}
 
                       {/* Features List */}
-                      <div className="mt-6 space-y-3 flex-1">
-                        <p className="text-[11px] font-mono uppercase tracking-wider text-ink-muted font-semibold">
+                      <div className="mt-4 space-y-2 flex-1">
+                        <p className="text-[10px] font-mono uppercase tracking-wider text-ink-muted font-semibold">
                           Membership Privileges
                         </p>
-                        <ul className="space-y-2.5">
+                        <ul className="space-y-2">
                           {plan.features.map((feat, idx) => (
-                            <li key={idx} className="flex items-start gap-2.5 text-xs text-ink leading-relaxed">
-                              <div className="w-4 h-4 rounded-full bg-gold-500/15 text-gold-700 flex items-center justify-center shrink-0 mt-0.5 border border-gold-500/30">
+                            <li key={idx} className="flex items-start gap-2 text-xs text-ink leading-snug">
+                              <div className="w-3.5 h-3.5 rounded-full bg-gold-500/15 text-gold-700 flex items-center justify-center shrink-0 mt-0.5 border border-gold-500/30">
                                 <Check className="w-2.5 h-2.5 stroke-[2.5]" />
                               </div>
                               <span>{feat}</span>
@@ -309,10 +307,10 @@ export const MembershipPage: React.FC = () => {
                       </div>
 
                       {/* CTA Button */}
-                      <div className="mt-8 pt-6 border-t border-border">
+                      <div className="mt-6 pt-4 border-t border-border">
                         <Link
                           href={`/contact/enquiry?plan=${encodeURIComponent(plan.title)}&type=membership`}
-                          className={`w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-sans font-bold transition-all shadow-sm ${
+                          className={`w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-sans font-bold transition-all shadow-sm ${
                             isPopular
                               ? 'bg-gold-500 hover:bg-gold-400 text-plum-950 shadow-soft hover:scale-[1.02]'
                               : 'bg-plum-900 hover:bg-plum-800 text-gold-300 hover:text-white'
@@ -448,42 +446,6 @@ export const MembershipPage: React.FC = () => {
                 </div>
               );
             })}
-          </div>
-        </Container>
-      </section>
-
-      {/* 5. Final Institutional CTA */}
-      <section className="mt-12">
-        <Container size="wide">
-          <div className="bg-[#1C0D1B] rounded-3xl p-8 sm:p-14 text-center text-white relative overflow-hidden border border-gold-500/30 shadow-modal">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.12),transparent_70%)] pointer-events-none" />
-
-            <div className="relative z-10 max-w-2xl mx-auto space-y-4">
-              <span className="inline-block text-[10px] font-mono uppercase tracking-widest text-gold-400 font-bold px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/20">
-                Begin Your Journey
-              </span>
-              <h2 className="font-editorial text-3xl sm:text-4xl text-white font-normal leading-tight">
-                Experience a Complimentary Trial Sadhana
-              </h2>
-              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans">
-                Unsure which batch suits your body alignment? Visit the Vidhyalaya for an introductory assessment session with our lead instructor.
-              </p>
-
-              <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Link
-                  href="/contact/enquiry?type=membership_trial"
-                  className="px-6 py-3 bg-gold-500 hover:bg-gold-400 text-plum-950 font-bold text-xs rounded-xl shadow-soft hover:scale-[1.02] transition-all"
-                >
-                  Book Assessment Trial
-                </Link>
-                <Link
-                  href="/contact"
-                  className="px-6 py-3 bg-plum-900/80 hover:bg-plum-900 text-gold-300 hover:text-white border border-gold-500/30 text-xs font-semibold rounded-xl transition-colors"
-                >
-                  Visit the Shala
-                </Link>
-              </div>
-            </div>
           </div>
         </Container>
       </section>

@@ -6,4 +6,5 @@ export * from './FeaturedCoursesSection';
 export * from './WhyYogaSection';
 export * from './GallerySection';
 export * from './VideosSection';
+export * from './TestimonialsSection';
 export * from './FinalCtaSection';

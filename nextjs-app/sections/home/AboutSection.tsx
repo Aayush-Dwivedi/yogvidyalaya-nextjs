@@ -13,8 +13,8 @@ export const AboutSection: React.FC = () => {
             {/* Primary Large Image */}
             <div className="relative z-10 w-full sm:w-5/6 rounded-[2px] overflow-hidden border border-border shadow-card bg-surface p-1.5">
               <img
-                src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1000&q=85"
-                alt="Meditation and yoga practice at Kalptaruu Yoga Vidhyalaya"
+                src="/images/welcome-cleansing.jpg"
+                alt="Therapeutic yogic practice and traditional guidance at Kalptaruu Yoga Vidhyalaya"
                 className="w-full aspect-[4/5] object-cover rounded-[1px] filter brightness-[0.98]"
                 loading="lazy"
               />
@@ -26,8 +26,8 @@ export const AboutSection: React.FC = () => {
             {/* Overlapping Secondary Image with Offset */}
             <div className="hidden sm:block absolute -bottom-8 -right-4 z-20 w-3/5 rounded-[2px] overflow-hidden border border-gold-400/60 shadow-modal bg-surface p-1.5">
               <img
-                src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=700&q=80"
-                alt="Teacher guiding asana adjustment"
+                src="/images/welcome-corporate-session.jpg"
+                alt="Corporate yogic wellness and collective practice"
                 className="w-full aspect-[4/3] object-cover rounded-[1px]"
                 loading="lazy"
               />
@@ -52,8 +52,7 @@ export const AboutSection: React.FC = () => {
           {/* Right Column: Editorial Narrative & Philosophy Pillars (6 cols) */}
           <div className="lg:col-span-6 space-y-8">
             <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <LotusMotif size={24} className="text-gold-600" />
+              <div className="flex items-center">
                 <span className="text-xs uppercase tracking-widest-editorial text-gold-700 font-semibold">
                   About Our Institute
                 </span>

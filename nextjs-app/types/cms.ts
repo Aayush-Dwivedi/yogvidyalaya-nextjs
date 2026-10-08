@@ -63,6 +63,8 @@ export interface CmsInstitute {
     email: string;
     phone: string;
     alternatePhone?: string;
+    whatsappLink?: string;
+    whatsappNumber?: string;
     address: {
       street: string;
       city: string;
@@ -314,4 +316,62 @@ export interface CmsMembershipPlan {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface CmsCorporateModule {
+  title: string;
+  duration?: string;
+  description: string;
+}
+
+export interface CmsCorporateProgram {
+  _id?: string;
+  id?: string;
+  title: string;
+  slug: string;
+  tagline?: string;
+  description: string;
+  shortDescription: string;
+  coverImage?: StorageImage;
+  format: 'on-site' | 'virtual' | 'retreat' | 'hybrid';
+  duration?: string;
+  targetAudience?: string;
+  deliverables: string[];
+  modules: CmsCorporateModule[];
+  caseStudiesOrClients?: string[];
+  pricingModel: 'custom-quote' | 'fixed-package' | 'per-seat';
+  startingPrice?: {
+    amount: number;
+    currency: string;
+  };
+  order: number;
+  status: 'draft' | 'published' | 'archived';
+  featured: boolean;
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: string[];
+    ogImage?: string;
+    canonicalUrl?: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CmsTestimonial {
+  _id?: string;
+  id?: string;
+  name: string;
+  roleOrTitle: string;
+  programOrCourse?: string;
+  quote: string;
+  rating: number;
+  avatar?: StorageImage;
+  location?: string;
+  order?: number;
+  featured?: boolean;
+  status: 'published' | 'draft' | 'archived';
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 

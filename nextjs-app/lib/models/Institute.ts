@@ -14,6 +14,8 @@ export interface IInstituteContact {
   email: string;
   phone: string;
   alternatePhone?: string;
+  whatsappLink?: string;
+  whatsappNumber?: string;
   address: {
     street: string;
     city: string;
@@ -139,6 +141,8 @@ const InstituteSchema = new Schema<IInstitute>(
       email: { type: String, required: true, trim: true, lowercase: true },
       phone: { type: String, required: true, trim: true },
       alternatePhone: { type: String, trim: true },
+      whatsappLink: { type: String, trim: true, default: 'https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL' },
+      whatsappNumber: { type: String, trim: true, default: '09818047984' },
       address: {
         street: { type: String, default: '' },
         city: { type: String, default: '' },

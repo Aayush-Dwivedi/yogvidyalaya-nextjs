@@ -95,8 +95,23 @@ const TrainersContent: React.FC = () => {
         <AuricBackground />
         
         <Container size="wide" className="relative z-10 text-center space-y-4 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono tracking-widest uppercase mb-2">
-            <LotusMotif size={16} className="text-gold-400" />
+          {/* Breadcrumb Navigation */}
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center justify-center space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase mb-2"
+          >
+            <Link href="/" className="hover:text-gold-300 transition-colors">
+              Home
+            </Link>
+            <span className="text-gold-500/60">/</span>
+            <Link href="/programs" className="hover:text-gold-300 transition-colors">
+              Programs
+            </Link>
+            <span className="text-gold-500/60">/</span>
+            <span className="text-gold-200 font-semibold">Trainers</span>
+          </nav>
+
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono tracking-widest uppercase mb-2">
             <span>Faculty &amp; Master Acharyas</span>
           </div>
 

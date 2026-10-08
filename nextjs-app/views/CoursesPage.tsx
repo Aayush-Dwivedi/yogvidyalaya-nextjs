@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
@@ -81,15 +82,25 @@ export const CoursesPage: React.FC = () => {
       <section className="relative py-20 sm:py-28 bg-plum-950 text-ivory overflow-hidden">
         <AuricBackground />
 
-        <Container size="wide" className="relative z-10">
-          <div className="max-w-3xl space-y-4">
-            <div className="flex items-center space-x-3">
-              <img
-                src="/logo.png"
-                alt="Kalptaruu Logo"
-                className="w-6 h-6 rounded-full object-cover shadow-xs shrink-0"
-              />
-              <span className="w-8 h-px bg-gold-400" />
+        <Container size="wide" className="relative z-10 text-center">
+          <div className="max-w-3xl mx-auto space-y-4 text-center">
+            {/* Breadcrumb Navigation */}
+            <nav
+              aria-label="Breadcrumb"
+              className="flex items-center justify-center space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase mb-2"
+            >
+              <Link href="/" className="hover:text-gold-300 transition-colors">
+                Home
+              </Link>
+              <span className="text-gold-500/60">/</span>
+              <Link href="/programs" className="hover:text-gold-300 transition-colors">
+                Programs
+              </Link>
+              <span className="text-gold-500/60">/</span>
+              <span className="text-gold-200 font-semibold">Courses</span>
+            </nav>
+
+            <div className="flex items-center justify-center">
               <span className="text-xs uppercase tracking-widest-editorial text-gold-300 font-semibold">
                 Traditional Yoga Programs
               </span>
@@ -99,11 +110,11 @@ export const CoursesPage: React.FC = () => {
               Courses &amp; Teacher Training
             </h1>
 
-            <p className="text-sm sm:text-base text-white/80 font-sans leading-relaxed max-w-2xl font-light">
+            <p className="text-sm sm:text-base text-white/80 font-sans leading-relaxed max-w-2xl mx-auto font-light">
               Our programs include general fitness yoga, therapeutic yoga for specific health conditions, and professional teacher training courses combining traditional yoga practices with physiotherapy expertise.
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-gold-300/80">
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-3 text-xs text-gold-300/80">
               <span className="flex items-center gap-1.5">
                 <Award className="w-4 h-4 text-gold-400" />
                 Affiliated by Indian Yoga Association

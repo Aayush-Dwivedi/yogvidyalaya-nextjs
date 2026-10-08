@@ -1,13 +1,56 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { OrnamentalDivider } from './Motifs';
 import { useToast } from './Toast';
+import { CmsService } from '../services/cmsService';
 
 export const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
   const { toast } = useToast();
+
+  const [contact, setContact] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('kalptaru_cached_institute');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.contact) return parsed.contact;
+        }
+      } catch {}
+    }
+    return {
+      email: 'shuchimohan@kalptaruyogvidyalaya.com',
+      phone: '09818047984',
+      whatsappLink: 'https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL',
+      address: {
+        street: 'N114 Piyush Heights, Sector 89',
+        city: 'Faridabad',
+        postalCode: '121002',
+      },
+    };
+  });
+
+  const loadContact = async () => {
+    try {
+      const data = await CmsService.getInstitute();
+      if (data && data.contact) {
+        setContact(data.contact);
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    loadContact();
+    const handleUpdate = () => loadContact();
+    window.addEventListener('kalptaru-cms-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('kalptaru-cms-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,14 +141,14 @@ export const Footer: React.FC = () => {
             <div className="space-y-2 text-xs text-ivory/80 font-sans">
               <div>
                 <span className="text-gold-400 font-medium">Phone: </span>
-                <a href="tel:09818047984" className="text-ivory hover:text-gold-300 transition-colors">
-                  09818047984
+                <a href={`tel:${contact.phone || '09818047984'}`} className="text-ivory hover:text-gold-300 transition-colors font-mono">
+                  {contact.phone || '09818047984'}
                 </a>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-gold-400 font-medium">WhatsApp: </span>
                 <a
-                  href="https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL"
+                  href={contact.whatsappLink || 'https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-ivory hover:text-gold-300 transition-colors inline-flex items-center gap-1.5"
@@ -118,14 +161,16 @@ export const Footer: React.FC = () => {
               </div>
               <div>
                 <span className="text-gold-400 font-medium">Email: </span>
-                <a href="mailto:shuchimohan@kalptaruyogvidyalaya.com" className="text-ivory hover:text-gold-300 transition-colors">
-                  shuchimohan@kalptaruyogvidyalaya.com
+                <a href={`mailto:${contact.email || 'shuchimohan@kalptaruyogvidyalaya.com'}`} className="text-ivory hover:text-gold-300 transition-colors">
+                  {contact.email || 'shuchimohan@kalptaruyogvidyalaya.com'}
                 </a>
               </div>
               <div>
                 <span className="text-gold-400 font-medium">Address: </span>
                 <span className="text-ivory/90">
-                  N114 Piyush Heights, Sector 89, Faridabad &ndash; 121002
+                  {contact.address?.street
+                    ? `${contact.address.street}, ${contact.address.city || 'Faridabad'}${contact.address.postalCode ? ` \u2013 ${contact.address.postalCode}` : ''}`
+                    : 'N114 Piyush Heights, Sector 89, Faridabad \u2013 121002'}
                 </span>
               </div>
             </div>

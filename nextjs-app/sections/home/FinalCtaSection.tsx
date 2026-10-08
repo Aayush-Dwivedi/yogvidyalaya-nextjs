@@ -61,7 +61,115 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({ cta: propCta }
   const secondaryUrl = cta?.secondaryCtaUrl || '/contact';
 
   return (
-    <section className="py-24 sm:py-32 bg-plum-900 text-ivory relative overflow-hidden border-t border-gold-500/40">
+    <section className="py-24 sm:py-32 text-ivory relative overflow-hidden border-t border-[#DAA53B]/30 border-b border-[#DAA53B]/20">
+      {/* Pure Purple & Golden Living Gradient Background Canvas (Animated) */}
+      <div
+        className="absolute inset-0 pointer-events-none -z-20"
+        style={{
+          background: 'linear-gradient(135deg, #1A0719 0%, #2A0725 25%, #3B0B34 50%, #2A0725 75%, #1A0719 100%)',
+          backgroundSize: '250% 250%',
+          animation: 'auricGradientFlow 12s ease-in-out infinite',
+        }}
+      />
+
+      {/* Breathing Golden & Purple Radiant Center Auras (No Light/White Colors) */}
+      <div
+        className="absolute inset-0 pointer-events-none -z-10"
+        style={{
+          background:
+            'radial-gradient(circle 650px at 50% 50%, rgba(218, 165, 59, 0.16) 0%, rgba(42, 7, 37, 0.45) 50%, transparent 75%)',
+          animation: 'auricGlowBreath 8s ease-in-out infinite',
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none -z-10"
+        style={{
+          background:
+            'radial-gradient(ellipse 90% 70% at 50% 50%, rgba(59, 11, 52, 0.5) 0%, rgba(26, 7, 25, 0.85) 65%, transparent 100%)',
+        }}
+      />
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#DAA53B]/50 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#DAA53B]/25 to-transparent pointer-events-none" />
+
+      {/* Concentric Sacred Geometry Circles (Animated Breathing & Slow Spin) */}
+      <div
+        className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none z-0"
+        style={{ animation: 'sacredBreathing 9s ease-in-out infinite' }}
+      >
+        <svg
+          className="w-[1100px] h-[1100px] sm:w-[1450px] sm:h-[1450px] lg:w-[1750px] lg:h-[1750px] max-w-none text-[#DAA53B]"
+          viewBox="0 0 1600 1600"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <radialGradient id="sacredCenterGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#DAA53B" stopOpacity="0.14" />
+              <stop offset="45%" stopColor="#2A0725" stopOpacity="0.08" />
+              <stop offset="85%" stopColor="#1A0719" stopOpacity="0.02" />
+              <stop offset="100%" stopColor="#1A0719" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+
+          {/* Central Auric Glow */}
+          <circle cx="800" cy="800" r="500" fill="url(#sacredCenterGlow)" />
+
+          {/* Concentric Base Rings (Soft Opacity increasing from inside out) */}
+          {/* Circle 1: Innermost circle framing text closely, very low opacity (0.04) */}
+          <circle cx="800" cy="800" r="180" stroke="#DAA53B" strokeWidth="1.2" strokeOpacity="0.04" />
+
+          {/* Circle 2: Low opacity (0.08) */}
+          <circle cx="800" cy="800" r="270" stroke="#DAA53B" strokeWidth="1.2" strokeOpacity="0.08" />
+
+          {/* Circle 3: Low-mid opacity (0.14) */}
+          <circle cx="800" cy="800" r="370" stroke="#DAA53B" strokeWidth="1.3" strokeOpacity="0.14" />
+
+          {/* Circle 4: Mid opacity (0.22) */}
+          <circle cx="800" cy="800" r="480" stroke="#DAA53B" strokeWidth="1.4" strokeOpacity="0.22" />
+
+          {/* Circle 5: Upper-mid opacity (0.32) */}
+          <circle cx="800" cy="800" r="600" stroke="#DAA53B" strokeWidth="1.6" strokeOpacity="0.32" />
+
+          {/* Circle 6: Elevated opacity (0.45) */}
+          <circle cx="800" cy="800" r="730" stroke="#DAA53B" strokeWidth="1.8" strokeOpacity="0.45" />
+
+          {/* Circle 7: Outermost bounding ring (0.60) */}
+          <circle cx="800" cy="800" r="870" stroke="#DAA53B" strokeWidth="2" strokeOpacity="0.60" />
+
+          {/* Animated Counter-Rotating Sacred Dashed & Dotted Rings */}
+          <g style={{ transformOrigin: '800px 800px', animation: 'sacredSpinReverse 95s linear infinite' }}>
+            {/* Circle 3 dashed companion */}
+            <circle cx="800" cy="800" r="385" stroke="#DAA53B" strokeWidth="0.9" strokeOpacity="0.15" strokeDasharray="4 6" />
+            {/* Circle 5 dotted companion */}
+            <circle cx="800" cy="800" r="618" stroke="#DAA53B" strokeWidth="1.2" strokeOpacity="0.33" strokeDasharray="3 8" />
+            {/* Circle 7 outer dashed companion */}
+            <circle cx="800" cy="800" r="888" stroke="#DAA53B" strokeWidth="1.2" strokeOpacity="0.60" strokeDasharray="5 7" />
+          </g>
+
+          {/* Animated Clockwise-Rotating Sacred 8-Fold Axis Marks & Sacred Diamonds */}
+          <g style={{ transformOrigin: '800px 800px', animation: 'sacredSpinSlow 80s linear infinite' }}>
+            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+              <g key={angle} transform={`rotate(${angle} 800 800)`}>
+                {/* Subtle Tick on Circle 3 (opacity 0.14) */}
+                <line x1="800" y1="422" x2="800" y2="438" stroke="#DAA53B" strokeWidth="1" strokeOpacity="0.14" />
+
+                {/* Sacred Diamond on Circle 4 (opacity 0.22) */}
+                <line x1="800" y1="310" x2="800" y2="330" stroke="#DAA53B" strokeWidth="1.2" strokeOpacity="0.22" />
+                <polygon points="800,314 804,320 800,326 796,320" fill="#DAA53B" fillOpacity="0.22" />
+
+                {/* Sacred Diamond & Axis Marker on Circle 5 (opacity 0.32) */}
+                <line x1="800" y1="190" x2="800" y2="210" stroke="#DAA53B" strokeWidth="1.4" strokeOpacity="0.32" />
+                <polygon points="800,193 805,200 800,207 795,200" fill="#DAA53B" fillOpacity="0.32" />
+
+                {/* Sacred Ray & Marker on Circle 6 (opacity 0.45) */}
+                <line x1="800" y1="60" x2="800" y2="80" stroke="#DAA53B" strokeWidth="1.6" strokeOpacity="0.45" />
+                <polygon points="800,62 806,70 800,78 794,70" fill="#DAA53B" fillOpacity="0.45" />
+              </g>
+            ))}
+          </g>
+        </svg>
+      </div>
+
       <Container size="default" className="relative z-10 text-center space-y-6">
         {/* Emblem & Badge */}
         <div className="flex flex-col items-center space-y-3">

@@ -37,6 +37,7 @@ import {
   Sun,
   Camera,
   Check,
+  MessageSquare,
 } from 'lucide-react';
 
 export const AdminHomepageCMS: React.FC = () => {
@@ -636,6 +637,14 @@ export const AdminHomepageCMS: React.FC = () => {
           <ImageIcon className="w-4 h-4 text-gold-500" />
           <span>Gallery &amp; Video Highlights</span>
         </button>
+
+        <a
+          href="/admin/content/testimonials"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans bg-white text-ink hover:text-plum-900 hover:bg-surface-subtle border border-border font-medium shadow-xs transition-all"
+        >
+          <MessageSquare className="w-4 h-4 text-gold-500" />
+          <span>Testimonials CMS</span>
+        </a>
       </div>
 
       {/* ========================================================================= */}

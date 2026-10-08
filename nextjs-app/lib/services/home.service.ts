@@ -4,6 +4,7 @@ import { Workshop } from '../models/Workshop';
 import { Benefit } from '../models/Benefit';
 import { GalleryImage } from '../models/GalleryImage';
 import { Video } from '../models/Video';
+import { Testimonial } from '../models/Testimonial';
 import { InstituteService } from './institute.service';
 
 export class HomeService {
@@ -19,6 +20,7 @@ export class HomeService {
       benefits,
       galleryHighlights,
       featuredVideos,
+      testimonials,
     ] = await Promise.all([
       InstituteService.getInstitute(),
       HeroSlide.find({ active: true }).sort({ order: 1 }),
@@ -38,6 +40,9 @@ export class HomeService {
       Video.find({ status: 'published', featured: true })
         .sort({ order: 1 })
         .limit(4),
+      Testimonial.find({ status: 'published' })
+        .sort({ order: 1, createdAt: -1 })
+        .limit(10),
     ]);
 
     // Fallbacks if none marked featured yet
@@ -78,6 +83,7 @@ export class HomeService {
       benefits,
       galleryHighlights,
       featuredVideos,
+      testimonials,
       homepageCta: institute.homepageCta,
     };
   }

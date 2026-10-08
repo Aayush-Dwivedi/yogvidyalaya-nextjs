@@ -167,9 +167,19 @@ export const VideosPage: React.FC = () => {
 
         <Container size="wide" className="relative z-10">
           <div className="max-w-3xl space-y-4">
-            <div className="flex items-center space-x-3">
-              <Film className="w-5 h-5 text-gold-400 shrink-0" />
-              <span className="w-8 h-px bg-gold-400" />
+            {/* Breadcrumb Navigation */}
+            <nav
+              aria-label="Breadcrumb"
+              className="flex items-center space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase"
+            >
+              <Link href="/" className="hover:text-gold-300 transition-colors">
+                Home
+              </Link>
+              <span className="text-gold-500/60">/</span>
+              <span className="text-gold-200 font-semibold">Videos</span>
+            </nav>
+
+            <div className="flex items-center">
               <span className="text-xs uppercase tracking-widest-editorial text-gold-300 font-semibold">
                 Wisdom &amp; Visual Archives
               </span>
@@ -373,8 +383,7 @@ export const VideosPage: React.FC = () => {
                   {/* Spotlight Metadata & Actions */}
                   <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between space-y-6">
                     <div className="space-y-3">
-                      <div className="flex items-center space-x-2 text-gold-700">
-                        <Sparkles className="w-4 h-4 text-gold-500" />
+                      <div className="flex items-center text-gold-700">
                         <span className="text-xs uppercase font-mono tracking-widest font-semibold">
                           Spotlight Session
                         </span>

@@ -23,6 +23,7 @@ import {
   Activity,
   Layers,
   Compass,
+  ExternalLink,
 } from 'lucide-react';
 
 export interface InstitutePageProps {
@@ -156,11 +157,31 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
   const contact = {
     email: institute?.contact?.email || 'shuchimohan@kalptaruyogvidyalaya.com',
     phone: institute?.contact?.phone || '09818047984',
+    alternatePhone: institute?.contact?.alternatePhone || '',
+    whatsappLink: institute?.contact?.whatsappLink || '',
     hours: institute?.contact?.hours || 'Mon – Sat: 06:00 AM – 08:00 PM',
     address: institute?.contact?.address?.street
       ? `${institute.contact.address.street}, ${institute.contact.address.city || 'Faridabad'} – ${institute.contact.address.postalCode || '121002'}, ${institute.contact.address.state || 'Haryana'}, ${institute.contact.address.country || 'India'}`
       : 'N114 Piyush Heights, Sector 89, Faridabad – 121002, Haryana, India',
+    mapUrl: institute?.contact?.address?.mapUrl || '',
   };
+
+  const configuredMapUrl = (institute?.contact?.address?.mapUrl || '').trim();
+  const mapEmbedSrc =
+    configuredMapUrl.includes('output=embed') || configuredMapUrl.includes('/embed')
+      ? configuredMapUrl
+      : `https://maps.google.com/maps?q=${encodeURIComponent(
+          contact.address || 'Piyush Heights, Sector 89, Faridabad'
+        )}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+
+  const mapDirectUrl =
+    configuredMapUrl &&
+    !configuredMapUrl.includes('output=embed') &&
+    configuredMapUrl !== 'https://maps.google.com'
+      ? configuredMapUrl
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          contact.address || 'Piyush Heights, Sector 89, Faridabad'
+        )}`;
 
   const campusPhotos =
     institute?.images && institute.images.length > 0 ? institute.images : null;
@@ -173,9 +194,24 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
 
         <Container size="wide" className="relative z-10">
           <div className="max-w-4xl space-y-5 text-left">
+            {/* Breadcrumb Navigation */}
+            <nav
+              aria-label="Breadcrumb"
+              className="flex items-center space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase"
+            >
+              <Link href="/" className="hover:text-gold-300 transition-colors">
+                Home
+              </Link>
+              <span className="text-gold-500/60">/</span>
+              <Link href="/about" className="hover:text-gold-300 transition-colors">
+                About
+              </Link>
+              <span className="text-gold-500/60">/</span>
+              <span className="text-gold-200 font-semibold">Institute</span>
+            </nav>
+
             {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono tracking-widest uppercase">
-              <LotusMotif size={16} className="text-gold-400" />
+            <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono tracking-widest uppercase">
               <span>{eyebrow}</span>
             </div>
 
@@ -581,7 +617,7 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
       {/* ─── 7. CAMPUS LOCATION & VISITATION DETAILS ─── */}
       <section className="py-16 sm:py-20 bg-surface relative border-b border-border">
         <Container size="wide">
-          <div className="max-w-4xl mx-auto rounded-2xl bg-canvas border border-border p-8 sm:p-10 shadow-soft space-y-6">
+          <div className="max-w-5xl mx-auto rounded-2xl bg-canvas border border-border p-6 sm:p-10 shadow-soft space-y-8">
             <div className="text-center space-y-2">
               <span className="text-xs font-mono uppercase tracking-widest text-gold-700 font-semibold">
                 Sanctuary Location
@@ -589,10 +625,13 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
               <h2 className="text-2xl sm:text-3xl font-editorial font-bold text-plum-900">
                 Visit Our Learning Ashram in Faridabad
               </h2>
+              <p className="text-xs sm:text-sm text-ink-muted max-w-xl mx-auto">
+                Conveniently located in Sector 89, Faridabad with serene facilities dedicated to classical yoga and clinical physiotherapy.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-canvas-warm border border-gold-300/40">
                 <MapPin className="w-5 h-5 text-gold-700 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <div className="text-xs font-mono uppercase tracking-wider text-plum-900 font-bold">
@@ -604,7 +643,7 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-canvas-warm border border-gold-300/40">
                 <Phone className="w-5 h-5 text-gold-700 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <div className="text-xs font-mono uppercase tracking-wider text-plum-900 font-bold">
@@ -618,7 +657,7 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-canvas-warm border border-gold-300/40">
                 <Mail className="w-5 h-5 text-gold-700 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <div className="text-xs font-mono uppercase tracking-wider text-plum-900 font-bold">
@@ -630,6 +669,37 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
                 </div>
               </div>
             </div>
+
+            {/* Embedded Google Map */}
+            <div className="overflow-hidden rounded-2xl border border-gold-300/60 shadow-sm bg-canvas-warm">
+              <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 bg-plum-950 text-white text-xs border-b border-gold-500/30">
+                <div className="flex items-center gap-2.5">
+                  <MapPin className="w-4 h-4 text-gold-400 shrink-0" />
+                  <span className="font-semibold font-mono tracking-wider text-gold-300 uppercase text-[11px] sm:text-xs">
+                    Kalptaruu Yoga Vidhyalaya — Interactive Map
+                  </span>
+                </div>
+                <a
+                  href={mapDirectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gold-500/20 hover:bg-gold-500/30 text-gold-300 hover:text-gold-200 transition-colors text-xs font-medium border border-gold-400/30"
+                >
+                  <span>Open in Google Maps</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+              <div className="relative w-full h-[360px] sm:h-[420px] bg-canvas">
+                <iframe
+                  title="Kalptaruu Yoga Vidhyalaya Location"
+                  src={mapEmbedSrc}
+                  className="w-full h-full border-0"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
+              </div>
+            </div>
           </div>
         </Container>
       </section>
@@ -637,8 +707,7 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
       {/* ─── 8. CALL TO ACTION: BEGIN YOUR JOURNEY ─── */}
       <section className="py-16 sm:py-20 bg-plum-900 text-white relative text-center">
         <Container size="narrow" className="space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono uppercase">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono uppercase">
             <span>Begin Your Sadhana</span>
           </div>
 

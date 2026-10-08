@@ -27,12 +27,12 @@ export const ProgramsPage: React.FC = () => {
       {/* Breadcrumb Header */}
       <div className="bg-canvas-warm border-b border-border py-4">
         <Container size="wide">
-          <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-xs text-ink-muted">
-            <Link href="/" className="hover:text-plum-900 transition-colors">
+          <nav aria-label="Breadcrumb" className="flex items-center justify-center space-x-2 text-xs font-mono tracking-widest uppercase">
+            <Link href="/" className="hover:text-gold-600 transition-colors text-ink-muted">
               Home
             </Link>
-            <span className="text-gold-500/80">/</span>
-            <span className="text-plum-900 font-medium">Programs</span>
+            <span className="text-gold-500/60">/</span>
+            <span className="text-gold-800 font-semibold">Programs</span>
           </nav>
         </Container>
       </div>

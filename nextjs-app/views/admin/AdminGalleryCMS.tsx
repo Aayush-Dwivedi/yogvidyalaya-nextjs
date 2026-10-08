@@ -18,6 +18,13 @@ import {
   FolderPlus,
   Star,
   Filter,
+  Layers,
+  Plus,
+  X,
+  UploadCloud,
+  FolderUp,
+  Check,
+  FileImage,
 } from 'lucide-react';
 
 export const AdminGalleryCMS: React.FC = () => {
@@ -29,9 +36,26 @@ export const AdminGalleryCMS: React.FC = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Upload & Edit Modal
+  // Upload & Edit Modal (Single)
   const [modalOpen, setModalOpen] = useState(false);
   const [editingImage, setEditingImage] = useState<Partial<CmsGalleryImage> | null>(null);
+
+  // Bulk Upload Modal (Section-wise)
+  const [batchModalOpen, setBatchModalOpen] = useState(false);
+  const [batchTargetCategory, setBatchTargetCategory] = useState<string>('');
+  const [batchFiles, setBatchFiles] = useState<
+    Array<{ file: File; id: string; title: string; previewUrl: string }>
+  >([]);
+  const [batchEvent, setBatchEvent] = useState('');
+  const [batchStatus, setBatchStatus] = useState<'published' | 'draft'>('published');
+  const [batchUploading, setBatchUploading] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<{ current: number; total: number; stage: string }>({
+    current: 0,
+    total: 0,
+    stage: '',
+  });
+  const [inlineNewCatName, setInlineNewCatName] = useState('');
+  const [showInlineNewCat, setShowInlineNewCat] = useState(false);
 
   // Category Modal
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
@@ -70,6 +94,160 @@ export const AdminGalleryCMS: React.FC = () => {
     setTimeout(() => {
       setStatusMessage(null);
     }, 4500);
+  };
+
+  const notifyGalleryUpdated = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('kalptaru_cached_gallery_photos');
+        localStorage.removeItem('kalptaru_cached_gallery_categories');
+        window.dispatchEvent(new CustomEvent('kalptaru-cms-updated', { detail: { timestamp: Date.now() } }));
+      } catch {}
+    }
+  };
+
+  const handleOpenBatchModal = (preselectedCatId?: string) => {
+    const defaultCat = preselectedCatId || (categories.length > 0 ? (categories[0]._id || categories[0].id) : '');
+    setBatchTargetCategory((defaultCat as string) || '');
+    setBatchFiles([]);
+    setBatchEvent('');
+    setBatchStatus('published');
+    setShowInlineNewCat(false);
+    setInlineNewCatName('');
+    setBatchModalOpen(true);
+  };
+
+  const handleBatchFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = Array.from(e.target.files || []);
+    if (selected.length === 0) return;
+
+    const newItems = selected.map((file, idx) => {
+      // Format file name into a clean, human title (e.g. "morning_asana_01.jpg" -> "Morning Asana 01")
+      const cleanName = file.name
+        .replace(/\.[^/.]+$/, '')
+        .replace(/[-_]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+
+      return {
+        file,
+        id: `${Date.now()}-${idx}-${Math.random().toString(36).slice(2, 7)}`,
+        title: cleanName || `Gallery Photo ${images.length + idx + 1}`,
+        previewUrl: URL.createObjectURL(file),
+      };
+    });
+
+    setBatchFiles((prev) => [...prev, ...newItems]);
+    // Reset file input value so same files can be reselected if needed
+    e.target.value = '';
+  };
+
+  const handleRemoveBatchFile = (id: string) => {
+    setBatchFiles((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleUpdateBatchTitle = (id: string, newTitle: string) => {
+    setBatchFiles((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, title: newTitle } : item))
+    );
+  };
+
+  const handleBatchUploadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (batchFiles.length === 0) {
+      showToast('Please select at least one photo to upload.', 'error');
+      return;
+    }
+
+    let targetCatId = batchTargetCategory;
+
+    // If user is creating a new category inline:
+    if (showInlineNewCat && inlineNewCatName.trim()) {
+      try {
+        const createdCat = await CmsService.createGalleryCategory({ name: inlineNewCatName.trim() });
+        targetCatId = (createdCat._id || createdCat.id) as string;
+        setCategories((prev) => [...prev, createdCat]);
+        setBatchTargetCategory(targetCatId);
+        setShowInlineNewCat(false);
+        setInlineNewCatName('');
+      } catch (err: any) {
+        showToast(err.message || 'Failed to create new section', 'error');
+        return;
+      }
+    }
+
+    if (!targetCatId) {
+      showToast('Please select or create a target section / category.', 'error');
+      return;
+    }
+
+    const targetCatObj = categories.find((c) => (c._id || c.id) === targetCatId);
+
+    try {
+      setBatchUploading(true);
+      setBatchProgress({
+        current: 0,
+        total: batchFiles.length,
+        stage: `Preparing ${batchFiles.length} photos for upload...`,
+      });
+
+      const uploadedImagesData: Partial<CmsGalleryImage>[] = [];
+
+      // Upload each file with live progress updates
+      for (let i = 0; i < batchFiles.length; i++) {
+        const item = batchFiles[i];
+        setBatchProgress({
+          current: i + 1,
+          total: batchFiles.length,
+          stage: `Uploading photo ${i + 1} of ${batchFiles.length} (${item.title})...`,
+        });
+
+        const uploadRes = await MediaService.uploadImage(item.file, 'gallery', item.title);
+
+        uploadedImagesData.push({
+          title: item.title,
+          category: targetCatId,
+          categorySlug: targetCatObj?.slug,
+          event: batchEvent.trim(),
+          featured: false,
+          status: batchStatus,
+          order: images.length + i + 1,
+          image: {
+            url: uploadRes.url,
+            path: uploadRes.path,
+            bucket: uploadRes.bucket,
+            size: uploadRes.size,
+            mimeType: uploadRes.mimeType,
+            alt: uploadRes.alt || item.title,
+          },
+        });
+      }
+
+      setBatchProgress({
+        current: batchFiles.length,
+        total: batchFiles.length,
+        stage: 'Saving photos to gallery section...',
+      });
+
+      // Save records in batch to MongoDB
+      await CmsService.createGalleryImagesBatch(uploadedImagesData);
+
+      notifyGalleryUpdated();
+      showToast(
+        `Successfully uploaded ${batchFiles.length} photos to section "${targetCatObj?.name || 'Selected Section'}"!`
+      );
+
+      setBatchModalOpen(false);
+      setBatchFiles([]);
+      setBatchEvent('');
+      await loadData();
+    } catch (err: any) {
+      console.error(err);
+      showToast(err.message || 'Failed to upload photos. Please try again.', 'error');
+    } finally {
+      setBatchUploading(false);
+    }
   };
 
   const handleOpenUploadModal = (img?: CmsGalleryImage) => {
@@ -158,6 +336,7 @@ export const AdminGalleryCMS: React.FC = () => {
         showToast('New photo added to gallery successfully!');
       }
 
+      notifyGalleryUpdated();
       setModalOpen(false);
       setEditingImage(null);
       await loadData();
@@ -179,6 +358,7 @@ export const AdminGalleryCMS: React.FC = () => {
       setImages((prev) =>
         prev.map((img) => ((img._id || img.id) === imgId ? { ...img, featured: nextFeatured } : img))
       );
+      notifyGalleryUpdated();
       showToast(`Photo ${nextFeatured ? 'featured on homepage' : 'unfeatured'}.`);
     } catch (err: any) {
       showToast(err.message || 'Failed to toggle featured status', 'error');
@@ -194,6 +374,7 @@ export const AdminGalleryCMS: React.FC = () => {
       setSaving(true);
       await CmsService.deleteGalleryImage(imgId);
       setImages((prev) => prev.filter((img) => (img._id || img.id) !== imgId));
+      notifyGalleryUpdated();
       showToast('Gallery photo deleted successfully.');
       setDeleteModalOpen(false);
       setImageToDelete(null);
@@ -223,6 +404,7 @@ export const AdminGalleryCMS: React.FC = () => {
       setCategories((prev) => [...prev, created]);
       setNewCategoryName('');
       setCategoryModalOpen(false);
+      notifyGalleryUpdated();
       showToast(`Category "${created.name}" created!`);
     } catch (err: any) {
       showToast(err.message || 'Failed to create category', 'error');
@@ -241,6 +423,7 @@ export const AdminGalleryCMS: React.FC = () => {
       if (selectedCategory === catId || selectedCategory === categoryToDelete.slug) {
         setSelectedCategory('all');
       }
+      notifyGalleryUpdated();
       showToast(`Category "${categoryToDelete.name}" deleted successfully.`);
       setDeleteCategoryModalOpen(false);
       setCategoryToDelete(null);
@@ -324,11 +507,18 @@ export const AdminGalleryCMS: React.FC = () => {
             <span>Sync</span>
           </button>
           <button
+            onClick={() => handleOpenBatchModal(selectedCategory !== 'all' && selectedCategory !== 'featured' ? selectedCategory : undefined)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-semibold bg-gold-500 hover:bg-gold-400 text-plum-950 transition-colors shadow-soft"
+          >
+            <Layers className="w-4 h-4" />
+            <span>Upload Multiple Photos</span>
+          </button>
+          <button
             onClick={() => handleOpenUploadModal()}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-medium bg-plum-900 hover:bg-plum-800 text-gold-300 transition-colors shadow-soft"
           >
             <Upload className="w-4 h-4 text-gold-400" />
-            <span>Upload Photo</span>
+            <span>Single Photo</span>
           </button>
         </div>
       </div>
@@ -394,14 +584,31 @@ export const AdminGalleryCMS: React.FC = () => {
             </div>
           );
         })}
+
+        {selectedCategory !== 'all' && selectedCategory !== 'featured' && (
+          <button
+            onClick={() => handleOpenBatchModal(selectedCategory)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gold-100 hover:bg-gold-200 text-plum-950 border border-gold-300 transition-colors ml-auto shadow-xs"
+          >
+            <UploadCloud className="w-3.5 h-3.5 text-gold-700" />
+            <span>+ Add Multiple to This Section</span>
+          </button>
+        )}
       </div>
 
       {/* Gallery Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredImages.length === 0 ? (
-          <div className="col-span-full py-16 text-center bg-white border border-border rounded-xl shadow-soft">
+          <div className="col-span-full py-16 text-center bg-white border border-border rounded-xl shadow-soft space-y-3">
             <ImageIcon className="w-10 h-10 text-ink-faint mx-auto mb-2" />
-            <p className="text-sm text-ink-muted font-sans">No photos in this category.</p>
+            <p className="text-sm text-ink-muted font-sans">No photos in this section.</p>
+            <button
+              onClick={() => handleOpenBatchModal(selectedCategory !== 'all' && selectedCategory !== 'featured' ? selectedCategory : undefined)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold bg-gold-500 hover:bg-gold-400 text-plum-950 transition-colors shadow-soft"
+            >
+              <Layers className="w-4 h-4" />
+              <span>Upload Multiple Photos Here</span>
+            </button>
           </div>
         ) : (
           filteredImages.map((img) => {
@@ -829,6 +1036,237 @@ export const AdminGalleryCMS: React.FC = () => {
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* ─── Bulk Upload Modal (Section-wise) ─── */}
+      <Modal
+        isOpen={batchModalOpen}
+        onClose={() => {
+          if (!batchUploading) {
+            setBatchModalOpen(false);
+            setBatchFiles([]);
+          }
+        }}
+        title="Upload Multiple Photos (Section-wise)"
+        size="lg"
+      >
+        <form onSubmit={handleBatchUploadSubmit} className="space-y-5 font-sans text-xs sm:text-sm">
+          {/* Section Selection */}
+          <div className="p-4 bg-canvas border border-border rounded-xl space-y-3 shadow-xs">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-plum-900 uppercase tracking-wider flex items-center gap-1.5">
+                <FolderPlus className="w-3.5 h-3.5 text-gold-600" />
+                <span>Target Section / Category *</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowInlineNewCat(!showInlineNewCat)}
+                className="text-xs font-semibold text-gold-700 hover:text-gold-900 underline underline-offset-2 flex items-center gap-1"
+              >
+                <Plus className="w-3 h-3" />
+                <span>{showInlineNewCat ? 'Choose Existing Section' : 'Create New Section'}</span>
+              </button>
+            </div>
+
+            {showInlineNewCat ? (
+              <div className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  autoFocus
+                  value={inlineNewCatName}
+                  onChange={(e) => setInlineNewCatName(e.target.value)}
+                  placeholder="e.g. Asana Practice, Shala Architecture, NCERT Yoga Camp"
+                  className="flex-1 bg-white border border-border rounded-lg px-3.5 py-2 text-xs sm:text-sm text-ink focus:outline-none focus:border-gold-500 shadow-xs"
+                />
+                <span className="text-[11px] text-ink-muted">Will be created on upload</span>
+              </div>
+            ) : (
+              <select
+                required
+                value={batchTargetCategory}
+                onChange={(e) => setBatchTargetCategory(e.target.value)}
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-xs sm:text-sm text-ink focus:outline-none focus:border-gold-500 shadow-xs font-medium"
+              >
+                <option value="" disabled>-- Select Gallery Section / Category --</option>
+                {categories.map((c) => (
+                  <option key={c._id || c.id} value={(c._id || c.id) as string}>
+                    {c.name} ({images.filter((img) => ((typeof img.category === 'object' && img.category !== null ? (img.category as any)._id : img.category) === (c._id || c.id) || img.categorySlug === c.slug)).length} photos)
+                  </option>
+                ))}
+              </select>
+            )}
+            <p className="text-[11px] text-ink-muted">
+              All photos in this batch will be organized under this section on the public Gallery page.
+            </p>
+          </div>
+
+          {/* Multiple File Picker Dropzone */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-plum-900 uppercase tracking-wider block">
+              Select Photos *
+            </label>
+            <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border hover:border-gold-400 rounded-xl cursor-pointer bg-white transition-all shadow-xs group">
+              <UploadCloud className="w-9 h-9 text-gold-600 mb-2 group-hover:scale-110 transition-transform" />
+              <span className="text-xs sm:text-sm text-plum-900 font-bold">
+                Click or Drag &amp; Drop Multiple Images Here
+              </span>
+              <span className="text-[11px] text-ink-muted mt-1">
+                Select JPEG, PNG, or WebP pictures. Hold Ctrl/Cmd or Shift to select multiple files at once.
+              </span>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                disabled={batchUploading}
+                onChange={handleBatchFileSelect}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          {/* Common Optional Settings: Event Tag & Status */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                Event / Occasion Tag (Optional)
+              </label>
+              <input
+                type="text"
+                value={batchEvent}
+                onChange={(e) => setBatchEvent(e.target.value)}
+                placeholder="e.g. International Yoga Day 2026, Morning Sadhana"
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-xs sm:text-sm text-ink focus:outline-none focus:border-gold-500 shadow-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                Publish Status
+              </label>
+              <select
+                value={batchStatus}
+                onChange={(e) => setBatchStatus(e.target.value as any)}
+                className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-xs sm:text-sm text-ink focus:outline-none focus:border-gold-500 shadow-xs"
+              >
+                <option value="published">Published (Visible to public)</option>
+                <option value="draft">Draft (Admin only)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Selected Photos Queue List */}
+          {batchFiles.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-plum-900">
+                  Selected Queue ({batchFiles.length} photos)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setBatchFiles([])}
+                  className="text-[11px] text-rose-600 hover:text-rose-800 font-medium underline"
+                >
+                  Clear All
+                </button>
+              </div>
+
+              <div className="max-h-64 overflow-y-auto space-y-2 pr-1 rounded-xl border border-border p-2 bg-canvas">
+                {batchFiles.map((item, idx) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-3 p-2 bg-white rounded-lg border border-border shadow-xs"
+                  >
+                    <span className="text-xs font-mono font-bold text-ink-muted w-5 text-right shrink-0">
+                      {idx + 1}.
+                    </span>
+                    <img
+                      src={item.previewUrl}
+                      alt={item.title}
+                      className="w-12 h-12 object-cover rounded-lg border border-border shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <input
+                        type="text"
+                        value={item.title}
+                        onChange={(e) => handleUpdateBatchTitle(item.id, e.target.value)}
+                        placeholder="Photo Title"
+                        className="w-full bg-canvas-warm border border-border rounded px-2.5 py-1 text-xs text-ink focus:outline-none focus:border-gold-500 font-medium"
+                      />
+                      <span className="text-[10px] text-ink-muted block mt-0.5 truncate">
+                        {item.file.name} ({(item.file.size / (1024 * 1024)).toFixed(2)} MB)
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveBatchFile(item.id)}
+                      className="p-1.5 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded transition-colors shrink-0"
+                      title="Remove from batch"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Upload Progress Bar */}
+          {batchUploading && (
+            <div className="p-4 bg-plum-50 border border-plum-200 rounded-xl space-y-2">
+              <div className="flex items-center justify-between text-xs font-medium text-plum-950">
+                <span className="flex items-center gap-2">
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-gold-600" />
+                  <span>{batchProgress.stage}</span>
+                </span>
+                <span className="font-mono font-bold">
+                  {batchProgress.current} / {batchProgress.total}
+                </span>
+              </div>
+              <div className="w-full h-2.5 bg-plum-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-gold-500 to-gold-400 transition-all duration-300 rounded-full"
+                  style={{
+                    width: `${batchProgress.total > 0 ? (batchProgress.current / batchProgress.total) * 100 : 0}%`,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Modal Actions */}
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+            <button
+              type="button"
+              disabled={batchUploading}
+              onClick={() => {
+                setBatchModalOpen(false);
+                setBatchFiles([]);
+              }}
+              className="px-4 py-2 rounded-lg text-xs font-sans text-ink-muted hover:text-ink border border-border bg-white shadow-xs disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={batchUploading || batchFiles.length === 0}
+              className="px-5 py-2.5 rounded-lg text-xs font-sans font-bold bg-gold-500 hover:bg-gold-400 text-plum-950 shadow-soft transition-colors disabled:opacity-50 inline-flex items-center gap-2"
+            >
+              {batchUploading ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Uploading Batch...</span>
+                </>
+              ) : (
+                <>
+                  <UploadCloud className="w-3.5 h-3.5" />
+                  <span>
+                    Upload {batchFiles.length > 0 ? `${batchFiles.length} Photos` : 'Photos'} to Section
+                  </span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </Modal>
     </div>
   );

@@ -36,28 +36,28 @@
   --color-gold-900: #5A4328;
   --color-gold-950: #342514;
 
-  /* Brand Canvas & Ivory Surfaces */
-  --color-canvas: #FDFBF7;
-  --color-canvas-warm: #FAF7F0;
-  --color-ivory: #FDFBF7;
-  --color-ivory-warm: #FAF7F0;
-  --color-ivory-50: #FFFFFF;
-  --color-ivory-100: #FDFBF7;
-  --color-ivory-200: #FAF6EE;
-  --color-ivory-300: #F5EFE0;
-  --color-ivory-400: #EFE5CE;
-  --color-ivory-500: #E5D6B8;
+  /* Brand Canvas & Ivory Surfaces (A little darker, rich warm yogic parchment) */
+  --color-canvas: #F2EDE4;
+  --color-canvas-warm: #EAE4D8;
+  --color-ivory: #F2EDE4;
+  --color-ivory-warm: #EAE4D8;
+  --color-ivory-50: #FAF7F2;
+  --color-ivory-100: #F2EDE4;
+  --color-ivory-200: #EAE4D8;
+  --color-ivory-300: #E2DBD0;
+  --color-ivory-400: #D8CFBF;
+  --color-ivory-500: #C5B9A4;
 
-  --color-surface: #FFFFFF;
-  --color-surface-subtle: #F6F3EC;
-  --color-surface-muted: #F0ECE4;
+  --color-surface: #FAF7F2;
+  --color-surface-subtle: #E8E2D5;
+  --color-surface-muted: #DDD6C6;
 
   /* Earth / Terracotta */
-  --color-earth-50: #F9F6F4;
-  --color-earth-100: #F0ECE8;
-  --color-earth-200: #DFD5CE;
-  --color-earth-300: #C5B5AA;
-  --color-earth-400: #A79083;
+  --color-earth-50: #F5F0EC;
+  --color-earth-100: #ECE4DD;
+  --color-earth-200: #D7CBC2;
+  --color-earth-300: #BDADA2;
+  --color-earth-400: #9E887B;
   --color-earth-500: #8C7164;
   --color-earth-600: #7B4E3D;
   --color-earth-700: #5C382B;
@@ -72,8 +72,8 @@
   --color-ink-earth: #7B4E3D;
 
   /* Borders */
-  --color-border: #E8E2D8;
-  --color-border-subtle: #E8E2D8;
+  --color-border: #DDD6C8;
+  --color-border-subtle: #E4DED2;
   --color-border-gold: rgba(197, 160, 89, 0.4);
   --color-border-plum: rgba(42, 17, 40, 0.15);
 
@@ -94,13 +94,13 @@
     scroll-behavior: smooth;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #1A1718;
-    background-color: #FDFBF7;
+    background-color: #F2EDE4;
   }
 
   body {
     margin: 0;
     padding: 0;
-    background-color: #FDFBF7;
+    background-color: #F2EDE4;
     color: #1A1718;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -120,20 +120,20 @@
 
   /* Refined Subtle Scrollbars */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #FAF7F0; }
+  ::-webkit-scrollbar-track { background: #EAE4D8; }
   ::-webkit-scrollbar-thumb { background: #D8B26E; border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: #C5A059; }
 }
 
 /* ─── Explicit Utility Classes ──────────────────────────────────────────────── */
 @layer utilities {
-  .bg-canvas        { background-color: #FDFBF7 !important; }
-  .bg-canvas-warm   { background-color: #FAF7F0 !important; }
-  .bg-surface       { background-color: #FFFFFF !important; }
-  .bg-surface-subtle{ background-color: #F6F3EC !important; }
-  .bg-ivory         { background-color: #FDFBF7 !important; }
-  .text-ivory       { color: #FDFBF7 !important; }
-  .border-ivory     { border-color: #FDFBF7 !important; }
+  .bg-canvas        { background-color: #F2EDE4 !important; }
+  .bg-canvas-warm   { background-color: #EAE4D8 !important; }
+  .bg-surface       { background-color: #FAF7F2 !important; }
+  .bg-surface-subtle{ background-color: #E8E2D5 !important; }
+  .bg-ivory         { background-color: #F2EDE4 !important; }
+  .text-ivory       { color: #FAF7F2 !important; }
+  .border-ivory     { border-color: #F2EDE4 !important; }
   .bg-plum-950      { background-color: #1A0719 !important; }
   .bg-plum-900      { background-color: #2A1128 !important; }
   .bg-plum-800      { background-color: #3B1838 !important; }
@@ -319,6 +319,47 @@
   animation: celestialOrbitRotate 50s linear infinite !important;
   transform-origin: center center;
   will-change: transform;
+}
+
+/* Sacred Geometry & Gradient Breathing Animations */
+@keyframes sacredBreathing {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.025);
+    opacity: 1;
+  }
+}
+
+@keyframes sacredSpinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sacredSpinReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes auricGlowBreath {
+  0%, 100% {
+    transform: scale(0.96);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
 }
 
 

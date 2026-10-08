@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { CmsService } from '../../services/cmsService';
 import { MediaService } from '../../services/mediaService';
 import { CmsInstitute, StorageImage } from '../../types/cms';
@@ -957,6 +958,18 @@ export const AdminInstituteCMS: React.FC = () => {
                 </h2>
               </div>
               <span className="text-[11px] text-ink-muted">Displays in sanctuary address section</span>
+            </div>
+
+            <div className="p-3.5 rounded-lg bg-gold-50/80 border border-gold-300/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
+              <span className="text-plum-950 font-medium">
+                💡 Prefer a dedicated contact center? You can also use the unified <strong>Contact Details Manager</strong> with dual live previews for both Institute and Contact pages.
+              </span>
+              <Link
+                href="/admin/content/contact"
+                className="px-3 py-1.5 rounded-lg bg-gold-500 hover:bg-gold-400 text-plum-950 font-semibold text-xs shrink-0 transition-colors text-center"
+              >
+                Open Contact Manager &rarr;
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

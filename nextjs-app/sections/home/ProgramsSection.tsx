@@ -345,8 +345,7 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
       ) : (
           <div className="mt-16 pt-10 border-t border-border/80 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/70 p-6 rounded-2xl border border-border">
             <div>
-              <div className="flex items-center space-x-2 text-gold-600 mb-1">
-                <LotusMotif size={18} />
+              <div className="flex items-center text-gold-600 mb-1">
                 <span className="text-[11px] uppercase tracking-widest-editorial font-semibold text-gold-700">
                   Institute Faculty
                 </span>

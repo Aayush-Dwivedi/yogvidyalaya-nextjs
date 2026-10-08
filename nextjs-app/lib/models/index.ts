@@ -15,3 +15,4 @@ export * from './MediaAsset';
 export * from './User';
 export * from './Booking';
 export * from './Enquiry';
+export * from './Testimonial';

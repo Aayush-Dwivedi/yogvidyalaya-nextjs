@@ -12,6 +12,9 @@ import { AdminWorkshopsPage } from './AdminWorkshopsPage';
 import { AdminTrainersPage } from './AdminTrainersPage';
 import { AdminBookingsPage } from './AdminBookingsPage';
 import { AdminMembershipPage } from './AdminMembershipPage';
+import { AdminCorporatePage } from './AdminCorporatePage';
+import { AdminTestimonialsCMS } from './AdminTestimonialsCMS';
+import { AdminContactCMS } from './AdminContactCMS';
 
 export {
   AdminDashboardPage,
@@ -27,29 +30,24 @@ export {
   AdminTrainersPage,
   AdminBookingsPage,
   AdminMembershipPage,
+  AdminCorporatePage,
+  AdminTestimonialsCMS,
+  AdminContactCMS,
 };
 
 // Content Sub-Modules
 export const AdminContentHomepage: React.FC = () => <AdminHomepageCMS />;
 export const AdminContentInstitute: React.FC = () => <AdminInstituteCMS />;
+export const AdminContentContact: React.FC = () => <AdminContactCMS />;
 export const AdminContentFounder: React.FC = () => <AdminFounderCMS />;
 export const AdminContentBenefits: React.FC = () => <AdminBenefitsCMS />;
+export const AdminContentTestimonials: React.FC = () => <AdminTestimonialsCMS />;
 
 // Programs Sub-Modules
 export const AdminProgramsCourses: React.FC = () => <AdminCoursesPage />;
 export const AdminProgramsWorkshops: React.FC = () => <AdminWorkshopsPage />;
 export const AdminProgramsTrainers: React.FC = () => <AdminTrainersPage />;
-
-export const AdminProgramsCorporate: React.FC = () => (
-  <AdminModulePlaceholder
-    moduleName="Corporate Yogic Wellness"
-    category="Programs"
-    description="Manage corporate employee wellness packages, on-site shala retreats, and executive packages."
-    sampleColumns={['Program Package', 'Target Audience', 'Format', 'Deliverables', 'Status']}
-    sampleCount={3}
-  />
-);
-
+export const AdminProgramsCorporate: React.FC = () => <AdminCorporatePage />;
 export const AdminProgramsMembership: React.FC = () => <AdminMembershipPage />;
 
 // Media Sub-Modules

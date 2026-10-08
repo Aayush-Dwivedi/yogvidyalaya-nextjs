@@ -87,7 +87,6 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ highlights: prop
           title="Gallery"
           description="Photos from our classes and events"
           align="asymmetric"
-          motif={<LotusMotif size={28} />}
           action={
             <LinkButton to="/gallery" variant="text" size="md" withArrow>
               View More Images

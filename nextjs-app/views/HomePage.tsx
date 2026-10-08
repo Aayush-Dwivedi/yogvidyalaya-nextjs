@@ -4,12 +4,12 @@ import React, { useEffect, useState } from 'react';
 import {
   HeroSection,
   AboutSection,
-  ProgramsSection,
   FeaturedWorkshopsSection,
   FeaturedCoursesSection,
   WhyYogaSection,
   GallerySection,
   VideosSection,
+  TestimonialsSection,
   FinalCtaSection,
 } from '../sections';
 import { CmsService } from '../services/cmsService';
@@ -86,23 +86,23 @@ export const HomePage: React.FC<HomePageProps> = ({ initialHeroSlides }) => {
       {/* 2. Editorial Asymmetric About Section */}
       <AboutSection />
 
-      {/* 3. Explore Our Programs (4 Quadrants) */}
-      <ProgramsSection />
-
-      {/* 4. Featured Upcoming Workshops */}
+      {/* 3. Featured Upcoming Workshops */}
       <FeaturedWorkshopsSection workshops={homeData?.featuredWorkshops} />
 
-      {/* 5. Featured Certified Courses */}
+      {/* 4. Featured Certified Courses */}
       <FeaturedCoursesSection courses={homeData?.featuredCourses} />
 
-      {/* 6. Why Yoga: Holistic Benefits & Scripture References */}
+      {/* 5. Why Yoga: Holistic Benefits & Scripture References */}
       <WhyYogaSection benefits={homeData?.benefits} />
 
-      {/* 7. Editorial Asymmetric Gallery Composition */}
+      {/* 6. Editorial Asymmetric Gallery Composition */}
       <GallerySection highlights={homeData?.galleryHighlights} />
 
-      {/* 8. YouTube Video Library & Masterclass Discourses */}
+      {/* 7. YouTube Video Library & Masterclass Discourses */}
       <VideosSection videos={homeData?.featuredVideos} />
+
+      {/* 8. Voices of Sadhana: Student & Corporate Testimonials */}
+      <TestimonialsSection testimonials={homeData?.testimonials} />
 
       {/* 9. Final Institutional Call to Action */}
       <FinalCtaSection cta={homeData?.homepageCta} />

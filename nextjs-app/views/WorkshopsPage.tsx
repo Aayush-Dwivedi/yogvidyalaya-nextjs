@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
@@ -72,11 +73,25 @@ export const WorkshopsPage: React.FC = () => {
       <section className="relative py-20 sm:py-28 bg-plum-950 text-ivory overflow-hidden">
         <AuricBackground />
 
-        <Container size="wide" className="relative z-10">
-          <div className="max-w-3xl space-y-4">
-            <div className="flex items-center space-x-3">
-              <LotusMotif size={24} className="text-gold-400 shrink-0" />
-              <span className="w-8 h-px bg-gold-400" />
+        <Container size="wide" className="relative z-10 text-center">
+          <div className="max-w-3xl mx-auto space-y-4 text-center">
+            {/* Breadcrumb Navigation */}
+            <nav
+              aria-label="Breadcrumb"
+              className="flex items-center justify-center space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase mb-2"
+            >
+              <Link href="/" className="hover:text-gold-300 transition-colors">
+                Home
+              </Link>
+              <span className="text-gold-500/60">/</span>
+              <Link href="/programs" className="hover:text-gold-300 transition-colors">
+                Programs
+              </Link>
+              <span className="text-gold-500/60">/</span>
+              <span className="text-gold-200 font-semibold">Workshops</span>
+            </nav>
+
+            <div className="flex items-center justify-center">
               <span className="text-xs uppercase tracking-widest-editorial text-gold-300 font-semibold">
                 Specialized Workshops
               </span>
@@ -86,11 +101,11 @@ export const WorkshopsPage: React.FC = () => {
               Workshops &amp; Special Sessions
             </h1>
 
-            <p className="text-sm sm:text-base text-white/80 font-sans leading-relaxed max-w-2xl font-light">
+            <p className="text-sm sm:text-base text-white/80 font-sans leading-relaxed max-w-2xl mx-auto font-light">
               Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active through focused workshops.
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-gold-300/80">
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-3 text-xs text-gold-300/80">
               <span className="flex items-center gap-1.5">
                 <Flame className="w-4 h-4 text-gold-400" />
                 Therapeutic Care

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
@@ -112,8 +113,23 @@ export const FounderPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Narrative */}
             <div className="lg:col-span-7 flex flex-col justify-center space-y-5 sm:space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono tracking-widest uppercase self-center lg:self-start">
-                <LotusMotif size={16} className="text-gold-400" />
+              {/* Breadcrumb Navigation */}
+              <nav
+                aria-label="Breadcrumb"
+                className="flex items-center justify-center lg:justify-start space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase"
+              >
+                <Link href="/" className="hover:text-gold-300 transition-colors">
+                  Home
+                </Link>
+                <span className="text-gold-500/60">/</span>
+                <Link href="/about" className="hover:text-gold-300 transition-colors">
+                  About
+                </Link>
+                <span className="text-gold-500/60">/</span>
+                <span className="text-gold-200 font-semibold">Founder</span>
+              </nav>
+
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-gold-500/10 border border-gold-400/30 text-gold-300 text-xs font-mono tracking-widest uppercase self-center lg:self-start">
                 <span>Founder Stewardship &amp; Lineage</span>
               </div>
 

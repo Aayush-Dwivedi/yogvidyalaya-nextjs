@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Container } from '../components/Container';
 import { LotusMotif, OrnamentalDivider } from '../components/Motifs';
 import { AuricBackground } from '../components/AuricBackground';
+import { CmsService } from '../services/cmsService';
 import {
   Phone,
   Mail,
@@ -20,10 +22,75 @@ import {
 } from 'lucide-react';
 
 export const ContactPage: React.FC = () => {
-  const WHATSAPP_LINK = 'https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL';
-  const PHONE_NUMBER = '09818047984';
-  const EMAIL_ADDRESS = 'shuchimohan@kalptaruyogvidyalaya.com';
-  const PHYSICAL_ADDRESS = 'N114 Piyush Heights, Sector 89, Faridabad – 121002';
+  const [contactData, setContactData] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('kalptaru_cached_institute');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.contact) return parsed.contact;
+        }
+      } catch {}
+    }
+    return {
+      email: 'shuchimohan@kalptaruyogvidyalaya.com',
+      phone: '09818047984',
+      alternatePhone: '',
+      whatsappLink: 'https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL',
+      whatsappNumber: '09818047984',
+      address: {
+        street: 'N114 Piyush Heights, Sector 89',
+        city: 'Faridabad',
+        state: 'Haryana',
+        postalCode: '121002',
+        country: 'India',
+        mapUrl: '',
+      },
+      hours: 'Mon – Sat: 06:00 AM – 08:00 PM',
+    };
+  });
+
+  const loadContact = async () => {
+    try {
+      const data = await CmsService.getInstitute();
+      if (data && data.contact) {
+        setContactData(data.contact);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('kalptaru_cached_institute', JSON.stringify(data));
+        }
+      }
+    } catch (err) {
+      console.warn('Could not load dynamic contact details:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadContact();
+
+    const handleUpdate = () => {
+      loadContact();
+    };
+
+    window.addEventListener('kalptaru-cms-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+
+    return () => {
+      window.removeEventListener('kalptaru-cms-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
+
+  const WHATSAPP_LINK =
+    contactData.whatsappLink || 'https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL';
+  const PHONE_NUMBER = contactData.phone || '09818047984';
+  const ALTERNATE_PHONE = contactData.alternatePhone || '';
+  const EMAIL_ADDRESS = contactData.email || 'shuchimohan@kalptaruyogvidyalaya.com';
+  const PHYSICAL_ADDRESS = contactData.address?.street
+    ? `${contactData.address.street}, ${contactData.address.city || 'Faridabad'}${
+        contactData.address.postalCode ? ` – ${contactData.address.postalCode}` : ''
+      }`
+    : 'N114 Piyush Heights, Sector 89, Faridabad – 121002';
+  const HOURS = contactData.hours || 'Mon – Sat: 06:00 AM – 08:00 PM';
 
   // Enquiry Form State
   const [formData, setFormData] = useState({
@@ -90,9 +157,19 @@ export const ContactPage: React.FC = () => {
 
         <Container size="wide" className="relative z-10">
           <div className="max-w-3xl space-y-4">
-            <div className="flex items-center space-x-3">
-              <LotusMotif size={24} className="text-gold-400 shrink-0" />
-              <span className="w-8 h-px bg-gold-400" />
+            {/* Breadcrumb Navigation */}
+            <nav
+              aria-label="Breadcrumb"
+              className="flex items-center space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase"
+            >
+              <Link href="/" className="hover:text-gold-300 transition-colors">
+                Home
+              </Link>
+              <span className="text-gold-500/60">/</span>
+              <span className="text-gold-200 font-semibold">Contact</span>
+            </nav>
+
+            <div className="flex items-center">
               <span className="text-xs uppercase tracking-widest-editorial text-gold-300 font-semibold">
                 Get in Touch
               </span>
@@ -157,9 +234,9 @@ export const ContactPage: React.FC = () => {
       {/* 3. Direct Contact Details & Form Grid */}
       <section className="py-16 sm:py-20 bg-canvas">
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Left Column: Direct Contact Information (5 cols) */}
-            <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
+            <div className="lg:col-span-5 space-y-6">
               <div>
                 <span className="text-xs uppercase tracking-widest-editorial text-gold-600 font-semibold block mb-1">
                   Immediate Reach
@@ -223,7 +300,12 @@ export const ContactPage: React.FC = () => {
                         {PHONE_NUMBER}
                       </p>
                       <p className="text-xs text-ink-muted mt-0.5">
-                        Available Monday to Saturday for calls &amp; WhatsApp enquiries.
+                        {HOURS}
+                        {ALTERNATE_PHONE && (
+                          <span className="block mt-0.5 text-ink-muted">
+                            Alt: <span className="font-mono text-plum-900 font-medium">{ALTERNATE_PHONE}</span>
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -270,29 +352,16 @@ export const ContactPage: React.FC = () => {
                       </p>
                       <div className="mt-3 flex items-center gap-2 text-[11px] text-gold-700 font-medium">
                         <Clock className="w-3.5 h-3.5" />
-                        <span>Sessions held by appointment &amp; scheduled batches</span>
+                        <span>Hours: {HOURS}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* Guarantees / Quality Notice */}
-              <div className="p-5 rounded-xl bg-plum-950 text-ivory/90 border border-gold-500/30 space-y-3">
-                <div className="flex items-center gap-2 text-gold-400">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span className="text-xs font-semibold uppercase tracking-wider">
-                    Our Teaching Commitment
-                  </span>
-                </div>
-                <p className="text-xs text-ivory/80 leading-relaxed">
-                  Every participant is guided with individualized attention. We do not use automated enrollment bots or online payment gateways—our teachers verify your physical needs before enrolling you.
-                </p>
-              </div>
             </div>
 
             {/* Right Column: General Message & Enquiry Form (7 cols) */}
-            <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
+            <div className="lg:col-span-7 space-y-6">
               <div>
                 <span className="text-xs uppercase tracking-widest-editorial text-gold-600 font-semibold block mb-1">
                   Send a Message
@@ -305,7 +374,7 @@ export const ContactPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="bg-canvas-warm/90 rounded-2xl p-6 sm:p-8 border border-gold-300/60 shadow-medium relative flex-1 flex flex-col justify-center">
+              <div className="bg-canvas-warm/90 rounded-2xl p-6 sm:p-8 border border-gold-300/60 shadow-medium relative">
 
                 {submitted ? (
                   <div className="text-center py-12 px-4 space-y-5 bg-white/70 rounded-xl border border-emerald-200">
@@ -451,6 +520,19 @@ export const ContactPage: React.FC = () => {
                     </div>
                   </form>
                 )}
+              </div>
+
+              {/* Guarantees / Quality Notice: Placed right under the form */}
+              <div className="p-5 sm:p-6 rounded-2xl bg-plum-950 text-ivory/90 border border-gold-500/30 shadow-soft space-y-2.5">
+                <div className="flex items-center gap-2.5 text-gold-400">
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-semibold uppercase tracking-wider font-mono">
+                    Our Teaching Commitment
+                  </span>
+                </div>
+                <p className="text-xs sm:text-[13px] text-ivory/85 leading-relaxed">
+                  Every participant is guided with individualized attention. We do not use automated enrollment bots or online payment gateways—our teachers verify your physical needs before enrolling you.
+                </p>
               </div>
             </div>
           </div>

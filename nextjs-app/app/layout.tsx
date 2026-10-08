@@ -16,6 +16,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
   },
+  icons: {
+    icon: [
+      { url: '/logo.png', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
   robots: { index: true, follow: true },
 };
 

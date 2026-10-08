@@ -145,6 +145,29 @@ export class GalleryService {
     return await GalleryImage.create(data);
   }
 
+  static async createMultipleGalleryImages(
+    imagesData: Partial<IGalleryImage>[]
+  ): Promise<IGalleryImage[]> {
+    if (!imagesData || imagesData.length === 0) {
+      return [];
+    }
+
+    // Resolve category slugs
+    const resolved = await Promise.all(
+      imagesData.map(async (data) => {
+        if (data.category && Types.ObjectId.isValid(data.category as any)) {
+          const cat = await GalleryCategory.findById(data.category);
+          if (cat) {
+            data.categorySlug = cat.slug;
+          }
+        }
+        return data;
+      })
+    );
+
+    return (await GalleryImage.insertMany(resolved)) as unknown as IGalleryImage[];
+  }
+
   static async updateGalleryImage(id: string, data: Partial<IGalleryImage>): Promise<IGalleryImage> {
     if (data.category && Types.ObjectId.isValid(data.category as any)) {
       const cat = await GalleryCategory.findById(data.category);

@@ -26,6 +26,7 @@ import {
   Menu,
   X,
   ExternalLink,
+  PhoneCall,
 } from 'lucide-react';
 
 interface SubMenuItem {
@@ -53,8 +54,10 @@ const ADMIN_NAVIGATION: AdminNavGroup[] = [
     children: [
       { name: 'Home', href: '/admin/content/homepage', icon: Home },
       { name: 'Institute', href: '/admin/content/institute', icon: Building2 },
+      { name: 'Contact Details', href: '/admin/content/contact', icon: PhoneCall },
       { name: 'Founder', href: '/admin/content/founder', icon: Users2 },
       { name: 'Benefits', href: '/admin/content/benefits', icon: Sparkles },
+      { name: 'Testimonials', href: '/admin/content/testimonials', icon: MessageSquare },
     ],
   },
   {

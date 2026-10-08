@@ -23,6 +23,8 @@ export class InstituteService {
           email: 'shuchimohan@kalptaruyogvidyalaya.com',
           phone: '09818047984',
           alternatePhone: '',
+          whatsappLink: 'https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL',
+          whatsappNumber: '09818047984',
           address: {
             street: 'N114 Piyush Heights, Sector 89',
             city: 'Faridabad',

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
 import { Container } from '../components/Container';
 import { LotusMotif, OrnamentalDivider, CornerFlourish } from '../components/Motifs';
 import { AuricBackground } from '../components/AuricBackground';
@@ -19,13 +20,18 @@ import {
   Layers,
 } from 'lucide-react';
 
-interface DisplayPhoto {
+export interface DisplayPhoto {
   id: string;
   title: string;
   caption: string;
   category: string;
   image: string;
   date?: string;
+}
+
+export interface GalleryPageProps {
+  initialPhotos?: DisplayPhoto[];
+  initialCategories?: string[];
 }
 
 const DEFAULT_GALLERY: DisplayPhoto[] = [
@@ -95,18 +101,66 @@ const DEFAULT_GALLERY: DisplayPhoto[] = [
   },
 ];
 
-export const GalleryPage: React.FC = () => {
-  const [photos, setPhotos] = useState<DisplayPhoto[]>(DEFAULT_GALLERY);
-  const [categories, setCategories] = useState<string[]>(['All']);
+export const GalleryPage: React.FC<GalleryPageProps> = ({
+  initialPhotos,
+  initialCategories,
+}) => {
+  const [photos, setPhotos] = useState<DisplayPhoto[]>(() => {
+    if (initialPhotos && initialPhotos.length > 0) {
+      return initialPhotos;
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('kalptaru_cached_gallery_photos');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        }
+      } catch {}
+    }
+    return [];
+  });
+
+  const [categories, setCategories] = useState<string[]>(() => {
+    if (initialCategories && initialCategories.length > 0) {
+      return initialCategories;
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('kalptaru_cached_gallery_categories');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        }
+      } catch {}
+    }
+    return ['All'];
+  });
+
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(() => {
+    if (initialPhotos && initialPhotos.length > 0) return false;
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('kalptaru_cached_gallery_photos');
+        if (cached && JSON.parse(cached)?.length > 0) return false;
+      } catch {}
+    }
+    return true;
+  });
 
   // Lightbox Modal State
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  const loadGalleryData = async () => {
+  const loadGalleryData = async (showLoadingSpinner = false) => {
     try {
-      setLoading(true);
+      if (showLoadingSpinner) {
+        setLoading(true);
+      }
       const [images, cats] = await Promise.all([
         CmsService.getGalleryImages('published'),
         CmsService.getGalleryCategories(),
@@ -121,7 +175,7 @@ export const GalleryPage: React.FC = () => {
             (typeof img.category === 'object' ? img.category?.name : img.category) || 'Tradition',
           image:
             (typeof img.image === 'string' ? img.image : img.image?.url) ||
-            DEFAULT_GALLERY[idx % DEFAULT_GALLERY.length].image,
+            DEFAULT_GALLERY[idx % DEFAULT_GALLERY.length]?.image || '',
           date: img.createdAt ? new Date(img.createdAt).toLocaleDateString() : undefined,
         }));
         setPhotos(mapped);
@@ -133,26 +187,44 @@ export const GalleryPage: React.FC = () => {
             if (c.name && !uniqueCats.includes(c.name)) uniqueCats.push(c.name);
           });
         }
-        setCategories(['All', ...uniqueCats]);
+        const updatedCats = ['All', ...uniqueCats];
+        setCategories(updatedCats);
+
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem('kalptaru_cached_gallery_photos', JSON.stringify(mapped));
+            localStorage.setItem('kalptaru_cached_gallery_categories', JSON.stringify(updatedCats));
+          } catch {}
+        }
       } else {
-        setPhotos(DEFAULT_GALLERY);
-        setCategories(['All', 'Asana Practice', 'Therapy & Healing', 'Pranayama', 'Workshops', 'Meditation', 'Satsang']);
+        // Fallback only if database genuinely has no gallery photos
+        setPhotos((prev) => (prev.length > 0 ? prev : DEFAULT_GALLERY));
+        setCategories((prev) =>
+          prev.length > 1
+            ? prev
+            : ['All', 'Asana Practice', 'Therapy & Healing', 'Pranayama', 'Workshops', 'Meditation', 'Satsang']
+        );
       }
     } catch (err) {
       console.warn('Using default gallery photos:', err);
-      setPhotos(DEFAULT_GALLERY);
-      setCategories(['All', 'Asana Practice', 'Therapy & Healing', 'Pranayama', 'Workshops', 'Meditation', 'Satsang']);
+      setPhotos((prev) => (prev.length > 0 ? prev : DEFAULT_GALLERY));
+      setCategories((prev) =>
+        prev.length > 1
+          ? prev
+          : ['All', 'Asana Practice', 'Therapy & Healing', 'Pranayama', 'Workshops', 'Meditation', 'Satsang']
+      );
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadGalleryData();
+    // If no initial photos from SSR or cache, trigger load with spinner
+    loadGalleryData(!initialPhotos || initialPhotos.length === 0);
 
     // Subscribe to live admin publish updates
     const handleSync = () => {
-      loadGalleryData();
+      loadGalleryData(false);
     };
 
     window.addEventListener('kalptaru-cms-updated', handleSync);
@@ -203,9 +275,19 @@ export const GalleryPage: React.FC = () => {
 
         <Container size="wide" className="relative z-10">
           <div className="max-w-3xl space-y-4">
-            <div className="flex items-center space-x-3">
-              <LotusMotif size={24} className="text-gold-400 shrink-0" />
-              <span className="w-8 h-px bg-gold-400" />
+            {/* Breadcrumb Navigation */}
+            <nav
+              aria-label="Breadcrumb"
+              className="flex items-center space-x-2 text-xs font-mono tracking-widest text-gold-400/80 uppercase"
+            >
+              <Link href="/" className="hover:text-gold-300 transition-colors">
+                Home
+              </Link>
+              <span className="text-gold-500/60">/</span>
+              <span className="text-gold-200 font-semibold">Gallery</span>
+            </nav>
+
+            <div className="flex items-center">
               <span className="text-xs uppercase tracking-widest-editorial text-gold-300 font-semibold">
                 Visual Chronicles
               </span>
@@ -221,7 +303,11 @@ export const GalleryPage: React.FC = () => {
 
             <div className="pt-2 flex items-center gap-2 text-xs text-gold-300 font-mono">
               <Layers className="w-4 h-4 text-gold-400" />
-              <span>{photos.length} Captured Moments in High Definition</span>
+              <span>
+                {loading && photos.length === 0
+                  ? 'Loading Captured Moments...'
+                  : `${photos.length} Captured Moments in High Definition`}
+              </span>
             </div>
           </div>
         </Container>
@@ -251,7 +337,9 @@ export const GalleryPage: React.FC = () => {
             </div>
 
             <span className="text-xs font-mono text-ink-muted hidden md:block shrink-0">
-              Showing {filteredPhotos.length} of {photos.length}
+              {loading && photos.length === 0
+                ? 'Loading photos...'
+                : `Showing ${filteredPhotos.length} of ${photos.length}`}
             </span>
           </div>
         </Container>
@@ -260,7 +348,24 @@ export const GalleryPage: React.FC = () => {
       {/* 3. Photo Gallery Masonry / Grid */}
       <section className="py-12 sm:py-16">
         <Container size="wide">
-          {filteredPhotos.length === 0 ? (
+          {loading && photos.length === 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-pulse">
+              {[...Array(8)].map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-surface rounded-xl overflow-hidden border border-border shadow-card flex flex-col justify-between"
+                >
+                  <div className="relative aspect-[4/3] bg-plum-950/20 flex items-center justify-center">
+                    <ImageIcon className="w-8 h-8 text-gold-500/20" />
+                  </div>
+                  <div className="p-4 space-y-2.5 bg-canvas-warm/30">
+                    <div className="h-4 bg-border/60 rounded-md w-3/4" />
+                    <div className="h-3 bg-border/40 rounded-md w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredPhotos.length === 0 ? (
             <div className="text-center py-20 bg-canvas-warm rounded-2xl border border-border space-y-3">
               <ImageIcon className="w-12 h-12 text-gold-500 mx-auto" />
               <h3 className="text-xl font-editorial text-plum-900">No Photos in this Category</h3>

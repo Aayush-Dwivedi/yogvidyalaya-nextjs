@@ -31,6 +31,8 @@ export const updateInstituteSchema = {
         email: z.string().email(),
         phone: z.string().min(5),
         alternatePhone: z.string().optional(),
+        whatsappLink: z.string().optional(),
+        whatsappNumber: z.string().optional(),
         address: z
           .object({
             street: z.string().optional(),

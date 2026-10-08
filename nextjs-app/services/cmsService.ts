@@ -12,6 +12,8 @@ import {
   CmsCourse,
   CmsWorkshop,
   CmsMembershipPlan,
+  CmsCorporateProgram,
+  CmsTestimonial,
 } from '../types/cms';
 
 export class CmsService {
@@ -257,6 +259,11 @@ export class CmsService {
     return res.data;
   }
 
+  static async createGalleryImagesBatch(images: Partial<CmsGalleryImage>[]): Promise<CmsGalleryImage[]> {
+    const res = (await apiClient.post('/gallery/batch', { images })) as unknown as ApiResponse<CmsGalleryImage[]>;
+    return res.data;
+  }
+
   static async updateGalleryImage(id: string, data: Partial<CmsGalleryImage>): Promise<CmsGalleryImage> {
     const res = (await apiClient.patch(`/gallery/${id}`, data)) as unknown as ApiResponse<CmsGalleryImage>;
     return res.data;
@@ -320,4 +327,67 @@ export class CmsService {
   static async deleteMembershipPlan(id: string): Promise<void> {
     await apiClient.delete(`/membership-plans/${id}`);
   }
+
+  // ==========================================
+  // CORPORATE PROGRAMS (CRUD, STATUS)
+  // ==========================================
+
+  static async getCorporatePrograms(status: string = 'all', query?: Record<string, any>): Promise<CmsCorporateProgram[]> {
+    const res = (await apiClient.get('/corporate-programs', {
+      params: { status, limit: 50, ...query },
+    })) as unknown as ApiResponse<CmsCorporateProgram[]>;
+    // handle paginated structure
+    const data = res.data as any;
+    if (Array.isArray(data)) return data;
+    if (data?.items && Array.isArray(data.items)) return data.items;
+    return [];
+  }
+
+  static async getCorporateProgramByIdOrSlug(idOrSlug: string): Promise<CmsCorporateProgram> {
+    const res = (await apiClient.get(`/corporate-programs/${idOrSlug}`)) as unknown as ApiResponse<CmsCorporateProgram>;
+    return res.data;
+  }
+
+  static async createCorporateProgram(data: Partial<CmsCorporateProgram>): Promise<CmsCorporateProgram> {
+    const res = (await apiClient.post('/corporate-programs', data)) as unknown as ApiResponse<CmsCorporateProgram>;
+    return res.data;
+  }
+
+  static async updateCorporateProgram(id: string, data: Partial<CmsCorporateProgram>): Promise<CmsCorporateProgram> {
+    const res = (await apiClient.patch(`/corporate-programs/${id}`, data)) as unknown as ApiResponse<CmsCorporateProgram>;
+    return res.data;
+  }
+
+  static async deleteCorporateProgram(id: string): Promise<void> {
+    await apiClient.delete(`/corporate-programs/${id}`);
+  }
+
+  // ==========================================
+  // TESTIMONIALS (CRUD, STATUS)
+  // ==========================================
+
+  static async getTestimonials(status: string = 'all', query?: Record<string, any>): Promise<CmsTestimonial[]> {
+    const res = (await apiClient.get('/testimonials', {
+      params: { status, limit: 50, ...query },
+    })) as unknown as ApiResponse<CmsTestimonial[]>;
+    const data = res.data as any;
+    if (Array.isArray(data)) return data;
+    if (data?.items && Array.isArray(data.items)) return data.items;
+    return [];
+  }
+
+  static async createTestimonial(data: Partial<CmsTestimonial>): Promise<CmsTestimonial> {
+    const res = (await apiClient.post('/testimonials', data)) as unknown as ApiResponse<CmsTestimonial>;
+    return res.data;
+  }
+
+  static async updateTestimonial(id: string, data: Partial<CmsTestimonial>): Promise<CmsTestimonial> {
+    const res = (await apiClient.patch(`/testimonials/${id}`, data)) as unknown as ApiResponse<CmsTestimonial>;
+    return res.data;
+  }
+
+  static async deleteTestimonial(id: string): Promise<void> {
+    await apiClient.delete(`/testimonials/${id}`);
+  }
 }
+
