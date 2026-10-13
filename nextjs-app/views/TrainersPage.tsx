@@ -3,6 +3,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
@@ -12,6 +13,7 @@ import { CmsService } from '../services/cmsService';
 import { CmsFounder } from '../types/cms';
 import { LoadingState } from '../components/LoadingState';
 import { Modal } from '../components/Modal';
+import { isOptimizedUrl } from '../utils/imageUtils';
 import {
   Users,
   Award,
@@ -27,18 +29,23 @@ import {
   X,
 } from 'lucide-react';
 
-const TrainersContent: React.FC = () => {
+export interface TrainersPageProps {
+  initialTrainers?: CmsFounder[];
+}
+
+const TrainersContent: React.FC<TrainersPageProps> = ({ initialTrainers }) => {
   const searchParams = useSearchParams();
-  const [trainers, setTrainers] = useState<CmsFounder[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [trainers, setTrainers] = useState<CmsFounder[]>(() => initialTrainers || []);
+  const [loading, setLoading] = useState<boolean>(() => initialTrainers === undefined);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTrainer, setSelectedTrainer] = useState<CmsFounder | null>(null);
 
-  const fetchTrainers = async () => {
+
+  const fetchTrainers = async (showLoading = false) => {
     try {
-      setLoading(true);
+      if (showLoading) setLoading(true);
       const data = await CmsService.getFounders('published');
-      setTrainers(data || []);
+      if (data) setTrainers(data);
     } catch (err: any) {
       console.error('Failed to load faculty directory:', err);
     } finally {
@@ -47,10 +54,12 @@ const TrainersContent: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchTrainers();
+    if (!initialTrainers || initialTrainers.length === 0) {
+      fetchTrainers(true);
+    }
 
     const handleUpdate = () => {
-      fetchTrainers();
+      fetchTrainers(false);
     };
 
     window.addEventListener('kalptaru-cms-updated', handleUpdate);
@@ -60,7 +69,7 @@ const TrainersContent: React.FC = () => {
       window.removeEventListener('kalptaru-cms-updated', handleUpdate);
       window.removeEventListener('storage', handleUpdate);
     };
-  }, []);
+  }, [initialTrainers]);
 
   // Handle URL deep-linking (?trainer=... or ?id=...)
   useEffect(() => {
@@ -177,11 +186,14 @@ const TrainersContent: React.FC = () => {
                         onClick={() => setSelectedTrainer(trainer)}
                         className="relative aspect-[4/3] bg-plum-950 overflow-hidden cursor-pointer"
                       >
-                        <img
+                        <Image
                           src={photoUrl}
                           alt={trainer.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-95"
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
+                          className="object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-95"
                           loading="lazy"
+                          unoptimized={!isOptimizedUrl(photoUrl)}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-plum-950/90 via-plum-950/20 to-transparent pointer-events-none" />
 
@@ -315,7 +327,7 @@ const TrainersContent: React.FC = () => {
             {/* Header Identity Hero */}
             <div className="flex flex-col sm:flex-row gap-5 items-center sm:items-start bg-canvas-warm p-5 rounded-xl border border-border">
               <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-plum-950 shrink-0 border border-gold-400/40 shadow-card">
-                <img
+                <Image
                   src={
                     (typeof selectedTrainer.image === 'string'
                       ? selectedTrainer.image
@@ -323,7 +335,15 @@ const TrainersContent: React.FC = () => {
                     'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80'
                   }
                   alt={selectedTrainer.name}
+                  width={128}
+                  height={128}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  unoptimized={!isOptimizedUrl(
+                    typeof selectedTrainer.image === 'string'
+                      ? selectedTrainer.image
+                      : selectedTrainer.image?.url
+                  )}
                 />
               </div>
 
@@ -496,10 +516,10 @@ const TrainersContent: React.FC = () => {
   );
 };
 
-export const TrainersPage: React.FC = () => {
+export const TrainersPage: React.FC<TrainersPageProps> = ({ initialTrainers }) => {
   return (
     <Suspense fallback={<LoadingState message="Loading trainers directory..." />}>
-      <TrainersContent />
+      <TrainersContent initialTrainers={initialTrainers} />
     </Suspense>
   );
 };

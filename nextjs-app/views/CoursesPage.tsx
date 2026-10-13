@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
@@ -10,6 +11,7 @@ import { AuricBackground } from '../components/AuricBackground';
 import { CmsService } from '../services/cmsService';
 import { CmsCourse } from '../types/cms';
 import { LoadingState } from '../components/LoadingState';
+import { isOptimizedUrl } from '../utils/imageUtils';
 import {
   GraduationCap,
   Clock,
@@ -22,12 +24,15 @@ import {
   Search,
   Filter,
   Sparkles,
-  ArrowRight,
 } from 'lucide-react';
 
-export const CoursesPage: React.FC = () => {
-  const [courses, setCourses] = useState<CmsCourse[]>([]);
-  const [loading, setLoading] = useState(true);
+export interface CoursesPageProps {
+  initialCourses?: CmsCourse[];
+}
+
+export const CoursesPage: React.FC<CoursesPageProps> = ({ initialCourses }) => {
+  const [courses, setCourses] = useState<CmsCourse[]>(() => initialCourses || []);
+  const [loading, setLoading] = useState<boolean>(() => initialCourses === undefined);
 
   // Filters & Search
   const [selectedLevel, setSelectedLevel] = useState('all');
@@ -35,12 +40,13 @@ export const CoursesPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCurriculum, setExpandedCurriculum] = useState<Record<string, boolean>>({});
 
+
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchCourses = async (showLoading = false) => {
       try {
-        setLoading(true);
+        if (showLoading) setLoading(true);
         const data = await CmsService.getCourses('published');
-        setCourses(data || []);
+        if (data) setCourses(data);
       } catch (err: any) {
         console.error('Failed to load courses from backend:', err);
       } finally {
@@ -48,16 +54,20 @@ export const CoursesPage: React.FC = () => {
       }
     };
 
-    fetchCourses();
+    if (!initialCourses || initialCourses.length === 0) {
+      fetchCourses(true);
+    }
 
-    window.addEventListener('kalptaru-cms-updated', fetchCourses);
-    window.addEventListener('storage', fetchCourses);
+    const handleUpdate = () => fetchCourses(false);
+    window.addEventListener('kalptaru-cms-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
 
     return () => {
-      window.removeEventListener('kalptaru-cms-updated', fetchCourses);
-      window.removeEventListener('storage', fetchCourses);
+      window.removeEventListener('kalptaru-cms-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
     };
-  }, []);
+  }, [initialCourses]);
+
 
   const toggleCurriculum = (courseId: string) => {
     setExpandedCurriculum((prev) => ({
@@ -234,11 +244,14 @@ export const CoursesPage: React.FC = () => {
                       {/* Left: Media Banner (4 cols) */}
                       <div className="lg:col-span-4 relative aspect-[16/10] lg:aspect-auto overflow-hidden bg-surface-subtle flex flex-col justify-between">
                         {coverUrl ? (
-                          <img
+                          <Image
                             src={coverUrl}
                             alt={course.title}
-                            className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
+                            fill
+                            sizes="(max-width: 1024px) 100vw, 420px"
+                            className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
                             loading="lazy"
+                            unoptimized={!isOptimizedUrl(coverUrl)}
                           />
                         ) : (
                           <div className="w-full h-full bg-plum-950 flex items-center justify-center p-8 text-gold-400">
@@ -426,19 +439,19 @@ export const CoursesPage: React.FC = () => {
 
                           <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
                             <LinkButton
-                              to="/contact"
+                              to={`/contact?program=${encodeURIComponent(course.title)}`}
                               variant="primary"
                               size="md"
-                              className="w-full sm:w-auto bg-plum-900 hover:bg-plum-800 text-gold-300 font-semibold px-6 py-2.5 rounded-lg text-xs transition-colors shadow-soft flex items-center justify-center gap-1.5"
+                              className="w-full sm:w-auto text-center rounded-lg px-6 py-2.5 font-medium whitespace-nowrap"
+                              withArrow
                             >
-                              <span>Book Now</span>
-                              <ArrowRight className="w-3.5 h-3.5" />
+                              Book Now
                             </LinkButton>
                             <LinkButton
                               to={`/contact/enquiry?program=${encodeURIComponent(course.title)}`}
                               variant="outline"
                               size="md"
-                              className="w-full sm:w-auto text-center text-xs"
+                              className="w-full sm:w-auto text-center rounded-lg px-5 py-2.5 font-medium whitespace-nowrap"
                             >
                               Enquire
                             </LinkButton>
@@ -457,10 +470,13 @@ export const CoursesPage: React.FC = () => {
       {/* 4. Institutional Consultation Banner */}
       <section className="py-16 bg-canvas-warm border-t border-border">
         <Container size="default" className="text-center space-y-4">
-          <img
-            src="/logo.png"
+          <Image
+            src="/logo.webp"
             alt="Kalptaruu Logo"
+            width={48}
+            height={48}
             className="w-12 h-12 rounded-full object-cover shadow-soft mx-auto"
+            loading="lazy"
           />
           <h2 className="text-2xl sm:text-3xl font-editorial text-plum-900">
             Need Guidance Choosing Your Program?

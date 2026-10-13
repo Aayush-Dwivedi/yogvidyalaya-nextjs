@@ -15,11 +15,13 @@ export async function POST(request: NextRequest) {
     revalidatePath('/', 'page');
     revalidatePath('/courses', 'page');
     revalidatePath('/workshops', 'page');
+    revalidatePath('/trainers', 'page');
+    revalidatePath('/corporate', 'page');
+    revalidatePath('/membership', 'page');
     revalidatePath('/about', 'page');
     revalidatePath('/about/founder', 'page');
     revalidatePath('/about/institute', 'page');
     revalidatePath('/programs', 'page');
-    revalidatePath('/programs/trainers', 'page');
     revalidatePath('/gallery', 'page');
     revalidatePath('/videos', 'page');
     revalidatePath('/contact', 'page');

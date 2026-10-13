@@ -16,10 +16,14 @@ import { CmsService } from '../services/cmsService';
 
 export interface HomePageProps {
   initialHeroSlides?: any[];
+  initialData?: any;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ initialHeroSlides }) => {
+export const HomePage: React.FC<HomePageProps> = ({ initialHeroSlides, initialData }) => {
   const [homeData, setHomeData] = useState<any>(() => {
+    if (initialData) {
+      return initialData;
+    }
     if (initialHeroSlides && initialHeroSlides.length > 0) {
       return { heroSlides: initialHeroSlides };
     }
@@ -62,7 +66,17 @@ export const HomePage: React.FC<HomePageProps> = ({ initialHeroSlides }) => {
   };
 
   useEffect(() => {
-    loadHomeContent();
+    // Only fetch on client mount if initialData was not provided via SSR
+    if (!initialData) {
+      loadHomeContent();
+    } else if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('kalptaru_cached_home_data', JSON.stringify(initialData));
+        if (initialData.heroSlides) {
+          localStorage.setItem('kalptaru_cached_hero_slides', JSON.stringify(initialData.heroSlides));
+        }
+      } catch {}
+    }
 
     // Listen for live updates when admin clicks "Confirm Changes"
     const handleCmsUpdate = () => {
@@ -76,7 +90,7 @@ export const HomePage: React.FC<HomePageProps> = ({ initialHeroSlides }) => {
       window.removeEventListener('kalptaru-cms-updated', handleCmsUpdate);
       window.removeEventListener('storage', handleCmsUpdate);
     };
-  }, []);
+  }, [initialData]);
 
   return (
     <div className="w-full flex flex-col bg-[#1A0719]">

@@ -48,7 +48,7 @@ export const WhyYogaSection: React.FC<WhyYogaSectionProps> = ({ benefits: propBe
       }
     };
 
-    if (!propBenefits || propBenefits.length === 0) {
+    if (propBenefits === undefined) {
       fetchLiveBenefits();
     }
 

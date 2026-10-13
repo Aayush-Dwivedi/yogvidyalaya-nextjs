@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { OrnamentalDivider } from './Motifs';
 import { useToast } from './Toast';
 import { CmsService } from '../services/cmsService';
@@ -79,9 +80,12 @@ export const Footer: React.FC = () => {
           {/* Column 1: Institute Brand Identity (4 cols) */}
           <div className="lg:col-span-4 space-y-4">
             <Link href="/" className="flex items-center space-x-3 group">
-              <img
-                src="/logo.png"
+              <Image
+                src="/logo.webp"
                 alt="Kalptaruu Yoga Vidhyalaya Logo"
+                width={48}
+                height={48}
+                loading="lazy"
                 className="w-12 h-12 rounded-full object-cover shadow-soft group-hover:scale-[1.04] transition-transform shrink-0"
               />
               <div className="flex flex-col">
@@ -111,7 +115,7 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/founder" className="hover:text-gold-300 transition-colors">
+                <Link href="/about/founder" className="hover:text-gold-300 transition-colors">
                   Our Founder
                 </Link>
               </li>

@@ -2,12 +2,14 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { Container } from '../components/Container';
 import { LotusMotif, OrnamentalDivider, CornerFlourish } from '../components/Motifs';
 import { AuricBackground } from '../components/AuricBackground';
 import { Badge } from '../components/Badge';
 import { CmsService } from '../services/cmsService';
 import { CmsGalleryImage, CmsGalleryCategory } from '../types/cms';
+import { isOptimizedUrl } from '../utils/imageUtils';
 import {
   Image as ImageIcon,
   Sparkles,
@@ -393,11 +395,14 @@ export const GalleryPage: React.FC<GalleryPageProps> = ({
                 >
                   {/* Photo Container */}
                   <div className="relative aspect-[4/3] overflow-hidden bg-plum-950">
-                    <img
+                    <NextImage
                       src={photo.image}
                       alt={photo.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
                       loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-95"
+                      className="object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-95"
+                      unoptimized={!isOptimizedUrl(photo.image)}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-plum-950/80 via-transparent to-transparent opacity-80 group-hover:opacity-95 transition-opacity pointer-events-none" />
 

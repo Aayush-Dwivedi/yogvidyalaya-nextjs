@@ -2,10 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '../components/Container';
 import { AuricBackground } from '../components/AuricBackground';
 import { LotusMotif, CornerFlourish, KalptaruTree } from '../components/Motifs';
 import { CmsService } from '../services/cmsService';
+import { isOptimizedUrl } from '../utils/imageUtils';
 import {
   Award,
   Sparkles,
@@ -28,9 +30,10 @@ import {
 
 export interface InstitutePageProps {
   initialData?: any;
+  initialFounder?: any;
 }
 
-export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => {
+export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData, initialFounder }) => {
   const [institute, setInstitute] = useState<any>(() => {
     if (initialData) return initialData;
     if (typeof window !== 'undefined') {
@@ -45,17 +48,40 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
     return null;
   });
 
+  const [founder, setFounder] = useState<any>(() => {
+    if (initialFounder) return initialFounder;
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('kalptaru_cached_founder');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && (parsed.name || parsed.image)) return parsed;
+        }
+      } catch {}
+    }
+    return null;
+  });
+
   const loadData = async () => {
     try {
-      const data = await CmsService.getInstitute();
+      const [data, founders] = await Promise.all([
+        CmsService.getInstitute(),
+        CmsService.getFounders('published'),
+      ]);
       if (data) {
         setInstitute(data);
         if (typeof window !== 'undefined') {
           localStorage.setItem('kalptaru_cached_institute', JSON.stringify(data));
         }
       }
+      if (founders && founders.length > 0) {
+        setFounder(founders[0]);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('kalptaru_cached_founder', JSON.stringify(founders[0]));
+        }
+      }
     } catch (err) {
-      console.warn('Could not load dynamic institute data:', err);
+      console.warn('Could not load dynamic institute or founder data:', err);
     }
   };
 
@@ -249,7 +275,7 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-4 pt-4">
               <Link
-                href="/programs/courses"
+                href="/courses"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 text-plum-950 font-sans font-semibold text-xs sm:text-sm shadow-modal hover:from-gold-200 hover:to-gold-300 transition-all cursor-pointer"
               >
                 <span>Explore Accredited Courses</span>
@@ -290,13 +316,17 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             {/* Left Column: Visual Collage */}
             <div className="lg:col-span-6 space-y-4 relative">
-              <div className="relative rounded-2xl overflow-hidden border-2 border-gold-400/40 shadow-modal">
-                <img
+              <div className="relative rounded-2xl overflow-hidden border-2 border-gold-400/40 shadow-modal h-[380px] sm:h-[450px]">
+                <Image
                   src={storyCover}
                   alt={`${name} Learning Sanctuary`}
-                  className="w-full h-[380px] sm:h-[450px] object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 600px"
+                  className="object-cover"
+                  loading="lazy"
+                  unoptimized={!isOptimizedUrl(storyCover)}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-plum-950/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-plum-950/80 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute bottom-6 left-6 right-6 text-white space-y-1">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-gold-300 bg-plum-950/80 px-2.5 py-1 rounded">
                     Institutional Lineage
@@ -435,12 +465,16 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
               {campusPhotos.map((photo: any, idx: number) => (
                 <div
                   key={idx}
-                  className="rounded-xl overflow-hidden border border-border shadow-xs hover:border-gold-400 transition-all group"
+                  className="relative rounded-xl overflow-hidden border border-border shadow-xs hover:border-gold-400 transition-all group h-40"
                 >
-                  <img
+                  <Image
                     src={photo.url}
                     alt={photo.alt || 'Campus'}
-                    className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    unoptimized={!isOptimizedUrl(photo.url)}
                   />
                 </div>
               ))}
@@ -483,7 +517,7 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
                 biomechanical alignment, anatomy, and authentic guru-shishya parampara teaching pedagogy.
               </p>
               <Link
-                href="/programs/courses"
+                href="/courses"
                 className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-plum-900 hover:text-gold-700 pt-1"
               >
                 <span>Explore TTC Syllabuses</span>
@@ -535,7 +569,7 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
                 Spinal Mobility, and Women&apos;s Hormonal Health conducted in offline ashram and live online modes.
               </p>
               <Link
-                href="/programs/workshops"
+                href="/workshops"
                 className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-plum-900 hover:text-gold-700 pt-1"
               >
                 <span>View Upcoming Workshops</span>
@@ -561,7 +595,7 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
                 educational institutes, and government ministries to restore workplace vitality.
               </p>
               <Link
-                href="/programs/corporate"
+                href="/corporate"
                 className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-plum-900 hover:text-gold-700 pt-1"
               >
                 <span>Corporate Partnerships</span>
@@ -578,11 +612,20 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
 
         <Container size="wide" className="relative z-10">
           <div className="max-w-4xl mx-auto rounded-3xl bg-[#1A0719]/90 border border-gold-400/40 p-8 sm:p-12 shadow-modal flex flex-col md:flex-row items-center gap-8 sm:gap-10">
-            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden border-2 border-gold-400/60 shrink-0 shadow-card">
-              <img
-                src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80"
-                alt="Mrs. Shuchi Mohan - Founder"
-                className="w-full h-full object-cover"
+            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden border-2 border-gold-400/60 shrink-0 shadow-card relative">
+              <Image
+                src={
+                  (typeof founder?.image === 'string' ? founder.image : founder?.image?.url) ||
+                  'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80'
+                }
+                alt={`${founder?.name || 'Mrs. Shuchi Mohan'} - Founder`}
+                fill
+                sizes="176px"
+                className="object-cover"
+                loading="lazy"
+                unoptimized={!isOptimizedUrl(
+                  typeof founder?.image === 'string' ? founder.image : founder?.image?.url
+                )}
               />
             </div>
 
@@ -591,10 +634,10 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
                 <span>Visionary Lineage</span>
               </div>
               <h3 className="text-2xl sm:text-3xl font-editorial font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-gold-200 to-gold-300">
-                Mrs. Shuchi Mohan
+                {founder?.name || 'Mrs. Shuchi Mohan'}
               </h3>
               <p className="text-xs sm:text-sm text-gold-400 font-mono">
-                Physiotherapist &amp; Therapeutic Yoga Consultant • Founder
+                {founder?.designation || founder?.title || 'Physiotherapist & Therapeutic Yoga Consultant • Founder'}
               </p>
               <p className="text-xs sm:text-sm text-white/80 font-sans leading-relaxed">
                 With a legacy spanning MDNIY, NCERT educational broadcasts, and over 15 years of clinical practice, 
@@ -722,7 +765,7 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData }) => 
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <Link
-              href="/programs/courses"
+              href="/courses"
               className="px-7 py-3 rounded-full bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 text-plum-950 font-sans font-semibold text-sm shadow-modal hover:from-gold-200 hover:to-gold-300 transition-all cursor-pointer"
             >
               Browse Certified Courses

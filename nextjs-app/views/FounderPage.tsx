@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
@@ -9,6 +10,7 @@ import { LotusMotif, CornerFlourish } from '../components/Motifs';
 import { AuricBackground } from '../components/AuricBackground';
 import { CmsService } from '../services/cmsService';
 import { CmsFounder } from '../types/cms';
+import { isOptimizedUrl } from '../utils/imageUtils';
 import {
   Award,
   GraduationCap,
@@ -21,9 +23,25 @@ import {
   BookOpen,
 } from 'lucide-react';
 
-export const FounderPage: React.FC = () => {
-  const [founder, setFounder] = useState<CmsFounder | null>(null);
-  const [loading, setLoading] = useState(true);
+export interface FounderPageProps {
+  initialData?: CmsFounder | null;
+}
+
+export const FounderPage: React.FC<FounderPageProps> = ({ initialData }) => {
+  const [founder, setFounder] = useState<CmsFounder | null>(() => {
+    if (initialData) return initialData;
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('kalptaru_cached_founder');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && (parsed.name || parsed.image)) return parsed;
+        }
+      } catch {}
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(!founder);
 
   const loadFounder = async () => {
     try {
@@ -31,6 +49,11 @@ export const FounderPage: React.FC = () => {
       if (founders && founders.length > 0) {
         // First founder is the Institute Founder
         setFounder(founders[0]);
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem('kalptaru_cached_founder', JSON.stringify(founders[0]));
+          } catch {}
+        }
       }
     } catch (err) {
       console.warn('Could not load founder data from CMS:', err);
@@ -69,7 +92,7 @@ export const FounderPage: React.FC = () => {
 
   const photoUrl =
     (typeof founder?.image === 'string' ? founder.image : founder?.image?.url) ||
-    'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1000&q=85';
+    '';
 
   const experienceYears = founder?.experienceYears || 15;
 
@@ -161,11 +184,23 @@ export const FounderPage: React.FC = () => {
             {/* Right Portrait */}
             <div className="lg:col-span-5 flex justify-center lg:justify-end items-center">
               <div className="relative w-full max-w-[320px] sm:max-w-[360px] lg:max-w-[390px] aspect-[4/5] rounded-2xl overflow-hidden border-2 border-gold-400/60 shadow-[0_0_50px_rgba(218,165,59,0.25)] bg-plum-900 p-2">
-                <img
-                  src={photoUrl}
-                  alt={name}
-                  className="w-full h-full object-cover rounded-xl filter brightness-95"
-                />
+                <div className="relative w-full h-full rounded-xl overflow-hidden bg-plum-950 flex items-center justify-center">
+                  {photoUrl ? (
+                    <Image
+                      src={photoUrl}
+                      alt={name}
+                      fill
+                      priority
+                      sizes="(max-width: 640px) 320px, (max-width: 1024px) 360px, 390px"
+                      className="object-cover rounded-xl filter brightness-95"
+                      unoptimized={!isOptimizedUrl(photoUrl)}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center p-8 text-gold-400 bg-plum-950/80">
+                      <LotusMotif size={48} className="opacity-60" />
+                    </div>
+                  )}
+                </div>
                 <div className="absolute top-4 left-4 pointer-events-none">
                   <CornerFlourish position="top-left" className="text-gold-400" />
                 </div>

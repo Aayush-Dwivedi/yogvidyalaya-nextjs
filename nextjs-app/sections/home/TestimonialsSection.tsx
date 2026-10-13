@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { CmsTestimonial } from '../../types/cms';
 import { CmsService } from '../../services/cmsService';
 import { Star, Quote, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
+import { isOptimizedUrl } from '../../utils/imageUtils';
 
 export interface TestimonialsSectionProps {
   testimonials?: CmsTestimonial[];
@@ -93,7 +95,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       }
     };
 
-    if (!propTestimonials || propTestimonials.length === 0) {
+    if (propTestimonials === undefined) {
       fetchLiveTestimonials();
     }
 
@@ -229,10 +231,14 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
               {/* Author Footer */}
               <div className="pt-4 border-t border-border/80 flex items-center space-x-3.5">
                 {item.avatar?.url ? (
-                  <img
+                  <Image
                     src={item.avatar.url}
                     alt={item.name}
+                    width={44}
+                    height={44}
                     className="w-11 h-11 rounded-full object-cover border border-gold-200"
+                    loading="lazy"
+                    unoptimized={!isOptimizedUrl(item.avatar.url)}
                   />
                 ) : (
                   <div className="w-11 h-11 rounded-full bg-gold-50 border border-gold-200 text-gold-800 font-editorial font-bold text-base flex items-center justify-center">

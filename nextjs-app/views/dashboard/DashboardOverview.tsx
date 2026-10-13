@@ -199,7 +199,7 @@ export const DashboardOverview: React.FC = () => {
             title="No Active Membership"
             description="You do not currently have an active Shala Sadhana pass. Explore our tiers to join daily morning and evening practice."
             action={
-              <Link href="/programs/membership"
+              <Link href="/membership"
                 className="inline-flex items-center text-xs font-semibold text-plum-900 border border-gold-500/70 px-4 py-2 rounded bg-surface hover:bg-gold-50 transition-colors"
               >
                 Browse Membership Plans
@@ -377,7 +377,7 @@ export const DashboardOverview: React.FC = () => {
                   >
                     Resume Study <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
-                  <Link href={`/programs/courses`}
+                  <Link href={`/courses`}
                     className="text-[11px] font-mono text-ink-muted hover:text-plum-900 inline-flex items-center gap-1"
                   >
                     Syllabus <ExternalLink className="w-3 h-3" />
@@ -391,7 +391,7 @@ export const DashboardOverview: React.FC = () => {
             title="No Course Enrollments"
             description="You are not currently enrolled in any academic or teacher training courses."
             action={
-              <Link href="/programs/courses"
+              <Link href="/courses"
                 className="inline-flex items-center text-xs font-semibold text-plum-900 border border-gold-500/70 px-4 py-2 rounded bg-surface hover:bg-gold-50 transition-colors"
               >
                 Explore Courses
@@ -467,7 +467,7 @@ export const DashboardOverview: React.FC = () => {
             title="No Workshop Registrations"
             description="You have not enrolled in any upcoming weekend masterclasses or retreats."
             action={
-              <Link href="/programs/workshops"
+              <Link href="/workshops"
                 className="inline-flex items-center text-xs font-semibold text-plum-900 border border-gold-500/70 px-4 py-2 rounded bg-surface hover:bg-gold-50 transition-colors"
               >
                 Browse Workshops

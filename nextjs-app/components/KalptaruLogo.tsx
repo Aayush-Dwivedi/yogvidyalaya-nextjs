@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { cn } from '../utils/cn';
 
 export interface KalptaruLogoProps {
@@ -37,8 +38,8 @@ export const KalptaruLogo: React.FC<KalptaruLogoProps> = ({
   alt = 'Kalptaruu Yoga Vidhyalaya Logo',
 }) => {
   const logoImage = (
-    <img
-      src="/logo.png"
+    <Image
+      src="/logo.webp"
       alt={alt}
       width={size}
       height={size}
@@ -47,7 +48,7 @@ export const KalptaruLogo: React.FC<KalptaruLogoProps> = ({
         'rounded-full object-cover shrink-0 select-none shadow-soft transition-transform group-hover:scale-105',
         className
       )}
-      loading="eager"
+      priority
     />
   );
 

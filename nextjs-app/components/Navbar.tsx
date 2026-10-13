@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { cn } from '../utils/cn';
 import { useAuth } from '../context/AuthContext';
@@ -30,10 +31,10 @@ const NAV_ITEMS: NavItem[] = [
   {
     label: 'Programs',
     children: [
-      { label: 'Courses', href: '/programs/courses', description: 'Comprehensive certification and foundational study' },
-      { label: 'Workshops', href: '/programs/workshops', description: 'Immersive weekend intensives and masterclasses' },
-      { label: 'Corporate', href: '/programs/corporate', description: 'Workplace wellness and executive mindfulness' },
-      { label: 'Membership', href: '/programs/membership', description: 'Ongoing daily practice and ashram access' },
+      { label: 'Courses', href: '/courses', description: 'Comprehensive certification and foundational study' },
+      { label: 'Workshops', href: '/workshops', description: 'Immersive weekend intensives and masterclasses' },
+      { label: 'Corporate', href: '/corporate', description: 'Workplace wellness and executive mindfulness' },
+      { label: 'Membership', href: '/membership', description: 'Ongoing daily practice and ashram access' },
       { label: 'Trainers', href: '/trainers', description: 'Our qualified faculty and instructors' },
       { label: 'Videos', href: '/videos', description: 'Discourses, guided sadhanas, and lectures' },
     ],
@@ -138,9 +139,12 @@ export const Navbar: React.FC = () => {
               className="flex items-center space-x-3 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 rounded-[2px]"
             >
               <div className="relative shrink-0">
-                <img
-                  src="/logo.png"
+                <Image
+                  src="/logo.webp"
                   alt="Kalptaruu Yoga Vidhyalaya Logo"
+                  width={44}
+                  height={44}
+                  priority
                   className="w-11 h-11 rounded-full object-cover shadow-soft ring-1 ring-gold-400/40 group-hover:ring-gold-300 group-hover:scale-[1.04] transition-all"
                 />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-gold-400/20 to-plum-500/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />

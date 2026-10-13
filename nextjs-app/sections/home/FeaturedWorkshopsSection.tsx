@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Badge } from '../../components/Badge';
@@ -9,6 +10,7 @@ import { FEATURED_WORKSHOPS } from '../../services/homeData';
 import { FeaturedWorkshop } from '../../types/home';
 import { CmsService } from '../../services/cmsService';
 import { CmsWorkshop } from '../../types/cms';
+import { isOptimizedUrl } from '../../utils/imageUtils';
 
 export interface FeaturedWorkshopsSectionProps {
   workshops?: (FeaturedWorkshop | CmsWorkshop)[];
@@ -20,7 +22,7 @@ export const FeaturedWorkshopsSection: React.FC<FeaturedWorkshopsSectionProps> =
   const [workshops, setWorkshops] = useState<(FeaturedWorkshop | CmsWorkshop)[]>(propWorkshops || []);
 
   useEffect(() => {
-    if (propWorkshops && propWorkshops.length > 0) {
+    if (propWorkshops !== undefined) {
       setWorkshops(propWorkshops);
       return;
     }
@@ -42,6 +44,18 @@ export const FeaturedWorkshopsSection: React.FC<FeaturedWorkshopsSectionProps> =
     };
 
     loadFeatured();
+
+    const handleUpdate = () => {
+      loadFeatured();
+    };
+
+    window.addEventListener('kalptaru-cms-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+
+    return () => {
+      window.removeEventListener('kalptaru-cms-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, [propWorkshops]);
 
   const displayWorkshops = workshops && workshops.length > 0 ? workshops : FEATURED_WORKSHOPS;
@@ -55,7 +69,7 @@ export const FeaturedWorkshopsSection: React.FC<FeaturedWorkshopsSectionProps> =
           description="Specialized yoga therapy and wellness workshops designed for specific health conditions and holistic self-care."
           align="asymmetric"
           action={
-            <LinkButton to="/programs/workshops" variant="text" size="md" withArrow>
+            <LinkButton to="/workshops" variant="text" size="md" withArrow>
               View All Workshops
             </LinkButton>
           }
@@ -97,11 +111,14 @@ export const FeaturedWorkshopsSection: React.FC<FeaturedWorkshopsSectionProps> =
               >
                 {/* Workshop Image Container */}
                 <div className="relative aspect-[16/10] overflow-hidden bg-surface-subtle">
-                  <img
+                  <Image
                     src={coverUrl}
                     alt={ws.title}
-                    className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
                     loading="lazy"
+                    unoptimized={!isOptimizedUrl(coverUrl)}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-plum-950/60 via-transparent to-transparent pointer-events-none" />
 
@@ -151,7 +168,7 @@ export const FeaturedWorkshopsSection: React.FC<FeaturedWorkshopsSectionProps> =
                     <span className="text-base font-editorial font-semibold text-plum-900">{priceDisplay || '—'}</span>
                   </div>
 
-                  <LinkButton to="/programs/workshops" variant="secondary" size="sm" withArrow>
+                  <LinkButton to="/workshops" variant="secondary" size="sm" withArrow>
                     View Details
                   </LinkButton>
                 </div>

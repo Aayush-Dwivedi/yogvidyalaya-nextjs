@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Badge } from '../../components/Badge';
@@ -9,6 +10,7 @@ import { FEATURED_COURSES } from '../../services/homeData';
 import { FeaturedCourse } from '../../types/home';
 import { CmsService } from '../../services/cmsService';
 import { CmsCourse } from '../../types/cms';
+import { isOptimizedUrl } from '../../utils/imageUtils';
 
 export interface FeaturedCoursesSectionProps {
   courses?: (FeaturedCourse | CmsCourse)[];
@@ -20,7 +22,7 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
   const [courses, setCourses] = useState<(FeaturedCourse | CmsCourse)[]>(propCourses || []);
 
   useEffect(() => {
-    if (propCourses && propCourses.length > 0) {
+    if (propCourses !== undefined) {
       setCourses(propCourses);
       return;
     }
@@ -42,6 +44,18 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
     };
 
     loadFeatured();
+
+    const handleUpdate = () => {
+      loadFeatured();
+    };
+
+    window.addEventListener('kalptaru-cms-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+
+    return () => {
+      window.removeEventListener('kalptaru-cms-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, [propCourses]);
 
   const displayCourses = courses && courses.length > 0 ? courses : FEATURED_COURSES;
@@ -55,7 +69,7 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
           description="A carefully designed curriculum providing a strong foundation in traditional yogasanas with correct alignment."
           align="asymmetric"
           action={
-            <LinkButton to="/programs/courses" variant="text" size="md" withArrow>
+            <LinkButton to="/courses" variant="text" size="md" withArrow>
               Browse Complete Course Catalog
             </LinkButton>
           }
@@ -92,11 +106,14 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
                 <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
                   {/* Image Column (4 cols) */}
                   <div className="lg:col-span-4 relative aspect-[16/10] lg:aspect-auto overflow-hidden bg-surface-subtle">
-                    <img
+                    <Image
                       src={coverUrl}
                       alt={c.title}
-                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 420px"
+                      className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
                       loading="lazy"
+                      unoptimized={!isOptimizedUrl(coverUrl)}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-plum-950/60 via-transparent to-transparent lg:hidden" />
 
@@ -157,7 +174,7 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
 
                       <div className="flex items-center space-x-3 w-full sm:w-auto">
                         <LinkButton
-                          to="/programs/courses"
+                          to="/courses"
                           variant="secondary"
                           size="sm"
                           className="w-full sm:w-auto text-center"

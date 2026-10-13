@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { HERO_SLIDES, HERO_METRICS } from '../../services/homeData';
 import { CmsService } from '../../services/cmsService';
 import { CmsHeroSlide } from '../../types/cms';
@@ -44,7 +45,7 @@ const normalizeSlides = (rawSlides: (HeroSlide | CmsHeroSlide)[]): NormalizedHer
         'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
       quote: s.quote || 'Affiliated by Indian Yoga Association',
       ctaText: s.ctaText || 'Explore Courses',
-      ctaUrl: s.ctaUrl || '/programs/courses',
+      ctaUrl: s.ctaUrl || '/courses',
       secondaryCtaText: s.secondaryCtaText || 'Contact Us',
       secondaryCtaUrl: s.secondaryCtaUrl || '/contact',
     };
@@ -70,6 +71,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
     return normalizeSlides(HERO_SLIDES);
   });
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loadedIndices, setLoadedIndices] = useState<number[]>([0]);
 
   // Sync when propSlides changes
   useEffect(() => {
@@ -97,7 +99,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
       }
     };
 
-    if (!propSlides || propSlides.length === 0) {
+    if (propSlides === undefined) {
       fetchLiveSlides();
     }
 
@@ -114,14 +116,40 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
     };
   }, [propSlides]);
 
-  // Slideshow auto-advance (5.5s timer)
+  // Slideshow auto-advance (5.5s timer) with background next-slide preloading and reduced-motion check
   useEffect(() => {
     if (slides.length <= 1) return;
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) return;
+
+    // Preload next slide 2.5s ahead of transition for seamless 1000ms crossfade
+    const preloadTimer = setTimeout(() => {
+      const nextIdx = (currentIndex + 1) % slides.length;
+      setLoadedIndices((prev) => (prev.includes(nextIdx) ? prev : [...prev, nextIdx]));
+    }, 2500);
+
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % slides.length);
+      setCurrentIndex((prev) => {
+        const next = (prev + 1) % slides.length;
+        setLoadedIndices((p) => (p.includes(next) ? p : [...p, next]));
+        return next;
+      });
     }, 5500);
-    return () => clearInterval(interval);
-  }, [slides.length]);
+
+    return () => {
+      clearTimeout(preloadTimer);
+      clearInterval(interval);
+    };
+  }, [slides.length, currentIndex]);
+
+  const handleSelectSlide = useCallback((idx: number) => {
+    setLoadedIndices((prev) => (prev.includes(idx) ? prev : [...prev, idx]));
+    setCurrentIndex(idx);
+  }, []);
 
 
   const currentSlide = slides[currentIndex] || slides[0] || normalizeSlides(HERO_SLIDES)[0];
@@ -177,7 +205,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
             {/* Golden Pill Action Buttons */}
             <div className="flex flex-wrap items-center gap-4 pt-1 sm:pt-2">
               <Link
-                href={currentSlide.ctaUrl || '/programs/courses'}
+                href={currentSlide.ctaUrl || '/courses'}
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 text-plum-950 hover:from-gold-200 hover:to-gold-300 font-sans font-semibold text-sm transition-all shadow-modal hover:shadow-[0_0_25px_rgba(216,178,110,0.45)] group cursor-pointer"
               >
                 <span>{currentSlide.ctaText || 'Explore Courses'}</span>
@@ -287,21 +315,34 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
 
               {/* ── CIRCULAR IMAGE WINDOW (Remains still and clearly oriented) ── */}
               <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-gold-400/60 shadow-[0_0_60px_rgba(218,165,59,0.30)] bg-[#1A0719] z-10">
-                {slides.map((s, idx) => (
-                  <div
-                    key={s.id || idx}
-                    className={cn(
-                      'absolute inset-0 transition-opacity duration-1000 ease-in-out',
-                      idx === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-                    )}
-                  >
-                    <img
-                      src={s.image}
-                      alt={s.title || 'Kalptaruu Yoga Vidhyalaya'}
-                      className="w-full h-full object-cover object-center transform scale-100"
-                    />
-                  </div>
-                ))}
+                {slides.map((s, idx) => {
+                  const isCurrent = idx === currentIndex;
+                  const shouldRender = isCurrent || loadedIndices.includes(idx);
+
+                  return (
+                    <div
+                      key={s.id || idx}
+                      className={cn(
+                        'absolute inset-0 transition-opacity duration-1000 ease-in-out',
+                        isCurrent ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                      )}
+                    >
+                      {shouldRender && (
+                        <Image
+                          src={s.image}
+                          alt={s.title || 'Kalptaruu Yoga Vidhyalaya'}
+                          fill
+                          priority={idx === 0}
+                          loading={idx === 0 ? 'eager' : 'lazy'}
+                          fetchPriority={idx === 0 ? 'high' : 'auto'}
+                          sizes="(max-width: 640px) 290px, (max-width: 1024px) 370px, (max-width: 1280px) 420px, (max-width: 1536px) 470px, 500px"
+                          quality={85}
+                          className="object-cover object-center transform scale-100"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
 
                 {/* Soft Radial Vignette Overlay inside the circle */}
                 <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,transparent_60%,rgba(26,7,25,0.45)_95%)] pointer-events-none z-15" />
@@ -311,7 +352,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
                   {slides.map((_, idx) => (
                     <button
                       key={idx}
-                      onClick={() => setCurrentIndex(idx)}
+                      onClick={() => handleSelectSlide(idx)}
                       aria-label={`Go to slide ${idx + 1}`}
                       className={cn(
                         'transition-all duration-300 rounded-full cursor-pointer',

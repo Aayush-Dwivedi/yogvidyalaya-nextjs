@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
@@ -10,6 +11,7 @@ import { AuricBackground } from '../components/AuricBackground';
 import { CmsService } from '../services/cmsService';
 import { CmsWorkshop } from '../types/cms';
 import { LoadingState } from '../components/LoadingState';
+import { isOptimizedUrl } from '../utils/imageUtils';
 import {
   Clock,
   MapPin,
@@ -18,24 +20,28 @@ import {
   Search,
   Filter,
   Sparkles,
-  ArrowRight,
 } from 'lucide-react';
 
-export const WorkshopsPage: React.FC = () => {
-  const [workshops, setWorkshops] = useState<CmsWorkshop[]>([]);
-  const [loading, setLoading] = useState(true);
+export interface WorkshopsPageProps {
+  initialWorkshops?: CmsWorkshop[];
+}
+
+export const WorkshopsPage: React.FC<WorkshopsPageProps> = ({ initialWorkshops }) => {
+  const [workshops, setWorkshops] = useState<CmsWorkshop[]>(() => initialWorkshops || []);
+  const [loading, setLoading] = useState<boolean>(() => initialWorkshops === undefined);
 
   // Filters & Search
   const [selectedMode, setSelectedMode] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [upcomingOnly, setUpcomingOnly] = useState(false);
 
+
   useEffect(() => {
-    const fetchWorkshops = async () => {
+    const fetchWorkshops = async (showLoading = false) => {
       try {
-        setLoading(true);
+        if (showLoading) setLoading(true);
         const data = await CmsService.getWorkshops('published');
-        setWorkshops(data || []);
+        if (data) setWorkshops(data);
       } catch (err: any) {
         console.error('Failed to load workshops from backend:', err);
       } finally {
@@ -43,16 +49,20 @@ export const WorkshopsPage: React.FC = () => {
       }
     };
 
-    fetchWorkshops();
+    if (!initialWorkshops || initialWorkshops.length === 0) {
+      fetchWorkshops(true);
+    }
 
-    window.addEventListener('kalptaru-cms-updated', fetchWorkshops);
-    window.addEventListener('storage', fetchWorkshops);
+    const handleUpdate = () => fetchWorkshops(false);
+    window.addEventListener('kalptaru-cms-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
 
     return () => {
-      window.removeEventListener('kalptaru-cms-updated', fetchWorkshops);
-      window.removeEventListener('storage', fetchWorkshops);
+      window.removeEventListener('kalptaru-cms-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
     };
-  }, []);
+  }, [initialWorkshops]);
+
 
   const now = new Date();
 
@@ -238,11 +248,14 @@ export const WorkshopsPage: React.FC = () => {
                     <div>
                       <div className="relative aspect-[16/10] overflow-hidden bg-surface-subtle">
                         {coverUrl ? (
-                          <img
+                          <Image
                             src={coverUrl}
                             alt={ws.title}
-                            className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+                            className="object-cover group-hover:scale-[1.04] transition-transform duration-500"
                             loading="lazy"
+                            unoptimized={!isOptimizedUrl(coverUrl)}
                           />
                         ) : (
                           <div className="w-full h-full bg-plum-950 flex items-center justify-center p-6 text-gold-400">
@@ -352,19 +365,19 @@ export const WorkshopsPage: React.FC = () => {
 
                       <div className="flex items-center gap-2">
                         <LinkButton
-                          to="/contact"
+                          to={`/contact?program=${encodeURIComponent(ws.title)}`}
                           variant="primary"
                           size="sm"
-                          className="bg-plum-900 hover:bg-plum-800 text-gold-300 font-semibold px-4 py-2 rounded-lg text-xs transition-colors shadow-soft flex items-center gap-1.5"
+                          className="rounded-lg px-4 py-2 font-medium whitespace-nowrap"
+                          withArrow
                         >
-                          <span>Book Now</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
+                          Book Now
                         </LinkButton>
                         <LinkButton
                           to={`/contact/enquiry?program=${encodeURIComponent(ws.title)}`}
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
-                          className="text-xs px-2"
+                          className="rounded-lg px-3.5 py-2 font-medium whitespace-nowrap"
                         >
                           Enquire
                         </LinkButton>

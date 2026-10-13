@@ -11,12 +11,30 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['mongoose', 'bcryptjs'],
 
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
-      // Allow Supabase Storage images
+      // Allow Supabase Storage images (both raw object and transformed render endpoints)
       {
         protocol: 'https',
         hostname: '*.supabase.co',
-        pathname: '/storage/v1/object/public/**',
+        pathname: '/storage/v1/**',
+      },
+      // Allow Unsplash images for hero slideshow and media
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
+      // Allow YouTube thumbnails
+      {
+        protocol: 'https',
+        hostname: 'img.youtube.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+        pathname: '/**',
       },
     ],
   },
@@ -35,6 +53,41 @@ const nextConfig: NextConfig = {
             value: 'camera=(), microphone=(), geolocation=()',
           },
         ],
+      },
+    ];
+  },
+
+  async redirects() {
+    return [
+      {
+        source: '/programs/courses',
+        destination: '/courses',
+        permanent: true,
+      },
+      {
+        source: '/programs/workshops',
+        destination: '/workshops',
+        permanent: true,
+      },
+      {
+        source: '/programs/corporate',
+        destination: '/corporate',
+        permanent: true,
+      },
+      {
+        source: '/programs/membership',
+        destination: '/membership',
+        permanent: true,
+      },
+      {
+        source: '/programs/trainers',
+        destination: '/trainers',
+        permanent: true,
+      },
+      {
+        source: '/founder',
+        destination: '/about/founder',
+        permanent: true,
       },
     ];
   },
