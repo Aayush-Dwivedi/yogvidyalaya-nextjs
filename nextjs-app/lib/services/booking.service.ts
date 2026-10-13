@@ -109,12 +109,17 @@ export class BookingService {
 
     let targetScheduleId: string | undefined = dto.schedule?.scheduleId;
     let capacityRollbackFn: (() => Promise<void>) | null = null;
+    let resolvedProgramId: Types.ObjectId | null = null;
 
     if (dto.programType === 'course') {
-      const course = await Course.findById(dto.programId);
+      const isObjectId = Types.ObjectId.isValid(dto.programId) && dto.programId.length === 24;
+      const course = isObjectId
+        ? await Course.findById(dto.programId)
+        : await Course.findOne({ slug: dto.programId });
       if (!course) {
         throw AppError.notFound(`Course not found with ID: ${dto.programId}`);
       }
+      resolvedProgramId = course._id;
       if (course.status !== 'published') {
         throw AppError.badRequest('This course is not open for public student enrollments.');
       }
@@ -237,10 +242,14 @@ export class BookingService {
       scheduleData.venue = scheduleData.venue || targetSchedule?.venue || targetSchedule?.location || 'Kalptaruu Tapovan Shala';
       scheduleData.location = scheduleData.location || scheduleData.venue;
     } else if (dto.programType === 'workshop') {
-      const workshop = await Workshop.findById(dto.programId);
+      const isObjectId = Types.ObjectId.isValid(dto.programId) && dto.programId.length === 24;
+      const workshop = isObjectId
+        ? await Workshop.findById(dto.programId)
+        : await Workshop.findOne({ slug: dto.programId });
       if (!workshop) {
         throw AppError.notFound(`Workshop not found with ID: ${dto.programId}`);
       }
+      resolvedProgramId = workshop._id;
       if (workshop.status !== 'published') {
         throw AppError.badRequest('This workshop is not open for public registrations.');
       }
@@ -391,7 +400,7 @@ export class BookingService {
         student: studentUser ? studentUser._id : undefined,
         program: {
           programType: dto.programType,
-          programId: new Types.ObjectId(dto.programId),
+          programId: resolvedProgramId || (Types.ObjectId.isValid(dto.programId) ? new Types.ObjectId(dto.programId) : new Types.ObjectId()),
           programRef: dto.programType === 'course' ? 'Course' : 'Workshop',
           title: programTitle,
           slug: programSlug,
@@ -842,7 +851,7 @@ export class BookingService {
             startTime: '05:30 PM',
             endTime: '08:00 PM',
             mode: course.mode || 'hybrid',
-            venue: 'Sacred Grove Pavilion',
+            venue: 'Kalptaruu Shala',
           },
         ];
 

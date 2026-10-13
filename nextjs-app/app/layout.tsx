@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { getMetadataBase } from '@/lib/seo/site-url';
 
 export const metadata: Metadata = {
   title: {
@@ -8,9 +9,7 @@ export const metadata: Metadata = {
   },
   description:
     'Kalptaruu Yoga Vidhyalaya offers authentic yoga courses, workshops, and residential programs rooted in ancient Indian tradition. Enroll today and begin your sadhana.',
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-  ),
+  metadataBase: getMetadataBase(),
   openGraph: {
     siteName: 'Kalptaruu Yoga Vidhyalaya',
     type: 'website',
@@ -18,11 +17,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/logo.png', type: 'image/png' },
+      { url: '/logo.webp', type: 'image/webp' },
       { url: '/favicon.ico' },
     ],
-    shortcut: '/logo.png',
-    apple: '/logo.png',
+    shortcut: '/logo.webp',
+    apple: '/apple-touch-icon.png',
   },
   robots: { index: true, follow: true },
 };

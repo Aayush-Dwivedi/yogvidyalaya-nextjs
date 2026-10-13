@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Container } from '../../components/Container';
 import { LinkButton } from '../../components/LinkButton';
 import { OrnamentalDivider } from '../../components/Motifs';
@@ -33,7 +34,7 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({ cta: propCta }
       }
     };
 
-    if (!propCta) {
+    if (propCta === undefined) {
       fetchLiveCta();
     }
 
@@ -56,7 +57,7 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({ cta: propCta }
     cta?.description ||
     "Whether you're looking to get fit, manage a health condition, or become a yoga teacher, we have a program for you. Get in touch to learn more.";
   const primaryText = cta?.primaryCtaText || 'Browse Courses';
-  const primaryUrl = cta?.primaryCtaUrl || '/programs/courses';
+  const primaryUrl = cta?.primaryCtaUrl || '/courses';
   const secondaryText = cta?.secondaryCtaText || 'Get in Touch';
   const secondaryUrl = cta?.secondaryCtaUrl || '/contact';
 
@@ -174,10 +175,13 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({ cta: propCta }
         {/* Emblem & Badge */}
         <div className="flex flex-col items-center space-y-3">
           <div className="mb-2">
-            <img
-              src="/logo.png"
+            <Image
+              src="/logo.webp"
               alt="Kalptaruu Yoga Vidhyalaya Logo"
+              width={64}
+              height={64}
               className="w-16 h-16 rounded-full object-cover shadow-modal mx-auto"
+              loading="lazy"
             />
           </div>
           <Badge variant="dark" size="sm" dot>

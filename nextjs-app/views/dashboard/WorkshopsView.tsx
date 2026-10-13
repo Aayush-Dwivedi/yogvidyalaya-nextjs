@@ -73,7 +73,7 @@ export const WorkshopsView: React.FC = () => {
           </p>
         </div>
 
-        <Link href="/programs/workshops"
+        <Link href="/workshops"
           className="inline-flex items-center text-xs font-mono text-plum-900 hover:text-gold-600 border border-border px-3 py-2 rounded bg-surface hover:bg-surface-subtle transition-colors shrink-0"
         >
           View Public Catalog <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
@@ -140,7 +140,7 @@ export const WorkshopsView: React.FC = () => {
           title="No Registered Workshops"
           description="You have not enrolled in any upcoming weekend masterclasses. Browse our offerings to deepen your practice."
           action={
-            <Link href="/programs/workshops"
+            <Link href="/workshops"
               className="inline-flex items-center text-xs font-semibold text-plum-900 border border-gold-500/70 px-4 py-2 rounded bg-surface hover:bg-gold-50 transition-colors"
             >
               Explore Workshops

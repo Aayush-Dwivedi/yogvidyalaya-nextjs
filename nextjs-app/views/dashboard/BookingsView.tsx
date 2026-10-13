@@ -414,7 +414,7 @@ export const BookingsView: React.FC = () => {
           }
           action={
             <a
-              href="/programs/courses"
+              href="/courses"
               className="inline-flex items-center px-4 py-2 bg-plum-900 text-gold-300 rounded-lg text-xs font-semibold hover:bg-plum-800 transition-colors shadow-soft"
             >
               Browse Programs

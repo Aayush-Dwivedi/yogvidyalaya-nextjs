@@ -81,8 +81,11 @@ export async function verifyRefreshToken(token: string): Promise<RefreshTokenPay
 }
 
 // ─── Cookie Helpers ───────────────────────────────────────────────────────────
+const SESSION_COOKIE = 'kalptaru_session';
+
 /**
- * Set both access and refresh token cookies (HttpOnly, Secure, SameSite=Lax).
+ * Set access and refresh token cookies (HttpOnly, Secure, SameSite=Lax),
+ * plus a non-sensitive session existence flag readable by the client.
  * Must be called from a Route Handler or Server Action.
  */
 export async function setAuthCookies(accessToken: string, refreshToken: string): Promise<void> {
@@ -107,6 +110,15 @@ export async function setAuthCookies(accessToken: string, refreshToken: string):
     maxAge: REFRESH_MAX_AGE,
     path: '/',
   });
+
+  // Non-sensitive boolean flag readable by browser JS to avoid 401s on anonymous visits
+  cookieStore.set(SESSION_COOKIE, '1', {
+    httpOnly: false,
+    secure: isSecure,
+    sameSite: 'lax',
+    maxAge: REFRESH_MAX_AGE,
+    path: '/',
+  });
 }
 
 /**
@@ -116,6 +128,7 @@ export async function clearAuthCookies(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(ACCESS_COOKIE);
   cookieStore.delete(REFRESH_COOKIE);
+  cookieStore.delete(SESSION_COOKIE);
 }
 
 /**
@@ -134,4 +147,4 @@ export async function getRefreshTokenFromCookies(): Promise<string | null> {
   return cookieStore.get(REFRESH_COOKIE)?.value ?? null;
 }
 
-export { ACCESS_COOKIE, REFRESH_COOKIE };
+export { ACCESS_COOKIE, REFRESH_COOKIE, SESSION_COOKIE };

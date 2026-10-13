@@ -111,7 +111,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         setSelectedBatch('Workshop Immersion');
         setSelectedTime(program.time || '09:00 AM – 05:00 PM');
         setSelectedMode(program.mode || 'in-person');
-        setSelectedVenue(program.venue || 'Sacred Grove Pavilion');
+        setSelectedVenue(program.venue || 'Kalptaruu Shala');
         if (program.date) {
           try {
             setSelectedDate(new Date(program.date).toISOString().split('T')[0]);
@@ -251,7 +251,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         <div className="bg-plum-950 text-ivory px-6 py-4 flex items-center justify-between border-b border-gold-500/30">
           <div className="flex items-center gap-3">
             <img
-              src="/logo.png"
+              src="/logo.webp"
               alt="Kalptaruu Yoga Vidhyalaya Logo"
               className="w-9 h-9 rounded-full object-cover shadow-soft shrink-0"
             />

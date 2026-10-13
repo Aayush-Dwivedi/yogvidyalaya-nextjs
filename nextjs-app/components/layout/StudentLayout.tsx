@@ -94,7 +94,7 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
           </button>
           <div className="flex items-center space-x-2.5">
             <img
-              src="/logo.png"
+              src="/logo.webp"
               alt="Kalptaruu Yoga Vidhyalaya Logo"
               className="w-8 h-8 rounded-full object-cover shadow-soft"
             />
@@ -139,7 +139,7 @@ export const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ childre
             <div className="flex items-center justify-between mb-4">
               <Link href="/dashboard" className="flex items-center space-x-3 group">
                 <img
-                  src="/logo.png"
+                  src="/logo.webp"
                   alt="Kalptaruu Yoga Vidhyalaya Logo"
                   className="w-10 h-10 rounded-full object-cover shadow-soft group-hover:scale-105 transition-transform shrink-0"
                 />

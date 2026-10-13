@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
@@ -52,9 +53,12 @@ export const LoginPage: React.FC = () => {
         <div className="flex justify-center mb-4">
           <Link href="/" className="inline-block hover:scale-105 transition-transform group">
             <div className="relative">
-              <img
-                src="/logo.png"
+              <Image
+                src="/logo.webp"
                 alt="Kalptaruu Yoga Vidhyalaya Emblem"
+                width={64}
+                height={64}
+                priority
                 className="w-16 h-16 rounded-full object-cover shadow-modal ring-2 ring-gold-400/50 group-hover:ring-gold-300 transition-all"
               />
               <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-gold-400/20 to-plum-500/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />

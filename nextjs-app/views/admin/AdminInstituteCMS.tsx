@@ -82,7 +82,7 @@ export const AdminInstituteCMS: React.FC = () => {
     branding: {
       logo: undefined,
       coverImage: undefined,
-      favicon: '/logo.png',
+      favicon: '/logo.webp',
     },
     images: [],
     contact: {

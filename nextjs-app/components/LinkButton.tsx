@@ -30,7 +30,7 @@ export const LinkButton: React.FC<LinkButtonProps> = ({
   const targetHref = href || to || '/';
 
   const baseStyles =
-    'inline-flex items-center justify-center font-sans tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 select-none rounded-[2px] group';
+    'inline-flex items-center justify-center whitespace-nowrap font-sans tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 select-none rounded-[2px] group';
 
   const sizeStyles: Record<ButtonSize, string> = {
     sm: 'text-xs px-3.5 py-1.5 gap-1.5 font-medium',
@@ -60,7 +60,7 @@ export const LinkButton: React.FC<LinkButtonProps> = ({
 
   const arrowElement = withArrow && (
     <svg
-      className="w-3.5 h-3.5 ml-1.5 transition-transform duration-200 group-hover:translate-x-1"
+      className="w-3.5 h-3.5 ml-1.5 transition-transform duration-200 group-hover:translate-x-1 shrink-0"
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +78,7 @@ export const LinkButton: React.FC<LinkButtonProps> = ({
   const content = (
     <>
       {leftIcon && <span className="inline-flex shrink-0">{leftIcon}</span>}
-      <span>{children}</span>
+      <span className="inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap">{children}</span>
       {rightIcon && <span className="inline-flex shrink-0">{rightIcon}</span>}
       {arrowElement}
     </>

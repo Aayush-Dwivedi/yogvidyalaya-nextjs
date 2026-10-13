@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Container } from '../../components/Container';
 import { LinkButton } from '../../components/LinkButton';
 import { CornerFlourish, LotusMotif } from '../../components/Motifs';
@@ -12,9 +13,12 @@ export const AboutSection: React.FC = () => {
           <div className="lg:col-span-6 relative">
             {/* Primary Large Image */}
             <div className="relative z-10 w-full sm:w-5/6 rounded-[2px] overflow-hidden border border-border shadow-card bg-surface p-1.5">
-              <img
-                src="/images/welcome-cleansing.jpg"
+              <Image
+                src="/images/welcome-cleansing.webp"
                 alt="Therapeutic yogic practice and traditional guidance at Kalptaruu Yoga Vidhyalaya"
+                width={640}
+                height={800}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 520px"
                 className="w-full aspect-[4/5] object-cover rounded-[1px] filter brightness-[0.98]"
                 loading="lazy"
               />
@@ -25,9 +29,12 @@ export const AboutSection: React.FC = () => {
 
             {/* Overlapping Secondary Image with Offset */}
             <div className="hidden sm:block absolute -bottom-8 -right-4 z-20 w-3/5 rounded-[2px] overflow-hidden border border-gold-400/60 shadow-modal bg-surface p-1.5">
-              <img
-                src="/images/welcome-corporate-session.jpg"
+              <Image
+                src="/images/welcome-corporate-session.webp"
                 alt="Corporate yogic wellness and collective practice"
+                width={640}
+                height={480}
+                sizes="(max-width: 1024px) 50vw, 360px"
                 className="w-full aspect-[4/3] object-cover rounded-[1px]"
                 loading="lazy"
               />

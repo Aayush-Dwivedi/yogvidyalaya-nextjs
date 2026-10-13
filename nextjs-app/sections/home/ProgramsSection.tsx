@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Badge } from '../../components/Badge';
@@ -10,6 +11,7 @@ import { CornerFlourish, LotusMotif } from '../../components/Motifs';
 import { CmsService } from '../../services/cmsService';
 import { CmsFounder } from '../../types/cms';
 import { ArrowRight, Award, GraduationCap, CheckCircle2 } from 'lucide-react';
+import { isOptimizedUrl } from '../../utils/imageUtils';
 
 interface ProgramsSectionProps {
   showTrainers?: boolean;
@@ -52,7 +54,7 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
           description="Whether pursuing professional teacher certification, an intensive weekend immersion, corporate balance, or daily sadhana, each pathway is rooted in traditional integrity."
           align="asymmetric"
           action={
-            <LinkButton to="/programs/courses" variant="text" size="md" withArrow>
+            <LinkButton to="/courses" variant="text" size="md" withArrow>
               View Full Curriculum Catalog
             </LinkButton>
           }
@@ -83,11 +85,13 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
                 </p>
               </div>
 
-              <div className="aspect-[16/8] rounded-[1px] overflow-hidden border border-border/60 bg-surface-subtle">
-                <img
+              <div className="relative aspect-[16/8] rounded-[1px] overflow-hidden border border-border/60 bg-surface-subtle">
+                <Image
                   src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1000&q=80"
                   alt="Students in teacher training asana lab"
-                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 650px"
+                  className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
                   loading="lazy"
                 />
               </div>
@@ -106,7 +110,7 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
             </div>
 
             <div className="pt-6 mt-6 border-t border-border flex items-center justify-between">
-              <LinkButton to="/programs/courses" variant="primary" size="md">
+              <LinkButton to="/courses" variant="primary" size="md">
                 Explore Courses
               </LinkButton>
               <span className="text-xs text-ink-muted font-mono">From ₹4,500</span>
@@ -132,11 +136,13 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
                 </p>
               </div>
 
-              <div className="aspect-[16/9] rounded-[1px] overflow-hidden border border-border/60 bg-surface-subtle">
-                <img
+              <div className="relative aspect-[16/9] rounded-[1px] overflow-hidden border border-border/60 bg-surface-subtle">
+                <Image
                   src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80"
                   alt="Yogic meditation and breathwork intensive"
-                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 450px"
+                  className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
                   loading="lazy"
                 />
               </div>
@@ -149,7 +155,7 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
             </div>
 
             <div className="pt-6 mt-6 border-t border-border flex items-center justify-between">
-              <LinkButton to="/programs/workshops" variant="secondary" size="md">
+              <LinkButton to="/workshops" variant="secondary" size="md">
                 View Schedule
               </LinkButton>
               <span className="text-xs text-ink-muted font-mono">1 – 3 Days</span>
@@ -192,7 +198,7 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
             </div>
 
             <div className="pt-6 mt-6 border-t border-border flex items-center justify-between">
-              <LinkButton to="/programs/corporate" variant="text" size="md" withArrow>
+              <LinkButton to="/corporate" variant="text" size="md" withArrow>
                 Request Proposal
               </LinkButton>
             </div>
@@ -234,7 +240,7 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
             </div>
 
             <div className="pt-6 mt-6 border-t border-border flex items-center justify-between">
-              <LinkButton to="/programs/membership" variant="primary" size="md">
+              <LinkButton to="/membership" variant="primary" size="md">
                 Join Membership
               </LinkButton>
             </div>
@@ -294,11 +300,14 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
                   >
                     <div className="space-y-3">
                       <div className="aspect-[4/3] rounded-lg overflow-hidden bg-plum-950/10 border border-border/60 relative">
-                        <img
+                        <Image
                           src={photoUrl}
                           alt={trainer.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 filter brightness-[0.98]"
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500 filter brightness-[0.98]"
                           loading="lazy"
+                          unoptimized={!isOptimizedUrl(photoUrl)}
                         />
                         {trainer.featured && (
                           <div className="absolute top-2.5 right-2.5">

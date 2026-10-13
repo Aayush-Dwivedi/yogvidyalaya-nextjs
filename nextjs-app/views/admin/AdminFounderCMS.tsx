@@ -207,17 +207,28 @@ export const AdminFounderCMS: React.FC = () => {
       };
 
       const founderId = (founder._id || founder.id) as string;
+      let savedFounder: any = null;
       if (founderId) {
-        await CmsService.updateFounder(founderId, payload);
+        savedFounder = await CmsService.updateFounder(founderId, payload);
       } else {
-        const created = await CmsService.createFounder(payload);
-        setFounder((prev) => ({ ...prev, _id: created._id || created.id }));
+        savedFounder = await CmsService.createFounder(payload);
+        setFounder((prev) => ({ ...prev, _id: savedFounder._id || savedFounder.id }));
       }
       showToast('Founder profile updated successfully!');
 
       if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(
+            'kalptaru_cached_founder',
+            JSON.stringify(savedFounder || { ...payload, _id: founderId })
+          );
+        } catch {}
         window.dispatchEvent(new CustomEvent('kalptaru-cms-updated', { detail: { timestamp: Date.now() } }));
       }
+
+      try {
+        await CmsService.confirmAllChanges();
+      } catch {}
     } catch (err: any) {
       console.error(err);
       showToast(err.message || 'Failed to save founder profile', 'error');

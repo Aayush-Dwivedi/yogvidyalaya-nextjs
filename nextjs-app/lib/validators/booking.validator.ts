@@ -4,7 +4,7 @@ import { idParamSchema, objectIdSchema, paginationQuerySchema } from './common.v
 export const createBookingSchema = {
   body: z.object({
     programType: z.enum(['course', 'workshop']),
-    programId: objectIdSchema,
+    programId: z.string().trim().min(1, 'Program ID is required'),
     schedule: z
       .object({
         scheduleId: z.string().trim().optional(),

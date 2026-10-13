@@ -26,6 +26,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [error, setError] = useState<string | null>(null);
 
   const fetchCurrentUser = useCallback(async () => {
+    // Skip network round-trip for anonymous visitors when no session cookie exists
+    if (!AuthService.hasSession()) {
+      setUser(null);
+      setIsLoading(false);
+      return null;
+    }
+
     try {
       setIsLoading(true);
       const currentUser = await AuthService.getMe();
@@ -49,6 +56,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const data = await AuthService.login(credentials);
+      if (typeof document !== 'undefined') {
+        document.cookie = 'kalptaru_session=1; Path=/; Max-Age=2592000; SameSite=Lax';
+      }
       setUser(data.user);
       return data.user;
     } catch (err: unknown) {
@@ -80,6 +90,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const res = await AuthService.register(data);
+      if (typeof document !== 'undefined') {
+        document.cookie = 'kalptaru_session=1; Path=/; Max-Age=2592000; SameSite=Lax';
+      }
       setUser(res.user);
       return res.user;
     } catch (err: unknown) {
@@ -97,6 +110,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await AuthService.logout();
     } finally {
+      if (typeof document !== 'undefined') {
+        document.cookie = 'kalptaru_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      }
       setUser(null);
       setIsLoading(false);
     }

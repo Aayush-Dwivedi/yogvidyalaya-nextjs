@@ -60,8 +60,12 @@ apiClient.interceptors.response.use(
       url.includes('/auth/refresh-token') ||
       url.includes('/auth/logout');
 
-    // On 401 from protected routes, attempt silent token refresh
-    if (status === 401 && !originalRequest._retry && !isAuthRoute) {
+    const hasSessionCookie =
+      typeof document !== 'undefined' &&
+      document.cookie.split('; ').some((row) => row.startsWith('kalptaru_session='));
+
+    // On 401 from protected routes, attempt silent token refresh ONLY if a session exists
+    if (status === 401 && !originalRequest._retry && !isAuthRoute && hasSessionCookie) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -78,6 +82,10 @@ apiClient.interceptors.response.use(
         processQueue(null);
         return apiClient(originalRequest);
       } catch (refreshError) {
+        // Clear session indicator on failed refresh to prevent repeated retry loops
+        if (typeof document !== 'undefined') {
+          document.cookie = 'kalptaru_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
         processQueue(refreshError);
         return Promise.reject(
           error.response?.data || {

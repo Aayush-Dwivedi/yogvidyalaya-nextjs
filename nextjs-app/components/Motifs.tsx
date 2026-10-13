@@ -12,7 +12,7 @@ interface MotifProps {
  */
 export const KalptaruTree: React.FC<MotifProps> = ({ className, size = 64 }) => (
   <img
-    src="/logo.png"
+    src="/logo.webp"
     alt="Kalptaruu Yoga Vidhyalaya Emblem"
     style={{ width: `${size}px`, height: `${size}px` }}
     className={cn(

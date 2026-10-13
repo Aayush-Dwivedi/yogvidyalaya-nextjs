@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '../components/Container';
 import { Badge } from '../components/Badge';
 import { LinkButton } from '../components/LinkButton';
@@ -12,6 +13,7 @@ import { AuricBackground } from '../components/AuricBackground';
 import { CmsService } from '../services/cmsService';
 import { CmsVideo } from '../types/cms';
 import { useAuth } from '../context/AuthContext';
+import { isOptimizedUrl } from '../utils/imageUtils';
 import {
   Play,
   Search,
@@ -27,7 +29,7 @@ import {
   Check,
 } from 'lucide-react';
 
-interface NormalizedVideo {
+export interface NormalizedVideo {
   id: string;
   title: string;
   youtubeId: string;
@@ -42,6 +44,10 @@ interface NormalizedVideo {
   createdAt?: string;
 }
 
+export interface VideosPageProps {
+  initialVideos?: NormalizedVideo[];
+}
+
 const extractVideoId = (v: CmsVideo): string => {
   if (v.youtubeVideoId && v.youtubeVideoId.length === 11) return v.youtubeVideoId;
   const rawUrl = v.youtubeUrl || '';
@@ -49,18 +55,19 @@ const extractVideoId = (v: CmsVideo): string => {
   return match ? match[1] : '';
 };
 
-export const VideosPage: React.FC = () => {
+export const VideosPage: React.FC<VideosPageProps> = ({ initialVideos }) => {
   const { user } = useAuth();
-  const [videos, setVideos] = useState<NormalizedVideo[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [videos, setVideos] = useState<NormalizedVideo[]>(() => initialVideos || []);
+  const [loading, setLoading] = useState<boolean>(() => initialVideos === undefined);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
   const [selectedVideo, setSelectedVideo] = useState<NormalizedVideo | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const fetchVideos = async () => {
+  const fetchVideos = async (showLoading = false) => {
     try {
-      setLoading(true);
+      if (showLoading) setLoading(true);
       const live = await CmsService.getVideos('published');
       if (Array.isArray(live)) {
         const mapped: NormalizedVideo[] = live
@@ -99,10 +106,12 @@ export const VideosPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchVideos();
+    if (!initialVideos || initialVideos.length === 0) {
+      fetchVideos(true);
+    }
 
     const handleUpdate = () => {
-      fetchVideos();
+      fetchVideos(false);
     };
 
     window.addEventListener('kalptaru-cms-updated', handleUpdate);
@@ -112,7 +121,8 @@ export const VideosPage: React.FC = () => {
       window.removeEventListener('kalptaru-cms-updated', handleUpdate);
       window.removeEventListener('storage', handleUpdate);
     };
-  }, []);
+  }, [initialVideos]);
+
 
   // Compute unique dynamic categories from live database
   const categories = useMemo(() => {
@@ -297,7 +307,7 @@ export const VideosPage: React.FC = () => {
                 </div>
 
                 <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-                  <LinkButton to="/programs/courses" variant="primary" size="md">
+                  <LinkButton to="/courses" variant="primary" size="md">
                     Explore Courses
                   </LinkButton>
                   <LinkButton to="/contact" variant="outline" size="md">
@@ -348,12 +358,16 @@ export const VideosPage: React.FC = () => {
                       if (e.key === 'Enter' || e.key === ' ') setSelectedVideo(spotlightVideo);
                     }}
                   >
-                    <img
+                    <Image
                       src={spotlightVideo.thumbnail}
                       alt={spotlightVideo.title}
-                      className="w-full h-full object-cover filter brightness-[0.82] group-hover:scale-105 transition-transform duration-700"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 750px"
+                      className="object-cover filter brightness-[0.82] group-hover:scale-105 transition-transform duration-700"
+                      loading="lazy"
+                      unoptimized={!isOptimizedUrl(spotlightVideo.thumbnail)}
                     />
-                    <div className="absolute inset-0 bg-plum-950/40 group-hover:bg-plum-950/20 transition-colors" />
+                    <div className="absolute inset-0 bg-plum-950/40 group-hover:bg-plum-950/20 transition-colors pointer-events-none" />
 
                     {/* Big Centered Play Button */}
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -458,13 +472,16 @@ export const VideosPage: React.FC = () => {
                     >
                       {/* Thumbnail Container */}
                       <div className="relative aspect-video bg-plum-950 overflow-hidden">
-                        <img
+                        <Image
                           src={video.thumbnail}
                           alt={video.title}
-                          className="w-full h-full object-cover filter brightness-[0.88] group-hover:scale-105 transition-transform duration-500"
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+                          className="object-cover filter brightness-[0.88] group-hover:scale-105 transition-transform duration-500"
                           loading="lazy"
+                          unoptimized={!isOptimizedUrl(video.thumbnail)}
                         />
-                        <div className="absolute inset-0 bg-plum-950/30 group-hover:bg-plum-950/10 transition-colors" />
+                        <div className="absolute inset-0 bg-plum-950/30 group-hover:bg-plum-950/10 transition-colors pointer-events-none" />
 
                         {/* Centered Play Button Overlay */}
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -557,7 +574,7 @@ export const VideosPage: React.FC = () => {
           </p>
 
           <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-            <LinkButton to="/programs/courses" variant="primary" size="md">
+            <LinkButton to="/courses" variant="primary" size="md">
               View Certified Courses
             </LinkButton>
             <LinkButton to="/contact" variant="outline" size="md">

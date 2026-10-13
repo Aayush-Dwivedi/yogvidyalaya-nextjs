@@ -1,6 +1,22 @@
+import type { Metadata } from 'next';
 import { connectDB } from '@/lib/db/mongoose';
 import { GalleryService } from '@/lib/services/gallery.service';
 import { GalleryPage, DisplayPhoto } from '@/views/GalleryPage';
+import { createPageMetadata } from '@/lib/seo/metadata';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { getBreadcrumbSchema } from '@/lib/seo/schema';
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'Photo Gallery',
+  description:
+    'View photographs documenting ashram life, yogic workshops, celebrations, and sadhana at Kalptaruu Yoga Vidhyalaya.',
+  pathname: '/gallery',
+});
+
+const breadcrumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Photo Gallery', path: '/gallery' },
+];
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -43,9 +59,13 @@ export default async function Page() {
   }
 
   return (
-    <GalleryPage
-      initialPhotos={initialPhotos || undefined}
-      initialCategories={initialCategories || undefined}
-    />
+    <>
+      <JsonLd data={getBreadcrumbSchema(breadcrumbs)} />
+      <GalleryPage
+        initialPhotos={initialPhotos || undefined}
+        initialCategories={initialCategories || undefined}
+      />
+    </>
   );
 }
+

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Badge } from '../../components/Badge';
@@ -11,6 +12,7 @@ import { CornerFlourish, LotusMotif } from '../../components/Motifs';
 import { GalleryHighlight } from '../../types/home';
 import { CmsGalleryImage } from '../../types/cms';
 import { CmsService } from '../../services/cmsService';
+import { isOptimizedUrl } from '../../utils/imageUtils';
 
 export interface GallerySectionProps {
   highlights?: (GalleryHighlight | CmsGalleryImage)[];
@@ -60,7 +62,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ highlights: prop
       }
     };
 
-    if (!propHighlights || propHighlights.length === 0) {
+    if (propHighlights === undefined) {
       fetchLiveGallery();
     }
 
@@ -102,12 +104,17 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ highlights: prop
             className="lg:col-span-7 bg-surface border border-border p-2 rounded-[2px] shadow-card group block hover:border-gold-500 transition-colors"
           >
             <div className="relative aspect-[16/11] overflow-hidden rounded-[1px] bg-surface-subtle">
-              <img
-                src={img1?.image}
-                alt={img1?.title}
-                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700"
-                loading="lazy"
-              />
+              {img1?.image && (
+                <Image
+                  src={img1.image}
+                  alt={img1.title || 'Institute Moment'}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 750px"
+                  className="object-cover group-hover:scale-[1.02] transition-transform duration-700"
+                  loading="lazy"
+                  unoptimized={!isOptimizedUrl(img1.image)}
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-plum-950/70 via-transparent to-transparent pointer-events-none" />
 
               <div className="absolute top-3 left-3">
@@ -140,12 +147,17 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ highlights: prop
                 <CornerFlourish position="top-right" className="text-gold-400" />
               </div>
               <div className="relative aspect-[16/9] overflow-hidden rounded-[1px] bg-surface-subtle">
-                <img
-                  src={img2?.image}
-                  alt={img2?.title}
-                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
-                  loading="lazy"
-                />
+                {img2?.image && (
+                  <Image
+                    src={img2.image}
+                    alt={img2.title || 'Institute Moment'}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 520px"
+                    className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                    loading="lazy"
+                    unoptimized={!isOptimizedUrl(img2.image)}
+                  />
+                )}
                 <div className="absolute top-2 left-2">
                   <Badge variant="plum" size="sm">
                     {img2?.category}
@@ -170,12 +182,17 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ highlights: prop
               className="bg-surface border border-border p-2 rounded-[2px] shadow-card group relative flex-grow block hover:border-gold-500 transition-colors"
             >
               <div className="relative aspect-[16/9] overflow-hidden rounded-[1px] bg-surface-subtle">
-                <img
-                  src={img3?.image}
-                  alt={img3?.title}
-                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
-                  loading="lazy"
-                />
+                {img3?.image && (
+                  <Image
+                    src={img3.image}
+                    alt={img3.title || 'Institute Moment'}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 520px"
+                    className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                    loading="lazy"
+                    unoptimized={!isOptimizedUrl(img3.image)}
+                  />
+                )}
                 <div className="absolute top-2 left-2">
                   <Badge variant="plum" size="sm">
                     {img3?.category}

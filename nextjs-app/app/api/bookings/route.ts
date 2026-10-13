@@ -36,11 +36,27 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/bookings — Decommissioned: Online visitor booking submission is decommissioned.
-// Visitors contact Kalptaruu Yoga Vidhyalaya directly via Phone, Email, or WhatsApp.
-export async function POST(_request: NextRequest) {
-  return ApiResponse.badRequest(
-    'Public online booking creation is decommissioned. Please contact Kalptaruu Yoga Vidhyalaya directly.'
-  );
+// POST /api/bookings — Public visitor booking request creation
+export async function POST(request: NextRequest) {
+  try {
+    const ip = getClientIp(request);
+    const limit = checkRateLimit(ip, 'booking', 20, 60 * 1000);
+    if (!limit.allowed) {
+      return ApiResponse.tooManyRequests('Too many booking requests. Please try again shortly.');
+    }
+
+    await connectDB();
+    const body = await request.json();
+
+    const parsed = createBookingSchema.body.safeParse(body);
+    if (!parsed.success) {
+      return ApiResponse.badRequest('Validation failed', parsed.error.flatten().fieldErrors);
+    }
+
+    const booking = await BookingService.createBooking(parsed.data as any);
+    return ApiResponse.created(booking, 'Booking request submitted successfully');
+  } catch (error) {
+    return handleRouteError(error);
+  }
 }
 

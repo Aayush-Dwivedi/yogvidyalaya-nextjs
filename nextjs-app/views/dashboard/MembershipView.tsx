@@ -65,7 +65,7 @@ export const MembershipView: React.FC = () => {
           </p>
         </div>
 
-        <Link href="/programs/membership"
+        <Link href="/membership"
           className="inline-flex items-center text-xs font-mono text-plum-900 hover:text-gold-600 border border-border px-3 py-2 rounded bg-surface hover:bg-surface-subtle transition-colors shrink-0"
         >
           View All Tiers <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
@@ -154,7 +154,7 @@ export const MembershipView: React.FC = () => {
           title="No Active Membership"
           description="You currently do not have an active sadhana pass. Join our daily shala batches to practice under traditional lineage."
           action={
-            <Link href="/programs/membership"
+            <Link href="/membership"
               className="inline-flex items-center text-xs font-semibold text-plum-900 border border-gold-500/70 px-4 py-2 rounded bg-surface hover:bg-gold-50 transition-colors"
             >
               View Membership Plans

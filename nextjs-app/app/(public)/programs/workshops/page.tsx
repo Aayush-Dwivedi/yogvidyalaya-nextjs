@@ -1,5 +1,3 @@
-'use client';
-
 import { WorkshopsPage } from '@/views/WorkshopsPage';
 
 export default function Page() {

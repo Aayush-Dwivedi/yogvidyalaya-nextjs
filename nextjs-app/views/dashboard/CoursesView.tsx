@@ -79,7 +79,7 @@ export const CoursesView: React.FC = () => {
           </p>
         </div>
 
-        <Link href="/programs/courses"
+        <Link href="/courses"
           className="inline-flex items-center text-xs font-mono text-plum-900 hover:text-gold-600 border border-border px-3 py-2 rounded bg-surface hover:bg-surface-subtle transition-colors shrink-0"
         >
           Explore All Courses <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
@@ -155,7 +155,7 @@ export const CoursesView: React.FC = () => {
           title="No Enrolled Courses"
           description="You are not currently enrolled in any academic training courses. View our classical yoga certifications and immerse yourself in the sacred tradition."
           action={
-            <Link href="/programs/courses"
+            <Link href="/courses"
               className="inline-flex items-center text-xs font-semibold text-plum-900 border border-gold-500/70 px-4 py-2 rounded bg-surface hover:bg-gold-50 transition-colors"
             >
               View Course Catalog

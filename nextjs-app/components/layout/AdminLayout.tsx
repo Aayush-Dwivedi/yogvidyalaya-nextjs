@@ -163,7 +163,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
           </button>
           <div className="flex items-center space-x-2.5">
             <img
-              src="/logo.png"
+              src="/logo.webp"
               alt="Kalptaruu Yoga Vidhyalaya Logo"
               className="w-8 h-8 rounded-full object-cover shadow-xs shrink-0"
             />
@@ -210,7 +210,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
             <div className="flex items-center justify-between">
               <Link href="/admin" className="flex items-center space-x-3 group">
                 <img
-                  src="/logo.png"
+                  src="/logo.webp"
                   alt="Kalptaruu Yoga Vidhyalaya Logo"
                   className="w-9 h-9 rounded-full object-cover shadow-soft group-hover:scale-105 transition-transform shrink-0"
                 />

@@ -91,7 +91,7 @@ export const PagePlaceholder: React.FC<PagePlaceholderProps> = ({
               <LinkButton href="/" variant="secondary" size="sm">
                 Return Home
               </LinkButton>
-              <LinkButton href="/programs/courses" variant="outline" size="sm">
+              <LinkButton href="/courses" variant="outline" size="sm">
                 Explore Courses
               </LinkButton>
               <LinkButton href="/contact" variant="text" size="sm">

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Badge } from '../../components/Badge';
@@ -9,6 +10,7 @@ import { Modal } from '../../components/Modal';
 import { VideoItem } from '../../types/home';
 import { CmsVideo } from '../../types/cms';
 import { CmsService } from '../../services/cmsService';
+import { isOptimizedUrl } from '../../utils/imageUtils';
 
 export interface VideosSectionProps {
   videos?: (VideoItem | CmsVideo)[];
@@ -74,7 +76,7 @@ export const VideosSection: React.FC<VideosSectionProps> = ({ videos: propVideos
       }
     };
 
-    if (!propVideos || propVideos.length === 0) {
+    if (propVideos === undefined) {
       fetchLiveVideos();
     }
 
@@ -126,12 +128,17 @@ export const VideosSection: React.FC<VideosSectionProps> = ({ videos: propVideos
                 if (e.key === 'Enter' || e.key === ' ') setSelectedVideo(mainVideo);
               }}
             >
-              <img
-                src={mainVideo?.thumbnail}
-                alt={mainVideo?.title}
-                className="w-full h-full object-cover filter brightness-[0.8] group-hover:scale-[1.03] transition-transform duration-700"
-                loading="lazy"
-              />
+              {mainVideo?.thumbnail && (
+                <Image
+                  src={mainVideo.thumbnail}
+                  alt={mainVideo.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 750px"
+                  className="object-cover filter brightness-[0.8] group-hover:scale-[1.03] transition-transform duration-700"
+                  loading="lazy"
+                  unoptimized={!isOptimizedUrl(mainVideo.thumbnail)}
+                />
+              )}
               <div className="absolute inset-0 bg-plum-950/40 group-hover:bg-plum-950/20 transition-colors" />
 
               {/* Central Play Indicator */}
@@ -183,12 +190,17 @@ export const VideosSection: React.FC<VideosSectionProps> = ({ videos: propVideos
               >
                 {/* Video Thumbnail */}
                 <div className="relative w-full sm:w-44 aspect-video shrink-0 overflow-hidden rounded-[1px] bg-plum-950">
-                  <img
-                    src={video.thumbnail}
-                    alt={video.title}
-                    className="w-full h-full object-cover filter brightness-[0.85] group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                  />
+                  {video.thumbnail && (
+                    <Image
+                      src={video.thumbnail}
+                      alt={video.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 176px"
+                      className="object-cover filter brightness-[0.85] group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      unoptimized={!isOptimizedUrl(video.thumbnail)}
+                    />
+                  )}
                   {/* Small Play Indicator */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-10 h-10 rounded-full bg-plum-900/90 border border-gold-400/70 text-gold-300 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-plum-950 transition-colors shadow-soft">
