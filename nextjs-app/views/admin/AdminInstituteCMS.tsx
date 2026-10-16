@@ -95,7 +95,9 @@ export const AdminInstituteCMS: React.FC = () => {
         state: 'Haryana',
         postalCode: '121002',
         country: 'India',
-        mapUrl: 'https://maps.google.com',
+        mapUrl: '',
+        mapEmbedUrl: '',
+        mapDirectUrl: '',
       },
       hours: 'Mon – Sat: 06:00 AM – 08:00 PM',
     },
@@ -1128,24 +1130,32 @@ export const AdminInstituteCMS: React.FC = () => {
                 />
               </div>
 
-              <div>
+              <div className="space-y-1.5 pt-2 border-t border-border/60">
                 <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
                   Google Maps URL
                 </label>
                 <input
                   type="text"
                   value={institute.contact.address.mapUrl || ''}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const val = e.target.value;
                     setInstitute({
                       ...institute,
                       contact: {
                         ...institute.contact,
-                        address: { ...institute.contact.address, mapUrl: e.target.value },
+                        address: {
+                          ...institute.contact.address,
+                          mapUrl: val,
+                        },
                       },
-                    })
-                  }
+                    });
+                  }}
+                  placeholder="e.g. https://maps.google.com/?q=Kalptaruu+Yoga+Vidhyalaya or https://www.google.com/maps/place/..."
                   className="w-full bg-white border border-border rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs"
                 />
+                <p className="text-[11px] text-ink-muted">
+                  📍 Paste any normal Google Maps link here (no embed code needed). Address above is treated purely as plain text.
+                </p>
               </div>
             </div>
           </div>

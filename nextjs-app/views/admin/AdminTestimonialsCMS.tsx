@@ -73,10 +73,10 @@ export const AdminTestimonialsCMS: React.FC = () => {
       setEditingItem({
         name: '',
         roleOrTitle: '',
-        programOrCourse: 'Therapeutic Yoga',
+        programOrCourse: '',
         quote: '',
         rating: 5,
-        location: 'Mumbai, India',
+        location: '',
         status: 'published',
         featured: true,
         order: testimonials.length + 1,
@@ -115,6 +115,11 @@ export const AdminTestimonialsCMS: React.FC = () => {
 
     if (!editingItem.name?.trim() || !editingItem.quote?.trim() || !editingItem.roleOrTitle?.trim()) {
       showToast('Name, role/title, and quote are required.', 'error');
+      return;
+    }
+
+    if (editingItem.quote.trim().length > 500) {
+      showToast('Testimonial quote cannot exceed 500 characters.', 'error');
       return;
     }
 
@@ -525,17 +530,32 @@ export const AdminTestimonialsCMS: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-1">
-                Testimonial Quote *
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted">
+                  Testimonial Quote *
+                </label>
+                <span
+                  className={`text-[11px] font-mono ${
+                    (editingItem.quote?.length || 0) > 450
+                      ? 'text-amber-600 font-bold'
+                      : 'text-ink-muted/70'
+                  }`}
+                >
+                  {editingItem.quote?.length || 0} / 500 characters
+                </span>
+              </div>
               <textarea
                 required
                 rows={4}
+                maxLength={500}
                 value={editingItem.quote || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, quote: e.target.value })}
                 placeholder="Share the sadhak's authentic journey, physical healing, or spiritual growth..."
                 className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-sm text-ink placeholder:text-ink-muted/50 focus:outline-none focus:border-gold-500 leading-relaxed font-editorial italic shadow-xs"
               />
+              <p className="text-[11px] text-ink-muted/70 mt-1">
+                Maximum 500 characters. Long reviews will be expandable on the public website.
+              </p>
             </div>
 
             {/* Avatar URL or Upload */}

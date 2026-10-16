@@ -125,7 +125,7 @@ export const AdminWorkshopsPage: React.FC = () => {
           title: 'Physiotherapist & Therapeutic Yoga Consultant',
           bio: 'Founder & Lead Instructor of Kalptaruu Yoga Vidhyalaya',
         },
-        prerequisites: ['Open to all age groups'],
+        prerequisites: [],
         status: 'published',
         featured: false,
         seo: {
@@ -170,9 +170,9 @@ export const AdminWorkshopsPage: React.FC = () => {
       const workshopId = editingWorkshop._id || editingWorkshop.id;
 
       const cover = editingWorkshop.coverImage || editingWorkshop.image || {
-        url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80',
-        path: 'workshops/default-workshop.jpg',
-        bucket: 'kalptaru-media',
+        url: '',
+        path: '',
+        bucket: '',
         alt: editingWorkshop.title,
       };
 

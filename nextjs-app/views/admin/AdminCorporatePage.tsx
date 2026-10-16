@@ -81,34 +81,18 @@ export const AdminCorporatePage: React.FC = () => {
       setEditingProgram({
         title: '',
         slug: '',
-        tagline: 'Customized Yogic Wellness for Enterprise',
-        shortDescription: 'Combat desk fatigue, realign ergonomics, and elevate cognitive clarity across your workforce.',
-        description: 'Comprehensive workplace wellness package incorporating therapeutic asanas, pranayama for stress reduction, and mindful leadership sessions tailored to your organizational rhythm.',
+        tagline: '',
+        shortDescription: '',
+        description: '',
         format: 'on-site',
-        duration: '4-8 Weeks / Flexible',
-        targetAudience: 'All Employees & Leadership Teams',
-        deliverables: [
-          'Desk-side posture alignment workshops',
-          'Guided daily breathwork & stress reset audios',
-          'Physiotherapist-designed spine health assessments',
-          'Bi-weekly employee wellness and engagement reports',
-        ],
-        modules: [
-          {
-            title: 'Foundations of Spine Ergonomics & Postural Health',
-            duration: '60 Mins',
-            description: 'Direct physiological correction for desk workers to eliminate cervical and lumbar tension.',
-          },
-          {
-            title: 'Pranayama for High-Stress Executive Performance',
-            duration: '45 Mins',
-            description: 'Scientific autonomic nervous system regulation for cognitive clarity and sustained focus.',
-          },
-        ],
+        duration: '',
+        targetAudience: '',
+        deliverables: [],
+        modules: [],
         pricingModel: 'custom-quote',
-        startingPrice: { amount: 25000, currency: 'INR' },
+        startingPrice: { amount: 0, currency: 'INR' },
         status: 'published',
-        featured: true,
+        featured: false,
         order: programs.length + 1,
       });
     }

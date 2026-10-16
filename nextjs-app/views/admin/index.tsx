@@ -15,6 +15,7 @@ import { AdminMembershipPage } from './AdminMembershipPage';
 import { AdminCorporatePage } from './AdminCorporatePage';
 import { AdminTestimonialsCMS } from './AdminTestimonialsCMS';
 import { AdminContactCMS } from './AdminContactCMS';
+import { AdminEnquiriesPage } from './AdminEnquiriesPage';
 
 export {
   AdminDashboardPage,
@@ -33,6 +34,7 @@ export {
   AdminCorporatePage,
   AdminTestimonialsCMS,
   AdminContactCMS,
+  AdminEnquiriesPage,
 };
 
 // Content Sub-Modules
@@ -75,15 +77,6 @@ export const AdminOrdersPage: React.FC = () => (
   />
 );
 
-export const AdminEnquiriesPage: React.FC = () => (
-  <AdminModulePlaceholder
-    moduleName="Enquiries"
-    category="Communications"
-    description="Review incoming student applications, course questions, and general enquiries."
-    sampleColumns={['Sender Name', 'Contact Info', 'Program of Interest', 'Received Date', 'Status']}
-    sampleCount={0}
-  />
-);
 
 export const AdminSettingsPage: React.FC = () => (
   <AdminModulePlaceholder

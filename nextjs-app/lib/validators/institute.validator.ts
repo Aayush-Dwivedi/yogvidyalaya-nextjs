@@ -41,6 +41,8 @@ export const updateInstituteSchema = {
             postalCode: z.string().optional(),
             country: z.string().optional(),
             mapUrl: z.string().optional(),
+            mapEmbedUrl: z.string().optional(),
+            mapDirectUrl: z.string().optional(),
           })
           .optional(),
         hours: z.string().optional(),

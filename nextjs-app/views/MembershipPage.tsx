@@ -37,54 +37,10 @@ export const MembershipPage: React.FC = () => {
       try {
         setLoading(true);
         const data = await CmsService.getMembershipPlans('published');
-        if (data && data.length > 0) {
-          setPlans(data);
-        } else {
-          // Graceful fallback to default institute plans
-          setPlans([
-            {
-              title: 'Monthly Sadhana Pass',
-              slug: 'monthly-sadhana-pass',
-              billingCycle: 'monthly',
-              price: { amount: 2500, currency: 'INR', discountPercentage: 16, originalAmount: 3000 },
-              description: 'Ideal for regular practitioners seeking consistency in traditional morning or evening batches with master instructors.',
-              batches: [
-                { name: 'Morning Shala Batch', timing: '06:00 AM – 07:30 AM', days: 'Mon to Fri' },
-                { name: 'Evening Dhyana Batch', timing: '06:30 PM – 08:00 PM', days: 'Mon to Fri' },
-              ],
-              features: [
-                'Unlimited weekday practice access',
-                'Full access to the Kalptaruu Yogic Library',
-                'Monthly 1-on-1 alignment check-in with an Acharya',
-                '10% discount on all intensive weekend workshops',
-              ],
-              popular: true,
-              order: 1,
-              status: 'published',
-            },
-            {
-              title: 'Annual Shala Sadhaka Pass',
-              slug: 'annual-shala-sadhaka-pass',
-              billingCycle: 'annual',
-              price: { amount: 24000, currency: 'INR', discountPercentage: 20, originalAmount: 30000 },
-              description: 'Our most committed pathway for devoted sadhakas seeking lifelong transformation and priority community privileges.',
-              batches: [
-                { name: 'All Morning & Evening Batches', timing: 'Flexible Attendance', days: 'Mon to Sat' },
-              ],
-              features: [
-                'Unlimited year-round shala access',
-                'Complimentary entry to 2 Weekend Intensives of your choice',
-                'Priority reservations for international retreats',
-                'Personalized sadhana journal and consultation quarterly',
-              ],
-              popular: false,
-              order: 2,
-              status: 'published',
-            },
-          ]);
-        }
+        setPlans(data || []);
       } catch (err) {
         console.warn('Could not load membership plans:', err);
+        setPlans([]);
       } finally {
         setLoading(false);
       }
@@ -309,7 +265,7 @@ export const MembershipPage: React.FC = () => {
                       {/* CTA Button */}
                       <div className="mt-6 pt-4 border-t border-border">
                         <Link
-                          href={`/contact/enquiry?plan=${encodeURIComponent(plan.title)}&type=membership`}
+                          href={`/contact?plan=${encodeURIComponent(plan.title)}&type=membership`}
                           className={`w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-sans font-bold transition-all shadow-sm ${
                             isPopular
                               ? 'bg-gold-500 hover:bg-gold-400 text-plum-950 shadow-soft hover:scale-[1.02]'

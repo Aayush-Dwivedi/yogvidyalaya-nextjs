@@ -1,17 +1,57 @@
+'use client';
+
 import React from 'react';
 import { cn } from '../utils/cn';
+import { KalptaruLoader } from './loader/KalptaruLoader';
 
 export interface LoadingStateProps {
   message?: string;
-  variant?: 'tree' | 'spinner' | 'minimal';
+  subMessage?: string;
+  variant?: 'emblem' | 'tree' | 'spinner' | 'minimal';
+  size?: number;
+  fullScreen?: boolean;
+  isTimeout?: boolean;
+  timeoutMessage?: string;
+  onRetry?: () => void;
+  showElapsed?: boolean;
+  elapsedSeconds?: number;
+  minDurationSeconds?: number;
   className?: string;
 }
 
 export const LoadingState: React.FC<LoadingStateProps> = ({
-  message = 'Loading...',
-  variant = 'tree',
+  message = 'Harmonizing breath & consciousness...',
+  subMessage = 'Kalptaruu Yoga Vidhyalaya',
+  variant = 'emblem',
+  size = 130,
+  fullScreen = false,
+  isTimeout = false,
+  timeoutMessage,
+  onRetry,
+  showElapsed = false,
+  elapsedSeconds,
+  minDurationSeconds,
   className,
 }) => {
+  // If variant is 'emblem' or 'tree', use the rich animated Kalptaru Emblem Loader
+  if (variant === 'emblem' || variant === 'tree') {
+    return (
+      <KalptaruLoader
+        message={message}
+        subMessage={subMessage}
+        size={size}
+        fullScreen={fullScreen}
+        isTimeout={isTimeout}
+        timeoutMessage={timeoutMessage}
+        onRetry={onRetry}
+        showElapsed={showElapsed}
+        elapsedSeconds={elapsedSeconds}
+        minDurationSeconds={minDurationSeconds}
+        className={className}
+      />
+    );
+  }
+
   return (
     <div
       className={cn(
@@ -21,17 +61,6 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
       role="status"
       aria-live="polite"
     >
-      {variant === 'tree' && (
-        <div className="relative mb-4">
-          <img
-            src="/logo.webp"
-            alt="Kalptaruu Logo"
-            className="w-14 h-14 rounded-full object-cover border-2 border-gold-500/60 shadow-soft animate-pulse"
-          />
-          <div className="absolute inset-0 rounded-full border border-gold-300/40 animate-ping opacity-25 pointer-events-none" />
-        </div>
-      )}
-
       {variant === 'spinner' && (
         <div className="relative mb-4">
           <svg

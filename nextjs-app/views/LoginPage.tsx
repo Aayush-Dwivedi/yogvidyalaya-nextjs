@@ -30,7 +30,7 @@ export const LoginPage: React.FC = () => {
       if (loggedUser.role === 'admin' || loggedUser.role === 'super_admin') {
         router.replace('/admin');
       } else {
-        setLocalError('Access restricted: Only administrative accounts are permitted.');
+        router.replace('/dashboard');
       }
     } catch (err: unknown) {
       const errObj = err as { message?: string };
@@ -67,10 +67,10 @@ export const LoginPage: React.FC = () => {
         </div>
 
         <h2 className="font-editorial text-3xl sm:text-4xl font-normal tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-[#FFF5DB] to-gold-300 drop-shadow-sm">
-          Admin Sign In
+          Sign In
         </h2>
         <p className="mt-2 text-xs sm:text-sm text-gold-200/80 font-sans font-light">
-          Administrative access for Kalptaruu Yoga Vidhyalaya management
+          Welcome to the Kalptaruu Yoga Vidhyalaya Portal
         </p>
       </div>
 
@@ -90,7 +90,7 @@ export const LoginPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label className="block text-xs uppercase tracking-wide-editorial text-gold-300 font-semibold">
-                Admin Email
+                Email Address
               </label>
               <div className="relative flex items-center">
                 <span className="absolute left-3.5 text-gold-400/80 pointer-events-none flex items-center">
@@ -98,7 +98,7 @@ export const LoginPage: React.FC = () => {
                 </span>
                 <input
                   type="email"
-                  placeholder="e.g. admin@kalptaruyogvidyalaya.com"
+                  placeholder="e.g. yourname@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -117,7 +117,7 @@ export const LoginPage: React.FC = () => {
                 </span>
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter admin password"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -139,7 +139,7 @@ export const LoginPage: React.FC = () => {
               disabled={isLoading}
               className="w-full mt-3 py-3 px-4 rounded-full bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 text-plum-950 font-sans font-semibold text-sm hover:from-gold-200 hover:to-gold-300 transition-all shadow-modal hover:shadow-[0_0_22px_rgba(218,165,59,0.5)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
             >
-              <span>{isLoading ? 'Signing in...' : 'Sign In to Admin'}</span>
+              <span>{isLoading ? 'Signing in...' : 'Sign In'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
@@ -147,7 +147,7 @@ export const LoginPage: React.FC = () => {
           {/* Secure Portal Notice */}
           <div className="text-center text-xs text-gold-200/70 pt-2 border-t border-gold-400/20 flex items-center justify-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-gold-400" />
-            <span>Authorized administrative personnel only</span>
+            <span>Kalptaruu Yoga Vidhyalaya Secure Portal</span>
           </div>
         </div>
       </div>

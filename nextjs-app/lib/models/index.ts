@@ -10,6 +10,7 @@ export * from './MembershipPlan';
 export * from './GalleryCategory';
 export * from './GalleryImage';
 export * from './Video';
+export * from './VideoCategory';
 export * from './Benefit';
 export * from './MediaAsset';
 export * from './User';

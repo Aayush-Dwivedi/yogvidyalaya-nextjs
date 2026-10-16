@@ -36,73 +36,6 @@ export interface GalleryPageProps {
   initialCategories?: string[];
 }
 
-const DEFAULT_GALLERY: DisplayPhoto[] = [
-  {
-    id: 'g-1',
-    title: 'Surya Namaskar at Dawn',
-    caption: 'Students aligning breath and movement during morning sadhana on the shala terrace.',
-    category: 'Asana Practice',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=85',
-    date: 'Morning Sadhana',
-  },
-  {
-    id: 'g-2',
-    title: 'Therapeutic Postural Alignment',
-    caption: 'Mrs. Shuchi Mohan guiding spine and joint restoration techniques with physiotherapy precision.',
-    category: 'Therapy & Healing',
-    image: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1200&q=85',
-    date: 'Therapy Intensive',
-  },
-  {
-    id: 'g-3',
-    title: 'Pranayama & Kumbhaka Masterclass',
-    caption: 'Deep breathwork session cultivating mental stillness and vital energy regulation.',
-    category: 'Pranayama',
-    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1200&q=85',
-    date: 'Weekend Intensive',
-  },
-  {
-    id: 'g-4',
-    title: 'Institutional NCERT Wellness Workshop',
-    caption: 'Interactive demonstration conducted for national educational and governmental forums.',
-    category: 'Workshops',
-    image: 'https://images.unsplash.com/photo-1599447421416-3414500d18a5?auto=format&fit=crop&w=1200&q=85',
-    date: 'Special Event',
-  },
-  {
-    id: 'g-5',
-    title: 'Mindful Meditation & Dhyana',
-    caption: 'Sadhakas immersed in contemplative silence, nurturing clarity and inner peace.',
-    category: 'Meditation',
-    image: 'https://images.unsplash.com/photo-1512290900672-1f41e57c66cb?auto=format&fit=crop&w=1200&q=85',
-    date: 'Evening Dhyana',
-  },
-  {
-    id: 'g-6',
-    title: 'Classical Sanskrit Chanting & Satsang',
-    caption: 'Vedic mantras resonating through the sanctified atmosphere of Kalptaruu Yoga Vidhyalaya.',
-    category: 'Satsang',
-    image: 'https://images.unsplash.com/photo-1524863479829-916d8e77f114?auto=format&fit=crop&w=1200&q=85',
-    date: 'Annual Gathering',
-  },
-  {
-    id: 'g-7',
-    title: 'Teacher Training Anatomy Practicum',
-    caption: 'Future yoga teachers analyzing biomechanical safety and joint protection in asanas.',
-    category: 'Teacher Training',
-    image: 'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?auto=format&fit=crop&w=1200&q=85',
-    date: 'Certification Batch',
-  },
-  {
-    id: 'g-8',
-    title: 'Senior Citizen Restorative Sadhana',
-    caption: 'Gentle, therapeutic chair yoga designed to enhance mobility and ease back and knee strain.',
-    category: 'Therapy & Healing',
-    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1200&q=85',
-    date: 'Restorative Care',
-  },
-];
-
 export const GalleryPage: React.FC<GalleryPageProps> = ({
   initialPhotos,
   initialCategories,
@@ -176,8 +109,7 @@ export const GalleryPage: React.FC<GalleryPageProps> = ({
           category:
             (typeof img.category === 'object' ? img.category?.name : img.category) || 'Tradition',
           image:
-            (typeof img.image === 'string' ? img.image : img.image?.url) ||
-            DEFAULT_GALLERY[idx % DEFAULT_GALLERY.length]?.image || '',
+            (typeof img.image === 'string' ? img.image : img.image?.url) || '',
           date: img.createdAt ? new Date(img.createdAt).toLocaleDateString() : undefined,
         }));
         setPhotos(mapped);
@@ -199,22 +131,13 @@ export const GalleryPage: React.FC<GalleryPageProps> = ({
           } catch {}
         }
       } else {
-        // Fallback only if database genuinely has no gallery photos
-        setPhotos((prev) => (prev.length > 0 ? prev : DEFAULT_GALLERY));
-        setCategories((prev) =>
-          prev.length > 1
-            ? prev
-            : ['All', 'Asana Practice', 'Therapy & Healing', 'Pranayama', 'Workshops', 'Meditation', 'Satsang']
-        );
+        setPhotos([]);
+        setCategories(cats && cats.length > 0 ? ['All', ...cats.map((c) => c.name)] : ['All']);
       }
     } catch (err) {
-      console.warn('Using default gallery photos:', err);
-      setPhotos((prev) => (prev.length > 0 ? prev : DEFAULT_GALLERY));
-      setCategories((prev) =>
-        prev.length > 1
-          ? prev
-          : ['All', 'Asana Practice', 'Therapy & Healing', 'Pranayama', 'Workshops', 'Meditation', 'Satsang']
-      );
+      console.warn('Could not load gallery photos:', err);
+      setPhotos([]);
+      setCategories(['All']);
     } finally {
       setLoading(false);
     }
@@ -366,6 +289,12 @@ export const GalleryPage: React.FC<GalleryPageProps> = ({
                   </div>
                 </div>
               ))}
+            </div>
+          ) : photos.length === 0 ? (
+            <div className="text-center py-20 bg-canvas-warm rounded-2xl border border-border space-y-3 max-w-md mx-auto">
+              <ImageIcon className="w-12 h-12 text-gold-500 mx-auto opacity-70" />
+              <h3 className="text-xl font-editorial text-plum-900">No Gallery Photos Published</h3>
+              <p className="text-xs text-ink-muted">Photos and moments from our shala and events will appear here once published by the administration.</p>
             </div>
           ) : filteredPhotos.length === 0 ? (
             <div className="text-center py-20 bg-canvas-warm rounded-2xl border border-border space-y-3">

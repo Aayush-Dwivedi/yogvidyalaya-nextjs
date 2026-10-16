@@ -1,12 +1,32 @@
 import { type NextRequest } from 'next/server';
 import { connectDB } from '@/lib/db/mongoose';
-import { Enquiry } from '@/lib/models/Enquiry';
+import { EnquiryService } from '@/lib/services/enquiry.service';
 import { ApiResponse, handleRouteError } from '@/lib/utils/apiResponse';
 import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimiter';
+import { requireAdminSession } from '@/lib/auth/session';
 
 export const runtime = 'nodejs';
 
-// POST /api/enquiries — Public General Visitor Enquiry
+// GET /api/enquiries — View all enquiries from database (staff/management only)
+export async function GET(request: NextRequest) {
+  try {
+    await connectDB();
+    await requireAdminSession(request);
+
+    const { searchParams } = new URL(request.url);
+    const page = Number(searchParams.get('page')) || 1;
+    const limit = Number(searchParams.get('limit')) || 25;
+    const status = searchParams.get('status') || undefined;
+    const search = searchParams.get('search') || undefined;
+
+    const result = await EnquiryService.getEnquiries({ page, limit, status, search });
+    return ApiResponse.paginated(result.items, result.meta, 'Enquiries retrieved from database');
+  } catch (error) {
+    return handleRouteError(error);
+  }
+}
+
+// POST /api/enquiries — Public General Visitor Enquiry (direct database submission)
 export async function POST(request: NextRequest) {
   try {
     const ip = getClientIp(request);
@@ -32,21 +52,17 @@ export async function POST(request: NextRequest) {
       return ApiResponse.badRequest('A message is required.');
     }
 
-    const validInterests = ['course', 'workshop', 'corporate', 'membership', 'general'];
-    const interest = validInterests.includes(programInterest) ? programInterest : 'general';
-
-    const enquiry = await Enquiry.create({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone ? String(phone).trim() : undefined,
-      programInterest: interest,
-      message: message.trim(),
-      status: 'new',
+    const enquiry = await EnquiryService.createEnquiry({
+      name,
+      email,
+      phone,
+      programInterest,
+      message,
     });
 
     return ApiResponse.created(
       { id: enquiry._id },
-      'Thank you for reaching out. We will get back to you shortly.'
+      'Thank you for reaching out. Your enquiry has been received and logged into our database.'
     );
   } catch (error) {
     return handleRouteError(error);

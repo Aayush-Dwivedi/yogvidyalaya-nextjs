@@ -4,37 +4,31 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { OrnamentalDivider } from './Motifs';
-import { useToast } from './Toast';
 import { CmsService } from '../services/cmsService';
 
 export const Footer: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const { toast } = useToast();
-
-  const [contact, setContact] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('kalptaru_cached_institute');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed && parsed.contact) return parsed.contact;
-        }
-      } catch {}
-    }
-    return {
-      email: 'shuchimohan@kalptaruyogvidyalaya.com',
-      phone: '09818047984',
-      whatsappLink: 'https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL',
-      address: {
-        street: 'N114 Piyush Heights, Sector 89',
-        city: 'Faridabad',
-        postalCode: '121002',
-      },
-    };
+  const [contact, setContact] = useState<any>({
+    email: 'shuchimohan@kalptaruyogvidyalaya.com',
+    phone: '09818047984',
+    whatsappLink: 'https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL',
+    address: {
+      street: 'N114 Piyush Heights, Sector 89',
+      city: 'Faridabad',
+      postalCode: '121002',
+    },
   });
 
   const loadContact = async () => {
     try {
+      if (typeof window !== 'undefined') {
+        const cached = localStorage.getItem('kalptaru_cached_institute');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.contact) {
+            setContact(parsed.contact);
+          }
+        }
+      }
       const data = await CmsService.getInstitute();
       if (data && data.contact) {
         setContact(data.contact);
@@ -52,25 +46,6 @@ export const Footer: React.FC = () => {
       window.removeEventListener('storage', handleUpdate);
     };
   }, []);
-
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !email.includes('@')) {
-      toast({
-        type: 'error',
-        title: 'Invalid Email',
-        message: 'Please enter a valid email address to receive our discourses.',
-      });
-      return;
-    }
-
-    toast({
-      type: 'gold',
-      title: 'Namaste & Welcome',
-      message: 'You are now subscribed to the Kalptaruu Yoga Vidhyalaya monthly journal.',
-    });
-    setEmail('');
-  };
 
   return (
     <footer className="bg-plum-950 text-ivory/90 border-t border-gold-500/30 pt-16 pb-10">
@@ -178,49 +153,17 @@ export const Footer: React.FC = () => {
                 </span>
               </div>
             </div>
-
-            <form onSubmit={handleNewsletterSubmit} className="space-y-2 pt-2">
-              <div className="flex">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email address"
-                  className="w-full bg-plum-900/80 border border-gold-500/40 text-ivory placeholder:text-ivory/40 text-xs px-3 py-2 rounded-l-[2px] focus:outline-none focus:border-gold-400"
-                />
-                <button
-                  type="submit"
-                  className="bg-gold-500 text-plum-950 font-medium text-xs px-3.5 py-2 rounded-r-[2px] hover:bg-gold-400 transition-colors shrink-0"
-                >
-                  Subscribe
-                </button>
-              </div>
-            </form>
           </div>
         </div>
 
         {/* Ornamental Divider */}
         <OrnamentalDivider className="my-6 opacity-40" />
 
-        {/* Bottom Bar: Copyright & Legal */}
-        <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-ivory/60 space-y-3 sm:space-y-0 pt-4">
+        {/* Bottom Bar: Centered Copyright */}
+        <div className="text-center text-[11px] text-ivory/60 pt-2">
           <p>
             &copy; {new Date().getFullYear()} Kalptaruu Yoga Vidhyalaya. All rights reserved.
           </p>
-
-          <div className="flex items-center space-x-4">
-            <Link href="/privacy" className="hover:text-gold-300 transition-colors">
-              Privacy Policy
-            </Link>
-            <span>&bull;</span>
-            <Link href="/terms" className="hover:text-gold-300 transition-colors">
-              Terms of Study
-            </Link>
-            <span>&bull;</span>
-            <Link href="/disclaimer" className="hover:text-gold-300 transition-colors">
-              Medical Disclaimer
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

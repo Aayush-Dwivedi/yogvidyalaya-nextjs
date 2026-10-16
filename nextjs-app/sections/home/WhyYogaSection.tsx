@@ -3,31 +3,46 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
-import { WHY_YOGA_BENEFITS } from '../../services/homeData';
 import { OrnamentalDivider } from '../../components/Motifs';
 import { BenefitItem } from '../../types/home';
 import { CmsBenefit } from '../../types/cms';
 import { CmsService } from '../../services/cmsService';
+import {
+  Heart,
+  Brain,
+  Activity,
+  ShieldCheck,
+  Sparkles,
+  Zap,
+  Sun,
+  Eye,
+  Flame,
+  Moon,
+  Flower2,
+  Feather,
+  Compass,
+  Wind,
+} from 'lucide-react';
 
 export interface WhyYogaSectionProps {
   benefits?: (BenefitItem | CmsBenefit)[];
 }
 
 const normalizeBenefits = (items: any[]): BenefitItem[] => {
-  if (!items || items.length === 0) return WHY_YOGA_BENEFITS;
+  if (!items || items.length === 0) return [];
   return items.map((b, idx) => ({
     id: b._id || b.id || `benefit-${idx}`,
     title: b.title || 'Holistic Wellness',
     sanskritTerm: b.sanskritTerm || '',
     description: b.description || '',
     scriptureRef: b.scriptureRef || '',
-    icon: b.icon || 'lotus',
+    icon: b.icon || 'Sparkles',
   }));
 };
 
 export const WhyYogaSection: React.FC<WhyYogaSectionProps> = ({ benefits: propBenefits }) => {
   const [benefits, setBenefits] = useState<BenefitItem[]>(() =>
-    propBenefits && propBenefits.length > 0 ? normalizeBenefits(propBenefits) : WHY_YOGA_BENEFITS
+    propBenefits && propBenefits.length > 0 ? normalizeBenefits(propBenefits) : []
   );
 
   useEffect(() => {
@@ -42,9 +57,11 @@ export const WhyYogaSection: React.FC<WhyYogaSectionProps> = ({ benefits: propBe
         const homeData = await CmsService.getHomeContent();
         if (homeData?.benefits && homeData.benefits.length > 0) {
           setBenefits(normalizeBenefits(homeData.benefits));
+        } else {
+          setBenefits([]);
         }
       } catch (err) {
-        console.warn('Using default benefits:', err);
+        setBenefits([]);
       }
     };
 
@@ -65,60 +82,48 @@ export const WhyYogaSection: React.FC<WhyYogaSectionProps> = ({ benefits: propBe
     };
   }, [propBenefits]);
 
-  // Subtle yogic line-art iconography corresponding to each benefit
-  const getBenefitIcon = (index: number) => {
-    switch (index % 6) {
-      case 0:
-        return (
-          <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <circle cx="12" cy="12" r="9" strokeWidth="1" />
-            <path d="M12 7v10M8 12h8" strokeWidth="1" strokeLinecap="round" />
-            <circle cx="12" cy="12" r="3" strokeWidth="0.8" strokeDasharray="1.5 1.5" />
-          </svg>
-        );
-      case 1:
-        return (
-          <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" strokeWidth="1" />
-            <circle cx="12" cy="12" r="3" strokeWidth="1" />
-            <circle cx="12" cy="12" r="1" fill="currentColor" />
-          </svg>
-        );
-      case 2:
-        return (
-          <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M6 18c4-4 8-12 12-12" strokeWidth="1" strokeLinecap="round" />
-            <path d="M6 12c3-2 6-6 12-6" strokeWidth="0.8" strokeDasharray="2 2" />
-            <circle cx="18" cy="6" r="2" strokeWidth="1" />
-            <circle cx="6" cy="18" r="2" strokeWidth="1" />
-          </svg>
-        );
-      case 3:
-        return (
-          <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M3 14c3-3 6 3 9 0s6-3 9 0" strokeWidth="1" strokeLinecap="round" />
-            <path d="M3 10c3-3 6 3 9 0s6-3 9 0" strokeWidth="0.8" strokeLinecap="round" opacity="0.6" />
-            <circle cx="12" cy="5" r="1.5" fill="currentColor" />
-          </svg>
-        );
-      case 4:
-        return (
-          <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M12 3c-3 5-4 9-4 13 0 3 2 5 4 5s4-2 4-5c0-4-1-8-4-13z" strokeWidth="1" />
-            <circle cx="12" cy="10" r="1" fill="currentColor" />
-          </svg>
-        );
-      case 5:
-        return (
-          <svg className="w-6 h-6 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <rect x="10" y="4" width="4" height="16" rx="1" strokeWidth="1" />
-            <line x1="7" y1="8" x2="17" y2="8" strokeWidth="1" strokeLinecap="round" />
-            <line x1="6" y1="12" x2="18" y2="12" strokeWidth="1.2" strokeLinecap="round" />
-            <line x1="7" y1="16" x2="17" y2="16" strokeWidth="1" strokeLinecap="round" />
-          </svg>
-        );
+  if (!benefits || benefits.length === 0) {
+    return null;
+  }
+
+  // Matches the exact icon selected in the Admin Benefits CMS
+  const renderBenefitIcon = (iconName?: string) => {
+    const key = (iconName || '').toLowerCase().trim();
+    const iconClass = 'w-6 h-6 text-gold-600 group-hover:scale-110 transition-transform duration-300';
+
+    switch (key) {
+      case 'heart':
+        return <Heart className={iconClass} />;
+      case 'brain':
+        return <Brain className={iconClass} />;
+      case 'activity':
+        return <Activity className={iconClass} />;
+      case 'shieldcheck':
+      case 'shield':
+        return <ShieldCheck className={iconClass} />;
+      case 'zap':
+        return <Zap className={iconClass} />;
+      case 'sun':
+        return <Sun className={iconClass} />;
+      case 'eye':
+        return <Eye className={iconClass} />;
+      case 'flame':
+        return <Flame className={iconClass} />;
+      case 'moon':
+        return <Moon className={iconClass} />;
+      case 'flower2':
+      case 'flower':
+      case 'lotus':
+        return <Flower2 className={iconClass} />;
+      case 'feather':
+        return <Feather className={iconClass} />;
+      case 'compass':
+        return <Compass className={iconClass} />;
+      case 'wind':
+        return <Wind className={iconClass} />;
+      case 'sparkles':
       default:
-        return null;
+        return <Sparkles className={iconClass} />;
     }
   };
 
@@ -143,7 +148,7 @@ export const WhyYogaSection: React.FC<WhyYogaSectionProps> = ({ benefits: propBe
                 {/* Header Icon + Number */}
                 <div className="flex items-center justify-between">
                   <div className="w-12 h-12 rounded-[2px] bg-canvas-warm border border-gold-400/40 flex items-center justify-center group-hover:border-gold-500 transition-colors">
-                    {getBenefitIcon(idx)}
+                    {renderBenefitIcon(benefit.icon)}
                   </div>
                   <span className="text-[10px] font-mono text-gold-700 tracking-wider font-semibold">
                     0{idx + 1}

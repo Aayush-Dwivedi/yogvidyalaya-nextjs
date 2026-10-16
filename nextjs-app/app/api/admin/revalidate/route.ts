@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
     revalidatePath('/gallery', 'page');
     revalidatePath('/videos', 'page');
     revalidatePath('/contact', 'page');
-    revalidatePath('/enquiry', 'page');
 
     return ApiResponse.success(
       { revalidated: true, timestamp: Date.now() },

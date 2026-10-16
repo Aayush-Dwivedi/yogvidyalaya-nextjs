@@ -448,7 +448,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ initialCourses }) => {
                               Book Now
                             </LinkButton>
                             <LinkButton
-                              to={`/contact/enquiry?program=${encodeURIComponent(course.title)}`}
+                              to={`/contact?program=${encodeURIComponent(course.title)}&type=course`}
                               variant="outline"
                               size="md"
                               className="w-full sm:w-auto text-center rounded-lg px-5 py-2.5 font-medium whitespace-nowrap"
@@ -485,7 +485,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ initialCourses }) => {
             Our experienced team offers guidance to help you select the course or program best suited for your health, fitness, and wellness goals.
           </p>
           <div className="pt-2">
-            <LinkButton to="/contact/enquiry" variant="outline" size="md">
+            <LinkButton to="/contact" variant="outline" size="md">
               Get in Touch
             </LinkButton>
           </div>

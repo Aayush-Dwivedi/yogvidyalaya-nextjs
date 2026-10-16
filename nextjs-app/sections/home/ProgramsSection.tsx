@@ -7,7 +7,7 @@ import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Badge } from '../../components/Badge';
 import { LinkButton } from '../../components/LinkButton';
-import { CornerFlourish, LotusMotif } from '../../components/Motifs';
+import { CornerFlourish, LotusMotif, KalptaruTree } from '../../components/Motifs';
 import { CmsService } from '../../services/cmsService';
 import { CmsFounder } from '../../types/cms';
 import { ArrowRight, Award, GraduationCap, CheckCircle2 } from 'lucide-react';
@@ -85,15 +85,8 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
                 </p>
               </div>
 
-              <div className="relative aspect-[16/8] rounded-[1px] overflow-hidden border border-border/60 bg-surface-subtle">
-                <Image
-                  src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1000&q=80"
-                  alt="Students in teacher training asana lab"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 650px"
-                  className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
-                  loading="lazy"
-                />
+              <div className="relative aspect-[16/8] rounded-[1px] overflow-hidden border border-border/60 bg-gradient-to-br from-plum-950 via-[#2A0725] to-[#1A0719] flex items-center justify-center p-6 text-gold-400">
+                <KalptaruTree size={54} />
               </div>
 
               <div className="flex flex-wrap gap-2 pt-2">
@@ -113,7 +106,6 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
               <LinkButton to="/courses" variant="primary" size="md">
                 Explore Courses
               </LinkButton>
-              <span className="text-xs text-ink-muted font-mono">From ₹4,500</span>
             </div>
           </div>
 
@@ -136,15 +128,8 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
                 </p>
               </div>
 
-              <div className="relative aspect-[16/9] rounded-[1px] overflow-hidden border border-border/60 bg-surface-subtle">
-                <Image
-                  src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80"
-                  alt="Yogic meditation and breathwork intensive"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 450px"
-                  className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
-                  loading="lazy"
-                />
+              <div className="relative aspect-[16/9] rounded-[1px] overflow-hidden border border-border/60 bg-gradient-to-br from-plum-950 via-[#2A0725] to-[#1A0719] flex items-center justify-center p-6 text-gold-400">
+                <LotusMotif size={48} />
               </div>
 
               <div className="p-3 bg-canvas-warm rounded-[2px] border border-border/80">
@@ -288,7 +273,7 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
               {trainers.map((trainer) => {
                 const photoUrl =
                   (typeof trainer.image === 'string' ? trainer.image : trainer.image?.url) ||
-                  'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80';
+                  '';
                 const id = (trainer._id || trainer.id || trainer.slug) as string;
                 const isFounder = trainer.name?.toLowerCase().includes('shuchi') || trainer.title?.toLowerCase().includes('founder');
                 const targetUrl = isFounder ? '/about/founder' : `/trainers?trainer=${encodeURIComponent(id)}`;
@@ -299,16 +284,22 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ showTrainers =
                     className="bg-surface border border-border hover:border-gold-400 rounded-xl p-5 shadow-card hover:shadow-modal transition-all duration-300 flex flex-col justify-between group"
                   >
                     <div className="space-y-3">
-                      <div className="aspect-[4/3] rounded-lg overflow-hidden bg-plum-950/10 border border-border/60 relative">
-                        <Image
-                          src={photoUrl}
-                          alt={trainer.name}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
-                          className="object-cover group-hover:scale-105 transition-transform duration-500 filter brightness-[0.98]"
-                          loading="lazy"
-                          unoptimized={!isOptimizedUrl(photoUrl)}
-                        />
+                      <div className="aspect-[4/3] rounded-lg overflow-hidden bg-plum-950 border border-border/60 relative flex items-center justify-center">
+                        {photoUrl ? (
+                          <Image
+                            src={photoUrl}
+                            alt={trainer.name}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500 filter brightness-[0.98]"
+                            loading="lazy"
+                            unoptimized={!isOptimizedUrl(photoUrl)}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center p-4 text-gold-400/80 bg-gradient-to-br from-plum-950 via-[#2A0725] to-[#1A0719]">
+                            <LotusMotif size={36} />
+                          </div>
+                        )}
                         {trainer.featured && (
                           <div className="absolute top-2.5 right-2.5">
                             <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-gold-500 text-plum-950 border border-gold-400">

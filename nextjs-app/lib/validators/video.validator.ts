@@ -40,3 +40,28 @@ export const updateVideoSchema = {
 export const deleteVideoSchema = {
   params: idParamSchema,
 };
+
+// Video Category Schemas
+export const createVideoCategorySchema = {
+  body: z.object({
+    name: z.string().trim().min(2, 'Category name is required'),
+    slug: z
+      .string()
+      .trim()
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase alphanumeric with hyphens')
+      .optional(),
+    description: z.string().trim().optional(),
+    order: z.number().int().default(0),
+    isActive: z.boolean().default(true),
+  }),
+};
+
+export const updateVideoCategorySchema = {
+  params: idParamSchema,
+  body: createVideoCategorySchema.body.partial(),
+};
+
+export const deleteVideoCategorySchema = {
+  params: idParamSchema,
+};
+

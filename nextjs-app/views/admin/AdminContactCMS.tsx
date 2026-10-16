@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { CmsService } from '../../services/cmsService';
 import { LoadingState } from '../../components/LoadingState';
+import { getMapEmbedUrl } from '../../utils/mapUtils';
 import {
   Phone,
   Mail,
@@ -84,7 +85,7 @@ export const AdminContactCMS: React.FC = () => {
             state: data.contact.address?.state || 'Haryana',
             postalCode: data.contact.address?.postalCode || '121002',
             country: data.contact.address?.country || 'India',
-            mapUrl: data.contact.address?.mapUrl || '',
+            mapUrl: data.contact.address?.mapUrl || (data.contact.address as any)?.mapDirectUrl || (data.contact.address as any)?.mapEmbedUrl || '',
           },
         });
       }
@@ -109,6 +110,8 @@ export const AdminContactCMS: React.FC = () => {
       setSaving(true);
       setStatusMessage(null);
 
+      const rawMapUrl = contact.address.mapUrl.trim();
+
       const updated = await CmsService.updateInstitute({
         contact: {
           email: contact.email.trim(),
@@ -123,7 +126,9 @@ export const AdminContactCMS: React.FC = () => {
             state: contact.address.state.trim(),
             postalCode: contact.address.postalCode.trim(),
             country: contact.address.country.trim(),
-            mapUrl: contact.address.mapUrl.trim(),
+            mapUrl: rawMapUrl,
+            mapEmbedUrl: getMapEmbedUrl(rawMapUrl),
+            mapDirectUrl: rawMapUrl,
           },
         },
       });
@@ -159,22 +164,9 @@ export const AdminContactCMS: React.FC = () => {
     contact.address.postalCode ? ` – ${contact.address.postalCode}` : ''
   }, ${contact.address.state}, ${contact.address.country}`;
 
-  const mapEmbedPreviewSrc =
-    contact.address.mapUrl.includes('output=embed') ||
-    contact.address.mapUrl.includes('/embed')
-      ? contact.address.mapUrl
-      : `https://maps.google.com/maps?q=${encodeURIComponent(
-          formattedFullAddress
-        )}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-
-  const mapDirectUrl =
-    contact.address.mapUrl &&
-    !contact.address.mapUrl.includes('output=embed') &&
-    contact.address.mapUrl !== 'https://maps.google.com'
-      ? contact.address.mapUrl
-      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-          formattedFullAddress
-        )}`;
+  // Interactive map is derived directly from normal mapUrl, NEVER from the address string!
+  const mapEmbedPreviewSrc = getMapEmbedUrl(contact.address.mapUrl);
+  const mapDirectUrl = contact.address.mapUrl.trim();
 
   if (loading) {
     return <LoadingState message="Loading contact settings..." />;
@@ -503,21 +495,21 @@ export const AdminContactCMS: React.FC = () => {
               </div>
             </div>
 
-            {/* 4. Google Maps URL & Embed Configuration */}
+            {/* 4. Google Maps URL (Normal URL - Address is plain text only) */}
             <div className="bg-white border border-border rounded-xl p-5 sm:p-6 shadow-soft space-y-5">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2">
                   <Navigation className="w-4 h-4 text-gold-600" />
                   <h2 className="text-base font-bold text-plum-900 font-sans">
-                    4. Google Maps &amp; Navigation URL
+                    4. Google Maps URL
                   </h2>
                 </div>
-                <span className="text-[11px] text-ink-muted">Interactive Map</span>
+                <span className="text-[11px] text-ink-muted">Normal URL Supported</span>
               </div>
 
-              <div>
-                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1.5">
-                  Custom Google Maps Embed or Share URL (Optional)
+              <div className="space-y-1.5">
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider">
+                  Google Maps URL
                 </label>
                 <input
                   type="text"
@@ -525,45 +517,61 @@ export const AdminContactCMS: React.FC = () => {
                   onChange={(e) =>
                     setContact({
                       ...contact,
-                      address: { ...contact.address, mapUrl: e.target.value },
+                      address: {
+                        ...contact.address,
+                        mapUrl: e.target.value,
+                      },
                     })
                   }
-                  placeholder="e.g. https://maps.google.com/?q=Piyush+Heights+Faridabad or leave blank for auto address embed"
+                  placeholder="e.g. https://maps.google.com/?q=Kalptaruu+Yoga+Vidhyalaya or https://www.google.com/maps/place/..."
                   className="w-full bg-white border border-border rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs"
                 />
-                <p className="text-[11px] text-ink-muted mt-1.5 leading-relaxed">
-                  💡 If left empty, the system automatically embeds an interactive Google Map centered on <code>{formattedFullAddress}</code>.
+                <p className="text-[11px] text-ink-muted leading-relaxed">
+                  📍 Paste any normal Google Maps link here (no embed code needed). Address above is treated purely as plain text.
                 </p>
               </div>
 
               {/* Live Embedded Map Preview in Admin */}
-              <div className="rounded-xl border border-border overflow-hidden bg-surface-subtle">
-                <div className="px-4 py-2.5 bg-plum-950 text-white flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-3.5 h-3.5 text-gold-400" />
-                    <span className="font-semibold text-gold-300 font-mono text-[11px]">
-                      Live Map Embed Test
-                    </span>
+              {mapEmbedPreviewSrc ? (
+                <div className="rounded-xl border border-border overflow-hidden bg-surface-subtle">
+                  <div className="px-4 py-2.5 bg-plum-950 text-white flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-3.5 h-3.5 text-gold-400" />
+                      <span className="font-semibold text-gold-300 font-mono text-[11px]">
+                        Live Map Preview
+                      </span>
+                    </div>
+                    {mapDirectUrl && (
+                      <a
+                        href={mapDirectUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] text-gold-300 hover:text-gold-200 underline"
+                      >
+                        <span>Open in Maps</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
                   </div>
-                  <a
-                    href={mapDirectUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[11px] text-gold-300 hover:text-gold-200 underline"
-                  >
-                    <span>Open in Maps</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                  <div className="relative w-full h-56 bg-surface">
+                    <iframe
+                      title="Admin Map Preview"
+                      src={mapEmbedPreviewSrc}
+                      className="w-full h-full border-0"
+                      loading="lazy"
+                    />
+                  </div>
                 </div>
-                <div className="relative w-full h-56 bg-surface">
-                  <iframe
-                    title="Admin Map Preview"
-                    src={mapEmbedPreviewSrc}
-                    className="w-full h-full border-0"
-                    loading="lazy"
-                  />
+              ) : (
+                <div className="rounded-xl border border-dashed border-border p-6 text-center bg-surface-subtle space-y-1">
+                  <p className="text-xs font-semibold text-plum-900">
+                    No Google Maps URL Configured
+                  </p>
+                  <p className="text-[11px] text-ink-muted">
+                    Paste any normal Google Maps link above to display the map. Address details are saved purely as plain text.
+                  </p>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 

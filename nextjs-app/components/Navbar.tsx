@@ -130,13 +130,13 @@ export const Navbar: React.FC = () => {
         <div className="absolute bottom-0 inset-x-0 h-[1px] auric-border-glow opacity-85 pointer-events-none" />
       )}
 
-      <div className="w-full max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-12 xl:px-16">
-        <div className="flex items-center justify-between relative">
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div className="flex items-center justify-between relative gap-2 sm:gap-4">
           {/* Brand Identity / Logo (Left) */}
           <div className="flex items-center shrink-0">
             <Link
               href="/"
-              className="flex items-center space-x-3 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 rounded-[2px]"
+              className="flex items-center space-x-2.5 sm:space-x-3 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 rounded-[2px]"
             >
               <div className="relative shrink-0">
                 <Image
@@ -145,23 +145,23 @@ export const Navbar: React.FC = () => {
                   width={44}
                   height={44}
                   priority
-                  className="w-11 h-11 rounded-full object-cover shadow-soft ring-1 ring-gold-400/40 group-hover:ring-gold-300 group-hover:scale-[1.04] transition-all"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shadow-soft ring-1 ring-gold-400/40 group-hover:ring-gold-300 group-hover:scale-[1.04] transition-all"
                 />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-gold-400/20 to-plum-500/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
               </div>
               <div className="flex flex-col">
-                <span className="font-editorial text-lg sm:text-xl text-white tracking-wide font-normal leading-tight group-hover:text-gold-200 transition-colors">
+                <span className="font-editorial text-base sm:text-lg xl:text-xl text-white tracking-wide font-normal leading-tight group-hover:text-gold-200 transition-colors whitespace-nowrap">
                   Kalptaruu Yoga Vidhyalaya
                 </span>
-                <span className="text-[9px] uppercase tracking-widest-editorial text-gold-400 font-semibold">
+                <span className="text-[8.5px] sm:text-[9px] uppercase tracking-widest-editorial text-gold-400 font-semibold whitespace-nowrap">
                   Traditional Yoga &amp; Wellness
                 </span>
               </div>
             </Link>
           </div>
 
-          {/* Desktop Navigation Links (DEAD CENTER OF HEADER) */}
-          <nav className="hidden lg:flex items-center justify-center space-x-1 xl:space-x-2 absolute left-1/2 -translate-x-1/2" aria-label="Main Navigation">
+          {/* Desktop Navigation Links (Centered in flow on lg, Dead Center on xl) */}
+          <nav className="hidden lg:flex items-center justify-center space-x-0.5 xl:space-x-1.5 xl:absolute xl:left-1/2 xl:-translate-x-1/2" aria-label="Main Navigation">
             {NAV_ITEMS.map((item) => {
               if (item.children) {
                 const isOpen = activeDropdown === item.label;
@@ -179,7 +179,7 @@ export const Navbar: React.FC = () => {
                       onClick={() => setActiveDropdown(isOpen ? null : item.label)}
                       aria-expanded={isOpen}
                       className={cn(
-                        'flex items-center gap-1.5 px-3 py-2 text-xs font-sans font-medium uppercase tracking-wide-editorial rounded-md transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 cursor-pointer',
+                        'flex items-center gap-1 px-2 xl:px-3 py-1.5 xl:py-2 text-[11px] xl:text-xs font-sans font-medium uppercase tracking-wide-editorial rounded-md transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-gold-500 cursor-pointer whitespace-nowrap',
                         isChildActive || isOpen
                           ? 'text-gold-300 font-semibold'
                           : 'text-white/90 hover:text-gold-300'
@@ -188,7 +188,7 @@ export const Navbar: React.FC = () => {
                       <span>{item.label}</span>
                       <svg
                         className={cn(
-                          'w-3.5 h-3.5 text-gold-400 transition-transform duration-200',
+                          'w-3 h-3 xl:w-3.5 xl:h-3.5 text-gold-400 transition-transform duration-200',
                           isOpen && 'rotate-180 text-gold-300'
                         )}
                         fill="none"
@@ -246,7 +246,7 @@ export const Navbar: React.FC = () => {
                   key={item.label}
                   href={item.href!}
                   className={cn(
-                    'px-3 py-2 text-xs font-sans uppercase tracking-wide-editorial rounded-md transition-colors relative',
+                    'px-2 xl:px-3 py-1.5 xl:py-2 text-[11px] xl:text-xs font-sans uppercase tracking-wide-editorial rounded-md transition-colors relative whitespace-nowrap',
                     isCurrent
                       ? 'text-gold-300 font-semibold'
                       : 'text-white/90 hover:text-gold-300'
@@ -254,7 +254,7 @@ export const Navbar: React.FC = () => {
                 >
                   <span>{item.label}</span>
                   {isCurrent && (
-                    <span className="absolute bottom-0 inset-x-2.5 h-[2px] bg-gold-400 rounded-full shadow-[0_0_8px_rgba(216,178,110,0.8)]" />
+                    <span className="absolute bottom-0 inset-x-2 h-[2px] bg-gold-400 rounded-full shadow-[0_0_8px_rgba(216,178,110,0.8)]" />
                   )}
                 </Link>
               );
@@ -262,18 +262,18 @@ export const Navbar: React.FC = () => {
           </nav>
 
           {/* Desktop Navigation CTA */}
-          <div className="hidden lg:flex items-center space-x-3">
+          <div className="hidden lg:flex items-center space-x-3 shrink-0">
             {isAuthenticated && (user?.role === 'admin' || user?.role === 'super_admin') ? (
               <Link
                 href="/admin"
-                className="inline-flex items-center text-xs uppercase tracking-wide-editorial text-plum-950 font-semibold px-4 py-2 rounded-full bg-gold-400 hover:bg-gold-300 transition-colors shadow-soft"
+                className="inline-flex items-center text-[11px] xl:text-xs uppercase tracking-wide-editorial text-plum-950 font-semibold px-3.5 xl:px-4 py-2 rounded-full bg-gold-400 hover:bg-gold-300 transition-colors shadow-soft whitespace-nowrap"
               >
-                Admin Dashboard
+                Dashboard
               </Link>
             ) : (
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold text-plum-950 bg-white hover:bg-gold-200 transition-all shadow-soft group cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 xl:px-5 py-2 rounded-full text-[11px] xl:text-xs font-semibold text-plum-950 bg-white hover:bg-gold-200 transition-all shadow-soft group cursor-pointer whitespace-nowrap"
               >
                 <span>Admissions</span>
                 <svg
@@ -403,7 +403,7 @@ export const Navbar: React.FC = () => {
                   href="/admin"
                   className="w-full flex items-center justify-center px-5 py-3 rounded-full text-sm font-semibold text-plum-950 bg-gold-400 hover:bg-gold-300 transition-colors"
                 >
-                  Admin Dashboard
+                  Dashboard
                 </Link>
               ) : (
                 <Link

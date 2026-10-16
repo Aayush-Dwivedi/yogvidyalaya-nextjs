@@ -7,7 +7,6 @@ import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Badge } from '../../components/Badge';
 import { LinkButton } from '../../components/LinkButton';
-import { GALLERY_HIGHLIGHTS } from '../../services/homeData';
 import { CornerFlourish, LotusMotif } from '../../components/Motifs';
 import { GalleryHighlight } from '../../types/home';
 import { CmsGalleryImage } from '../../types/cms';
@@ -19,29 +18,21 @@ export interface GallerySectionProps {
 }
 
 const normalizeHighlights = (items: any[]): GalleryHighlight[] => {
-  const normalized = items.map((g, idx) => ({
+  if (!items || !Array.isArray(items)) return [];
+  return items.map((g, idx) => ({
     id: g._id || g.id || `gallery-${idx}`,
     title: g.title || 'Institute Moment',
     caption: g.caption || g.description || '',
     category: (typeof g.category === 'object' ? g.category?.name : g.category) || 'Practice',
-    image:
-      (typeof g.image === 'string' ? g.image : g.image?.url) ||
-      GALLERY_HIGHLIGHTS[idx % GALLERY_HIGHLIGHTS.length]?.image ||
-      '',
-  }));
-
-  // Ensure we have at least 3 items by falling back to static highlights
-  while (normalized.length < 3) {
-    normalized.push(GALLERY_HIGHLIGHTS[normalized.length]);
-  }
-  return normalized;
+    image: (typeof g.image === 'string' ? g.image : g.image?.url) || '',
+  })).filter(g => Boolean(g.image));
 };
 
 export const GallerySection: React.FC<GallerySectionProps> = ({ highlights: propHighlights }) => {
   const [highlights, setHighlights] = useState<GalleryHighlight[]>(() =>
     propHighlights && propHighlights.length > 0
       ? normalizeHighlights(propHighlights)
-      : GALLERY_HIGHLIGHTS
+      : []
   );
 
   useEffect(() => {
@@ -56,9 +47,11 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ highlights: prop
         const homeData = await CmsService.getHomeContent();
         if (homeData?.galleryHighlights && homeData.galleryHighlights.length > 0) {
           setHighlights(normalizeHighlights(homeData.galleryHighlights));
+        } else {
+          setHighlights([]);
         }
       } catch (err) {
-        console.warn('Using default gallery highlights:', err);
+        setHighlights([]);
       }
     };
 
@@ -79,6 +72,10 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ highlights: prop
     };
   }, [propHighlights]);
 
+  if (!highlights || highlights.length === 0) {
+    return null;
+  }
+
   const [img1, img2, img3] = highlights;
 
   return (
@@ -98,10 +95,10 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ highlights: prop
 
         {/* Asymmetric Gallery Composition (Varying Dimensions) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Main Large Feature Frame (7 cols) */}
+          {/* Main Large Feature Frame */}
           <Link
             href="/gallery"
-            className="lg:col-span-7 bg-surface border border-border p-2 rounded-[2px] shadow-card group block hover:border-gold-500 transition-colors"
+            className={`${img2 ? 'lg:col-span-7' : 'lg:col-span-12'} bg-surface border border-border p-2 rounded-[2px] shadow-card group block hover:border-gold-500 transition-colors`}
           >
             <div className="relative aspect-[16/11] overflow-hidden rounded-[1px] bg-surface-subtle">
               {img1?.image && (
@@ -136,81 +133,85 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ highlights: prop
             </div>
           </Link>
 
-          {/* Stacked Complementary Frames (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col justify-between gap-6">
-            {/* Frame 2 */}
-            <Link
-              href="/gallery"
-              className="bg-surface border border-border p-2 rounded-[2px] shadow-card group relative flex-grow block hover:border-gold-500 transition-colors"
-            >
-              <div className="absolute top-3 right-3 z-10">
-                <CornerFlourish position="top-right" className="text-gold-400" />
-              </div>
-              <div className="relative aspect-[16/9] overflow-hidden rounded-[1px] bg-surface-subtle">
-                {img2?.image && (
-                  <Image
-                    src={img2.image}
-                    alt={img2.title || 'Institute Moment'}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 520px"
-                    className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
-                    loading="lazy"
-                    unoptimized={!isOptimizedUrl(img2.image)}
-                  />
-                )}
-                <div className="absolute top-2 left-2">
-                  <Badge variant="plum" size="sm">
-                    {img2?.category}
-                  </Badge>
+          {/* Stacked Complementary Frames */}
+          {img2 && (
+            <div className="lg:col-span-5 flex flex-col justify-between gap-6">
+              {/* Frame 2 */}
+              <Link
+                href="/gallery"
+                className="bg-surface border border-border p-2 rounded-[2px] shadow-card group relative flex-grow block hover:border-gold-500 transition-colors"
+              >
+                <div className="absolute top-3 right-3 z-10">
+                  <CornerFlourish position="top-right" className="text-gold-400" />
                 </div>
-              </div>
-              <div className="mt-3 px-1">
-                <h4 className="text-sm font-editorial font-medium text-ink group-hover:text-plum-900 transition-colors">
-                  {img2?.title}
-                </h4>
-                {img2?.caption && (
-                  <p className="text-[11px] text-ink-muted font-sans line-clamp-1 mt-0.5">
-                    {img2.caption}
-                  </p>
-                )}
-              </div>
-            </Link>
+                <div className="relative aspect-[16/9] overflow-hidden rounded-[1px] bg-surface-subtle">
+                  {img2?.image && (
+                    <Image
+                      src={img2.image}
+                      alt={img2.title || 'Institute Moment'}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 520px"
+                      className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                      loading="lazy"
+                      unoptimized={!isOptimizedUrl(img2.image)}
+                    />
+                  )}
+                  <div className="absolute top-2 left-2">
+                    <Badge variant="plum" size="sm">
+                      {img2?.category}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="mt-3 px-1">
+                  <h4 className="text-sm font-editorial font-medium text-ink group-hover:text-plum-900 transition-colors">
+                    {img2?.title}
+                  </h4>
+                  {img2?.caption && (
+                    <p className="text-[11px] text-ink-muted font-sans line-clamp-1 mt-0.5">
+                      {img2.caption}
+                    </p>
+                  )}
+                </div>
+              </Link>
 
-            {/* Frame 3 */}
-            <Link
-              href="/gallery"
-              className="bg-surface border border-border p-2 rounded-[2px] shadow-card group relative flex-grow block hover:border-gold-500 transition-colors"
-            >
-              <div className="relative aspect-[16/9] overflow-hidden rounded-[1px] bg-surface-subtle">
-                {img3?.image && (
-                  <Image
-                    src={img3.image}
-                    alt={img3.title || 'Institute Moment'}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 520px"
-                    className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
-                    loading="lazy"
-                    unoptimized={!isOptimizedUrl(img3.image)}
-                  />
-                )}
-                <div className="absolute top-2 left-2">
-                  <Badge variant="plum" size="sm">
-                    {img3?.category}
-                  </Badge>
-                </div>
-              </div>
-              <div className="mt-3 px-1">
-                <h4 className="text-sm font-editorial font-medium text-ink group-hover:text-plum-900 transition-colors">
-                  {img3?.title}
-                </h4>
-                {img3?.caption && (
-                  <p className="text-[11px] text-ink-muted font-sans line-clamp-1 mt-0.5">
-                    {img3.caption}
-                  </p>
-                )}
-              </div>
-            </Link>
-          </div>
+              {/* Frame 3 */}
+              {img3 && (
+                <Link
+                  href="/gallery"
+                  className="bg-surface border border-border p-2 rounded-[2px] shadow-card group relative flex-grow block hover:border-gold-500 transition-colors"
+                >
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-[1px] bg-surface-subtle">
+                    {img3?.image && (
+                      <Image
+                        src={img3.image}
+                        alt={img3.title || 'Institute Moment'}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 520px"
+                        className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                        loading="lazy"
+                        unoptimized={!isOptimizedUrl(img3.image)}
+                      />
+                    )}
+                    <div className="absolute top-2 left-2">
+                      <Badge variant="plum" size="sm">
+                        {img3?.category}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="mt-3 px-1">
+                    <h4 className="text-sm font-editorial font-medium text-ink group-hover:text-plum-900 transition-colors">
+                      {img3?.title}
+                    </h4>
+                    {img3?.caption && (
+                      <p className="text-[11px] text-ink-muted font-sans line-clamp-1 mt-0.5">
+                        {img3.caption}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       </Container>
     </section>

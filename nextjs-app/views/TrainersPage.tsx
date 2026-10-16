@@ -153,6 +153,14 @@ const TrainersContent: React.FC<TrainersPageProps> = ({ initialTrainers }) => {
         <Container size="wide">
           {loading ? (
             <LoadingState message="Loading our faculty and trainer directory..." />
+          ) : trainers.length === 0 ? (
+            <div className="text-center py-16 bg-white border border-border rounded-2xl p-8 max-w-lg mx-auto shadow-card">
+              <Users className="w-12 h-12 text-gold-600 mx-auto mb-3 opacity-70" />
+              <h3 className="font-editorial text-xl font-bold text-plum-900">No Faculty Listed</h3>
+              <p className="text-xs text-ink-muted mt-1">
+                Faculty instructors and therapeutic consultants will appear here once published by the administration.
+              </p>
+            </div>
           ) : filteredTrainers.length === 0 ? (
             <div className="text-center py-16 bg-white border border-border rounded-2xl p-8 max-w-lg mx-auto shadow-card">
               <Users className="w-12 h-12 text-gold-600 mx-auto mb-3" />
@@ -172,7 +180,7 @@ const TrainersContent: React.FC<TrainersPageProps> = ({ initialTrainers }) => {
               {filteredTrainers.map((trainer) => {
                 const photoUrl =
                   (typeof trainer.image === 'string' ? trainer.image : trainer.image?.url) ||
-                  'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80';
+                  '';
                 const id = trainer._id || trainer.id || trainer.slug;
 
                 return (
@@ -184,17 +192,23 @@ const TrainersContent: React.FC<TrainersPageProps> = ({ initialTrainers }) => {
                       {/* Card Media Header */}
                       <div
                         onClick={() => setSelectedTrainer(trainer)}
-                        className="relative aspect-[4/3] bg-plum-950 overflow-hidden cursor-pointer"
+                        className="relative aspect-[4/3] bg-plum-950 overflow-hidden cursor-pointer flex items-center justify-center"
                       >
-                        <Image
-                          src={photoUrl}
-                          alt={trainer.name}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
-                          className="object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-95"
-                          loading="lazy"
-                          unoptimized={!isOptimizedUrl(photoUrl)}
-                        />
+                        {photoUrl ? (
+                          <Image
+                            src={photoUrl}
+                            alt={trainer.name}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
+                            className="object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-95"
+                            loading="lazy"
+                            unoptimized={!isOptimizedUrl(photoUrl)}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-gold-400/80 bg-gradient-to-br from-plum-950 via-[#2A0725] to-[#1A0719]">
+                            <LotusMotif size={48} />
+                          </div>
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-plum-950/90 via-plum-950/20 to-transparent pointer-events-none" />
 
                         {trainer.featured && (
@@ -326,25 +340,26 @@ const TrainersContent: React.FC<TrainersPageProps> = ({ initialTrainers }) => {
           <div className="space-y-6 font-sans text-sm">
             {/* Header Identity Hero */}
             <div className="flex flex-col sm:flex-row gap-5 items-center sm:items-start bg-canvas-warm p-5 rounded-xl border border-border">
-              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-plum-950 shrink-0 border border-gold-400/40 shadow-card">
-                <Image
-                  src={
-                    (typeof selectedTrainer.image === 'string'
-                      ? selectedTrainer.image
-                      : selectedTrainer.image?.url) ||
-                    'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80'
-                  }
-                  alt={selectedTrainer.name}
-                  width={128}
-                  height={128}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  unoptimized={!isOptimizedUrl(
-                    typeof selectedTrainer.image === 'string'
-                      ? selectedTrainer.image
-                      : selectedTrainer.image?.url
-                  )}
-                />
+              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-plum-950 shrink-0 border border-gold-400/40 shadow-card flex items-center justify-center">
+                {((typeof selectedTrainer.image === 'string' ? selectedTrainer.image : selectedTrainer.image?.url)) ? (
+                  <Image
+                    src={typeof selectedTrainer.image === 'string' ? selectedTrainer.image : selectedTrainer.image?.url}
+                    alt={selectedTrainer.name}
+                    width={128}
+                    height={128}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    unoptimized={!isOptimizedUrl(
+                      typeof selectedTrainer.image === 'string'
+                        ? selectedTrainer.image
+                        : selectedTrainer.image?.url
+                    )}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gold-400 p-4">
+                    <LotusMotif size={40} />
+                  </div>
+                )}
               </div>
 
               <div className="flex-1 text-center sm:text-left space-y-2">

@@ -72,6 +72,8 @@ export interface CmsInstitute {
       postalCode: string;
       country: string;
       mapUrl?: string;
+      mapEmbedUrl?: string;
+      mapDirectUrl?: string;
     };
     hours?: string;
   };
@@ -171,6 +173,17 @@ export interface CmsVideo {
   featured: boolean;
   order: number;
   status: 'draft' | 'published' | 'archived';
+  createdAt?: string;
+}
+
+export interface CmsVideoCategory {
+  _id?: string;
+  id?: string;
+  name: string;
+  slug: string;
+  description?: string;
+  order?: number;
+  isActive?: boolean;
   createdAt?: string;
 }
 

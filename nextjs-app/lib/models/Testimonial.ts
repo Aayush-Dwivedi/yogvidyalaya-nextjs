@@ -23,21 +23,25 @@ const TestimonialSchema = new Schema<ITestimonial>(
       type: String,
       required: [true, 'Student/Client name is required'],
       trim: true,
+      maxlength: [100, 'Name cannot exceed 100 characters'],
     },
     roleOrTitle: {
       type: String,
       required: [true, 'Role or designation is required'],
       trim: true,
+      maxlength: [100, 'Role or title cannot exceed 100 characters'],
     },
     programOrCourse: {
       type: String,
       trim: true,
       default: 'Yoga Sadhak',
+      maxlength: [100, 'Program name cannot exceed 100 characters'],
     },
     quote: {
       type: String,
       required: [true, 'Testimonial quote is required'],
       trim: true,
+      maxlength: [500, 'Testimonial quote cannot exceed 500 characters'],
     },
     rating: {
       type: Number,

@@ -25,119 +25,8 @@ import {
   Award,
 } from 'lucide-react';
 
-const DEFAULT_CORPORATE_PROGRAMS: CmsCorporateProgram[] = [
-  {
-    _id: 'corp-1',
-    title: 'Executive Postural Realignment & Ergonomics',
-    slug: 'executive-postural-realignment',
-    tagline: 'Combat Desk Fatigue & Decompress Spinal Tension',
-    shortDescription:
-      'A structured clinical and yogic intervention designed specifically for screen-intensive teams suffering from cervical stiffness, lower back compression, and postural fatigue.',
-    description:
-      'Combining physiotherapy biomechanics with traditional sukshma vyayama and asana alignment. Conducted on-site at your workplace or dedicated shala sessions.',
-    format: 'on-site',
-    duration: '6 Weeks (12 Masterclasses)',
-    targetAudience: 'Software Engineers, Desk Workers, Senior Leadership',
-    deliverables: [
-      'Desk-side ergonomic posture audit & individual correction',
-      'Daily 15-minute desk mobility sequences for teams',
-      'Physiotherapist-designed lumbar & cervical release sessions',
-      'Pre- & post-program employee musculoskeletal pain survey',
-    ],
-    modules: [
-      {
-        title: 'Cervical & Scapular Decompression',
-        duration: '60 Mins',
-        description: 'Targeted release of trapezius tightness and forward-head posture correction.',
-      },
-      {
-        title: 'Lumbar Stabilization & Core Pelvic Alignment',
-        duration: '60 Mins',
-        description: 'Strengthening the posterior chain to prevent chronic lower-back degeneration.',
-      },
-    ],
-    pricingModel: 'custom-quote',
-    startingPrice: { amount: 35000, currency: 'INR' },
-    status: 'published',
-    featured: true,
-    order: 1,
-  },
-  {
-    _id: 'corp-2',
-    title: 'Autonomic Nervous System Reset & Executive Breathwork',
-    slug: 'executive-breathwork-stress-reset',
-    tagline: 'Science-Backed Stress Reduction & High-Pressure Calm',
-    shortDescription:
-      'Targeted pranayama protocols that scientifically activate the parasympathetic nervous system, lowering cortisol, reducing burnout, and sharpening focus under deadlines.',
-    description:
-      'Designed for fast-paced corporate environments where cognitive fatigue and acute stress hinder decision making. Delivered through live interactive hybrid or virtual masterclasses.',
-    format: 'hybrid',
-    duration: '4 Weeks (8 Live Cohort Sessions)',
-    targetAudience: 'High-Growth Tech Startups, C-Suite, Financial Traders',
-    deliverables: [
-      'Vagal nerve stimulation and deep diaphragm breath mechanics',
-      'Instant 3-minute nervous system down-regulation tools for meetings',
-      'Curated audio breath tracks for daily employee morning practice',
-      'Sleep hygiene and circadian restoration guidelines',
-    ],
-    modules: [
-      {
-        title: 'Pranayama Biomechanics & Vagal Nerve Activation',
-        duration: '50 Mins',
-        description: 'Shifting from sympathetic fight-or-flight into parasympathetic calm.',
-      },
-      {
-        title: 'Yoga Nidra for Deep Cognitive Recovery',
-        duration: '45 Mins',
-        description: 'Guided non-sleep deep rest (NSDR) for rapid mental reset during high workload.',
-      },
-    ],
-    pricingModel: 'fixed-package',
-    startingPrice: { amount: 28000, currency: 'INR' },
-    status: 'published',
-    featured: true,
-    order: 2,
-  },
-  {
-    _id: 'corp-3',
-    title: 'Executive Leadership Silence & Sadhana Retreat',
-    slug: 'executive-leadership-sadhana-retreat',
-    tagline: 'Immersive Offsite for Mental Stillness & Strategic Vision',
-    shortDescription:
-      'A bespoke weekend residential immersion away from digital noise, combining sacred yogic kriyas, mindful silence (mouna), nature sadhana, and purposeful leadership alignment.',
-    description:
-      'Tailored for executive committees, founders, and managing directors seeking deep inner rejuvenation and clarity away from corporate distractions.',
-    format: 'retreat',
-    duration: '3 Days / 2 Nights Residential',
-    targetAudience: 'Founders, Board Members, Senior Directors',
-    deliverables: [
-      'Private nature-immersed shala setting with organic sattvic cuisine',
-      'Guided early-morning Surya sadhana and deep meditation kriyas',
-      'Mindful digital detox and structured silent contemplative walks',
-      'Confidential one-on-one postural and lifestyle consultations',
-    ],
-    modules: [
-      {
-        title: 'Mouna (Silent Awareness) & Mental De-cluttering',
-        duration: 'Half Day',
-        description: 'Cultivating strategic stillness through prolonged absence of digital chatter.',
-      },
-      {
-        title: 'Sadhana for Visionary Leadership',
-        duration: '90 Mins',
-        description: 'Translating yogic clarity, equanimity, and dharma into organizational decision making.',
-      },
-    ],
-    pricingModel: 'custom-quote',
-    startingPrice: { amount: 95000, currency: 'INR' },
-    status: 'published',
-    featured: true,
-    order: 3,
-  },
-];
-
 export const CorporatePage: React.FC = () => {
-  const [programs, setPrograms] = useState<CmsCorporateProgram[]>(DEFAULT_CORPORATE_PROGRAMS);
+  const [programs, setPrograms] = useState<CmsCorporateProgram[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedFormat, setSelectedFormat] = useState('all');
 
@@ -146,11 +35,10 @@ export const CorporatePage: React.FC = () => {
       try {
         setLoading(true);
         const data = await CmsService.getCorporatePrograms('published');
-        if (data && data.length > 0) {
-          setPrograms(data);
-        }
+        setPrograms(data || []);
       } catch (err) {
-        console.warn('Using default corporate programs:', err);
+        console.warn('Could not load corporate programs:', err);
+        setPrograms([]);
       } finally {
         setLoading(false);
       }
@@ -327,6 +215,15 @@ export const CorporatePage: React.FC = () => {
           {/* Cards Grid */}
           {loading ? (
             <LoadingState message="Loading corporate packages..." />
+          ) : filteredPrograms.length === 0 ? (
+            <div className="text-center py-16 bg-surface border border-earth-200 rounded-2xl p-8 max-w-lg mx-auto shadow-sm space-y-3">
+              <Building2 className="w-10 h-10 text-gold-500 mx-auto" />
+              <h3 className="text-xl font-editorial font-bold text-plum-950">No Corporate Programs Listed</h3>
+              <p className="text-xs text-ink-muted">Custom corporate wellness programs and leadership retreats can be scheduled upon request.</p>
+              <Link href="/contact?type=corporate" className="inline-block mt-2 px-5 py-2.5 rounded-full bg-plum-950 text-gold-300 text-xs font-semibold hover:bg-plum-900 transition-colors">
+                Inquire for Enterprise Proposal
+              </Link>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredPrograms.map((pkg) => (

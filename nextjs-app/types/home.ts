@@ -46,6 +46,7 @@ export interface BenefitItem {
   sanskritTerm: string;
   description: string;
   scriptureRef: string;
+  icon?: string;
 }
 
 export interface GalleryHighlight {

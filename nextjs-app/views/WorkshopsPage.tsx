@@ -374,7 +374,7 @@ export const WorkshopsPage: React.FC<WorkshopsPageProps> = ({ initialWorkshops }
                           Book Now
                         </LinkButton>
                         <LinkButton
-                          to={`/contact/enquiry?program=${encodeURIComponent(ws.title)}`}
+                          to={`/contact?program=${encodeURIComponent(ws.title)}&type=workshop`}
                           variant="outline"
                           size="sm"
                           className="rounded-lg px-3.5 py-2 font-medium whitespace-nowrap"
@@ -402,7 +402,7 @@ export const WorkshopsPage: React.FC<WorkshopsPageProps> = ({ initialWorkshops }
             Mrs. Shuchi Mohan conducts specialized workshops on therapeutic yoga, postural alignment, and holistic wellness for institutions, organizations, and groups.
           </p>
           <div className="pt-2">
-            <LinkButton to="/contact/enquiry" variant="outline" size="md">
+            <LinkButton to="/contact?type=workshop" variant="outline" size="md">
               Enquire About Workshops
             </LinkButton>
           </div>

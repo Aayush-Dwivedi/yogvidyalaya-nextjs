@@ -10,8 +10,6 @@ interface AuthContextType {
   isLoading: boolean;
   error: string | null;
   login: (credentials: LoginCredentials) => Promise<User>;
-  loginDemoStudent: () => Promise<User>;
-  loginDemoAdmin: () => Promise<User>;
   register: (data: RegisterStudentData) => Promise<User>;
   logout: () => Promise<void>;
   updateProfile: (data: UpdateProfileData) => Promise<User>;
@@ -71,19 +69,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const loginDemoStudent = async (): Promise<User> => {
-    return login({
-      email: 'student@kalptaruyog.org',
-      password: 'Student@Kalptaru2026!',
-    });
-  };
-
-  const loginDemoAdmin = async (): Promise<User> => {
-    return login({
-      email: 'admin@kalptaruyog.org',
-      password: 'Admin@Kalptaru2026!',
-    });
-  };
 
   const register = async (data: RegisterStudentData): Promise<User> => {
     setError(null);
@@ -146,8 +131,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         error,
         login,
-        loginDemoStudent,
-        loginDemoAdmin,
         register,
         logout,
         updateProfile,

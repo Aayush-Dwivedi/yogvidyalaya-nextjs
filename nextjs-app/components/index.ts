@@ -18,3 +18,5 @@ export * from './Motifs';
 export * from './KalptaruLogo';
 export * from './DesignSystemShowcase';
 export * from './AuricBackground';
+export * from './contact';
+export * from './loader';
