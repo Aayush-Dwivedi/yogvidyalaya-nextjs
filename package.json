@@ -8,6 +8,7 @@
     "build": "npm --prefix nextjs-app run build",
     "start": "npm --prefix nextjs-app run start",
     "lint": "npm --prefix nextjs-app run lint",
+    "seed:admin": "npm --prefix nextjs-app run seed:admin",
     "install:app": "npm --prefix nextjs-app install"
   },
   "keywords": [

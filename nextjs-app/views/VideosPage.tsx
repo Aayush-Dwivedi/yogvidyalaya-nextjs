@@ -315,7 +315,7 @@ export const VideosPage: React.FC<VideosPageProps> = ({ initialVideos }) => {
                   </LinkButton>
                   {user?.role === 'admin' && (
                     <LinkButton to="/admin/media/videos" variant="secondary" size="md">
-                      Admin: Add Videos
+                      Manage Videos
                     </LinkButton>
                   )}
                 </div>

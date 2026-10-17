@@ -4,8 +4,10 @@ const nextConfig: NextConfig = {
   // Allow local LAN origin in development to avoid HMR / dev resource blocking
   allowedDevOrigins: ['192.168.1.7', '192.168.1.7:3000', 'localhost', 'localhost:3000'],
 
-  // Disable the floating development indicator ("N" logo badge)
-  devIndicators: false,
+  // Enable the floating development indicator ("N" logo badge)
+  devIndicators: {
+    position: 'bottom-right',
+  },
 
   // Mongoose, bcryptjs use native Node.js modules — exclude from Edge/client bundles
   serverExternalPackages: ['mongoose', 'bcryptjs'],
@@ -87,6 +89,16 @@ const nextConfig: NextConfig = {
       {
         source: '/founder',
         destination: '/about/founder',
+        permanent: true,
+      },
+      {
+        source: '/enquiry',
+        destination: '/contact',
+        permanent: true,
+      },
+      {
+        source: '/contact/enquiry',
+        destination: '/contact',
         permanent: true,
       },
     ];

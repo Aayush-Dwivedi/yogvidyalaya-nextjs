@@ -27,6 +27,7 @@ import {
   LotusMotif,
   SacredCircle,
   CornerFlourish,
+  LoaderDemo,
 } from './index';
 
 export const DesignSystemShowcase: React.FC = () => {
@@ -510,6 +511,19 @@ export const DesignSystemShowcase: React.FC = () => {
                 action={<Button variant="outline" size="sm">Notify Me</Button>}
               />
             </div>
+          </div>
+        </section>
+
+        {/* Animated Brand Loader Section */}
+        <section className="mb-20">
+          <SectionHeader
+            eyebrow="Feedback & Atmospheric Motion"
+            title="Animated Kalptaru Emblem Loader"
+            description="High-fidelity orbital loader with configurable minimum duration (at least X seconds) and automatic timeout handling."
+            align="left"
+          />
+          <div className="mt-8">
+            <LoaderDemo />
           </div>
         </section>
       </Container>

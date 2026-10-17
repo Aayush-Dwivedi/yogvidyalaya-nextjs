@@ -6,11 +6,11 @@ import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Badge } from '../../components/Badge';
 import { LinkButton } from '../../components/LinkButton';
-import { FEATURED_WORKSHOPS } from '../../services/homeData';
 import { FeaturedWorkshop } from '../../types/home';
-import { CmsService } from '../../services/cmsService';
 import { CmsWorkshop } from '../../types/cms';
+import { CmsService } from '../../services/cmsService';
 import { isOptimizedUrl } from '../../utils/imageUtils';
+import { LotusMotif } from '../../components/Motifs';
 
 export interface FeaturedWorkshopsSectionProps {
   workshops?: (FeaturedWorkshop | CmsWorkshop)[];
@@ -38,8 +38,7 @@ export const FeaturedWorkshopsSection: React.FC<FeaturedWorkshopsSectionProps> =
           setWorkshops(featured.length > 0 ? featured : liveWorkshops.slice(0, 3));
         }
       } catch (err) {
-        console.warn('Falling back to static featured workshops:', err);
-        setWorkshops(FEATURED_WORKSHOPS);
+        setWorkshops([]);
       }
     };
 
@@ -58,7 +57,9 @@ export const FeaturedWorkshopsSection: React.FC<FeaturedWorkshopsSectionProps> =
     };
   }, [propWorkshops]);
 
-  const displayWorkshops = workshops && workshops.length > 0 ? workshops : FEATURED_WORKSHOPS;
+  if (!workshops || workshops.length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-20 sm:py-28 bg-canvas-warm relative overflow-hidden border-b border-border/70">
@@ -77,13 +78,13 @@ export const FeaturedWorkshopsSection: React.FC<FeaturedWorkshopsSectionProps> =
 
         {/* Dynamic Workshop Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
-          {displayWorkshops.map((ws: any, index) => {
+          {workshops.map((ws: any, index) => {
             const wsId = ws._id || ws.id || `ws-${index}`;
             const coverUrl =
               ws.coverImage?.url ||
               ws.image?.url ||
               (typeof ws.image === 'string' ? ws.image : null) ||
-              'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80';
+              '';
 
             const formattedDate = ws.date
               ? typeof ws.date === 'string' && ws.date.length <= 15 && !ws.date.includes('-')
@@ -110,16 +111,22 @@ export const FeaturedWorkshopsSection: React.FC<FeaturedWorkshopsSectionProps> =
                 className="bg-surface border border-border rounded-[2px] overflow-hidden flex flex-col justify-between shadow-card hover:border-gold-500/70 transition-all duration-300 group hover:-translate-y-1"
               >
                 {/* Workshop Image Container */}
-                <div className="relative aspect-[16/10] overflow-hidden bg-surface-subtle">
-                  <Image
-                    src={coverUrl}
-                    alt={ws.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                    loading="lazy"
-                    unoptimized={!isOptimizedUrl(coverUrl)}
-                  />
+                <div className="relative aspect-[16/10] overflow-hidden bg-plum-950 flex items-center justify-center">
+                  {coverUrl ? (
+                    <Image
+                      src={coverUrl}
+                      alt={ws.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+                      className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                      loading="lazy"
+                      unoptimized={!isOptimizedUrl(coverUrl)}
+                    />
+                  ) : (
+                    <div className="w-full h-full min-h-[200px] flex items-center justify-center p-8 text-gold-400">
+                      <LotusMotif size={48} />
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-plum-950/60 via-transparent to-transparent pointer-events-none" />
 
                   {/* Floating Date Badge */}

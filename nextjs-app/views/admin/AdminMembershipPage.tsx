@@ -71,11 +71,60 @@ export const AdminMembershipPage: React.FC = () => {
     }, 4500);
   };
 
+  // Helper to auto-calculate discount percentage
+  const calculateDiscountPercentage = (amount?: number, originalAmount?: number): number => {
+    if (originalAmount === undefined || originalAmount === null || isNaN(originalAmount)) return 0;
+    if (amount === undefined || amount === null || isNaN(amount)) return 0;
+    if (originalAmount <= 0) return 0;
+    if (originalAmount <= amount) return 0;
+    return Math.min(100, Math.max(0, Math.round(((originalAmount - amount) / originalAmount) * 100)));
+  };
+
+  const handleEffectiveAmountChange = (val: string) => {
+    const newAmt = val === '' ? 0 : Number(val);
+    setEditingPlan((prev) => {
+      const orig = prev?.price?.originalAmount;
+      const disc = calculateDiscountPercentage(newAmt, orig);
+      return {
+        ...prev,
+        price: {
+          ...(prev?.price || { currency: 'INR' }),
+          amount: newAmt,
+          discountPercentage: disc,
+        },
+      };
+    });
+  };
+
+  const handleOriginalAmountChange = (val: string) => {
+    const newOrig = val === '' ? undefined : Number(val);
+    setEditingPlan((prev) => {
+      const amt = prev?.price?.amount ?? 0;
+      const disc = calculateDiscountPercentage(amt, newOrig);
+      return {
+        ...prev,
+        price: {
+          ...(prev?.price || { amount: 0, currency: 'INR' }),
+          originalAmount: newOrig,
+          discountPercentage: disc,
+        },
+      };
+    });
+  };
+
   const handleOpenModal = (plan?: CmsMembershipPlan) => {
     if (plan) {
+      const amt = plan.price?.amount ?? 0;
+      const orig = plan.price?.originalAmount;
+      const autoDisc = calculateDiscountPercentage(amt, orig);
       setEditingPlan({
         ...plan,
-        price: plan.price || { amount: 2500, currency: 'INR', discountPercentage: 0 },
+        price: {
+          amount: amt,
+          currency: plan.price?.currency || 'INR',
+          originalAmount: orig,
+          discountPercentage: orig && orig > amt ? autoDisc : (plan.price?.discountPercentage || 0),
+        },
         batches: plan.batches || [],
         features: plan.features || [],
         termsAndConditions: plan.termsAndConditions || [],
@@ -84,25 +133,19 @@ export const AdminMembershipPage: React.FC = () => {
       setEditingPlan({
         title: '',
         billingCycle: 'monthly',
-        price: { amount: 2500, currency: 'INR', discountPercentage: 0, originalAmount: 3000 },
-        description: 'Daily studio sadhana pass with guidance from accredited Acharyas.',
-        batches: [
-          { name: 'Morning Shala Batch', timing: '06:00 AM – 07:30 AM', days: 'Mon to Fri' },
-          { name: 'Evening Dhyana Batch', timing: '06:30 PM – 08:00 PM', days: 'Mon to Fri' },
-        ],
-        features: [
-          'Unlimited weekday shala practice access',
-          'Full access to the Kalptaruu Yogic Library',
-          'Monthly 1-on-1 alignment review with lead Acharya',
-          '10% discount on all weekend workshops & retreats',
-        ],
+        price: {
+          amount: 0,
+          currency: 'INR',
+          originalAmount: undefined,
+          discountPercentage: 0,
+        },
+        description: '',
+        batches: [],
+        features: [],
         popular: false,
         order: plans.length + 1,
         status: 'published',
-        termsAndConditions: [
-          'Attendance is valid exclusively for enrolled batches.',
-          'Monthly fees are non-transferable and renew on billing cycle date.',
-        ],
+        termsAndConditions: [],
       });
     }
     setModalOpen(true);
@@ -169,14 +212,18 @@ export const AdminMembershipPage: React.FC = () => {
       setSaving(true);
       const planId = editingPlan._id || editingPlan.id;
 
+      const amt = Number(editingPlan.price?.amount) || 0;
+      const orig = editingPlan.price?.originalAmount ? Number(editingPlan.price.originalAmount) : undefined;
+      const autoDiscount = calculateDiscountPercentage(amt, orig);
+
       const payload: Partial<CmsMembershipPlan> = {
         title: editingPlan.title.trim(),
         billingCycle: editingPlan.billingCycle || 'monthly',
         price: {
-          amount: Number(editingPlan.price?.amount) || 0,
+          amount: amt,
           currency: editingPlan.price?.currency || 'INR',
-          discountPercentage: Number(editingPlan.price?.discountPercentage) || 0,
-          originalAmount: editingPlan.price?.originalAmount ? Number(editingPlan.price.originalAmount) : undefined,
+          discountPercentage: autoDiscount,
+          originalAmount: orig,
         },
         description: editingPlan.description.trim(),
         batches: editingPlan.batches || [],
@@ -631,16 +678,9 @@ export const AdminMembershipPage: React.FC = () => {
                   min="0"
                   required
                   value={editingPlan?.price?.amount ?? 0}
-                  onChange={(e) =>
-                    setEditingPlan((prev) => ({
-                      ...prev,
-                      price: {
-                        ...(prev?.price || { currency: 'INR' }),
-                        amount: Number(e.target.value),
-                      },
-                    }))
-                  }
-                  className="w-full px-3 py-1.5 bg-white border border-border rounded text-ink text-xs focus:ring-1 focus:ring-gold-500"
+                  onChange={(e) => handleEffectiveAmountChange(e.target.value)}
+                  placeholder="e.g. 2500"
+                  className="w-full px-3 py-1.5 bg-white border border-border rounded text-ink text-xs focus:ring-1 focus:ring-gold-500 font-mono shadow-xs"
                 />
               </div>
 
@@ -650,39 +690,25 @@ export const AdminMembershipPage: React.FC = () => {
                   type="number"
                   min="0"
                   value={editingPlan?.price?.originalAmount ?? ''}
-                  onChange={(e) =>
-                    setEditingPlan((prev) => ({
-                      ...prev,
-                      price: {
-                        ...(prev?.price || { amount: 0, currency: 'INR' }),
-                        originalAmount: e.target.value ? Number(e.target.value) : undefined,
-                      },
-                    }))
-                  }
+                  onChange={(e) => handleOriginalAmountChange(e.target.value)}
                   placeholder="e.g. 3000 (optional)"
-                  className="w-full px-3 py-1.5 bg-white border border-border rounded text-ink text-xs focus:ring-1 focus:ring-gold-500"
+                  className="w-full px-3 py-1.5 bg-white border border-border rounded text-ink text-xs focus:ring-1 focus:ring-gold-500 font-mono shadow-xs"
                 />
               </div>
 
               <div className="space-y-1">
                 <label className="font-medium text-ink block">Discount %</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={editingPlan?.price?.discountPercentage ?? 0}
-                  onChange={(e) =>
-                    setEditingPlan((prev) => ({
-                      ...prev,
-                      price: {
-                        ...(prev?.price || { amount: 0, currency: 'INR' }),
-                        discountPercentage: Number(e.target.value),
-                      },
-                    }))
-                  }
-                  placeholder="e.g. 15"
-                  className="w-full px-3 py-1.5 bg-white border border-border rounded text-ink text-xs focus:ring-1 focus:ring-gold-500"
-                />
+                <div className="relative">
+                  <input
+                    type="number"
+                    readOnly
+                    value={editingPlan?.price?.discountPercentage ?? 0}
+                    className="w-full px-3 py-1.5 bg-white border border-border rounded text-ink text-xs focus:ring-1 focus:ring-gold-500 font-mono shadow-xs"
+                  />
+                  <span className="absolute right-3 top-1.5 text-xs text-ink-muted font-mono font-medium">
+                    %
+                  </span>
+                </div>
               </div>
             </div>
           </div>

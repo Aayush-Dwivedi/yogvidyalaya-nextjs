@@ -32,6 +32,9 @@ export async function PATCH(
     await requireAdminSession(request);
     const { id } = await params;
     const body = await request.json();
+    if (body.quote && typeof body.quote === 'string' && body.quote.length > 500) {
+      return ApiResponse.badRequest('Testimonial quote cannot exceed 500 characters');
+    }
 
     const updated = await Testimonial.findByIdAndUpdate(id, body, {
       new: true,

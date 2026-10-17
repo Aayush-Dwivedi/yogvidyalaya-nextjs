@@ -20,38 +20,40 @@ import {
   ShieldCheck,
   Calendar,
 } from 'lucide-react';
+import { ContactCards, GoogleMapEmbed } from '../components/contact';
+import { getMapEmbedUrl, getMapDirectUrl } from '../utils/mapUtils';
 
 export const ContactPage: React.FC = () => {
-  const [contactData, setContactData] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('kalptaru_cached_institute');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed && parsed.contact) return parsed.contact;
-        }
-      } catch {}
-    }
-    return {
-      email: 'shuchimohan@kalptaruyogvidyalaya.com',
-      phone: '09818047984',
-      alternatePhone: '',
-      whatsappLink: 'https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL',
-      whatsappNumber: '09818047984',
-      address: {
-        street: 'N114 Piyush Heights, Sector 89',
-        city: 'Faridabad',
-        state: 'Haryana',
-        postalCode: '121002',
-        country: 'India',
-        mapUrl: '',
-      },
-      hours: 'Mon – Sat: 06:00 AM – 08:00 PM',
-    };
+  const [contactData, setContactData] = useState<any>({
+    email: 'shuchimohan@kalptaruyogvidyalaya.com',
+    phone: '09818047984',
+    alternatePhone: '',
+    whatsappLink: 'https://chat.whatsapp.com/Id76gIzYYla6945X3lKjzL',
+    whatsappNumber: '09818047984',
+    address: {
+      street: 'N114 Piyush Heights, Sector 89',
+      city: 'Faridabad',
+      state: 'Haryana',
+      postalCode: '121002',
+      country: 'India',
+      mapUrl: '',
+      mapEmbedUrl: '',
+      mapDirectUrl: '',
+    },
+    hours: 'Mon – Sat: 06:00 AM – 08:00 PM',
   });
 
   const loadContact = async () => {
     try {
+      if (typeof window !== 'undefined') {
+        const cached = localStorage.getItem('kalptaru_cached_institute');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.contact) {
+            setContactData(parsed.contact);
+          }
+        }
+      }
       const data = await CmsService.getInstitute();
       if (data && data.contact) {
         setContactData(data.contact);
@@ -91,6 +93,14 @@ export const ContactPage: React.FC = () => {
       }`
     : 'N114 Piyush Heights, Sector 89, Faridabad – 121002';
   const HOURS = contactData.hours || 'Mon – Sat: 06:00 AM – 08:00 PM';
+  const normalMapUrl = (
+    contactData.address?.mapUrl ||
+    (contactData.address as any)?.mapDirectUrl ||
+    (contactData.address as any)?.mapEmbedUrl ||
+    ''
+  ).trim();
+  const MAP_DIRECT_URL = getMapDirectUrl(normalMapUrl);
+  const MAP_EMBED_SRC = getMapEmbedUrl(normalMapUrl);
 
   // Enquiry Form State
   const [formData, setFormData] = useState({
@@ -103,6 +113,43 @@ export const ContactPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Auto-fill query parameters when arriving from program or pass links
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const programParam = params.get('program') || params.get('course') || params.get('workshop') || '';
+      const planParam = params.get('plan') || '';
+      const typeParam = params.get('type') || '';
+
+      let interest = 'general';
+      let prefilledMsg = '';
+
+      if (typeParam === 'corporate') {
+        interest = 'corporate';
+        prefilledMsg = 'Inquiring about Corporate Yogic Wellness programs for our organization.';
+      } else if (typeParam === 'membership' || planParam) {
+        interest = 'membership';
+        prefilledMsg = planParam
+          ? `Inquiring about enrollment for the ${planParam} membership pass.`
+          : 'Inquiring about daily shala practice memberships.';
+      } else if (typeParam === 'workshop') {
+        interest = 'workshop';
+        if (programParam) prefilledMsg = `Inquiring about details and registration for: ${programParam}.`;
+      } else if (typeParam === 'course' || programParam) {
+        interest = 'course';
+        if (programParam) prefilledMsg = `Inquiring about syllabus and admission for: ${programParam}.`;
+      }
+
+      if (programParam || planParam || typeParam) {
+        setFormData((prev) => ({
+          ...prev,
+          programInterest: interest,
+          message: prev.message || prefilledMsg,
+        }));
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,114 +297,7 @@ export const ContactPage: React.FC = () => {
               </div>
 
               {/* Contact Cards */}
-              <div className="space-y-4">
-                {/* WhatsApp Community / Direct */}
-                <a
-                  href={WHATSAPP_LINK}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block p-5 rounded-xl bg-canvas-warm border border-gold-300/60 hover:border-gold-500 transition-all group shadow-sm"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200 group-hover:scale-105 transition-transform p-2.5">
-                      <img
-                        src="/whatsapp-icon.png"
-                        alt="WhatsApp"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs uppercase font-mono tracking-wider text-emerald-800 font-semibold">
-                          WhatsApp Community &amp; Help
-                        </span>
-                        <ExternalLink className="w-3.5 h-3.5 text-emerald-700 group-hover:translate-x-0.5 transition-transform" />
-                      </div>
-                      <p className="text-sm font-semibold text-plum-950 mt-1">
-                        Official Kalptaruu WhatsApp Group
-                      </p>
-                      <p className="text-xs text-ink-muted mt-0.5">
-                        Click to join our active group for direct support, updates, and admission chats.
-                      </p>
-                    </div>
-                  </div>
-                </a>
-
-                {/* Telephone */}
-                <a
-                  href={`tel:${PHONE_NUMBER}`}
-                  className="block p-5 rounded-xl bg-canvas-warm border border-gold-300/60 hover:border-gold-500 transition-all group shadow-sm"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-plum-50 text-plum-900 flex items-center justify-center shrink-0 border border-plum-200 group-hover:scale-105 transition-transform">
-                      <Phone className="w-5 h-5 text-gold-600" />
-                    </div>
-                    <div>
-                      <span className="text-xs uppercase font-mono tracking-wider text-gold-700 font-semibold">
-                        Direct Phone Line
-                      </span>
-                      <p className="text-base font-semibold text-plum-950 mt-1 font-mono">
-                        {PHONE_NUMBER}
-                      </p>
-                      <p className="text-xs text-ink-muted mt-0.5">
-                        {HOURS}
-                        {ALTERNATE_PHONE && (
-                          <span className="block mt-0.5 text-ink-muted">
-                            Alt: <span className="font-mono text-plum-900 font-medium">{ALTERNATE_PHONE}</span>
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </a>
-
-                {/* Email Address */}
-                <a
-                  href={`mailto:${EMAIL_ADDRESS}`}
-                  className="block p-5 rounded-xl bg-canvas-warm border border-gold-300/60 hover:border-gold-500 transition-all group shadow-sm"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-plum-50 text-plum-900 flex items-center justify-center shrink-0 border border-plum-200 group-hover:scale-105 transition-transform">
-                      <Mail className="w-5 h-5 text-gold-600" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-xs uppercase font-mono tracking-wider text-gold-700 font-semibold">
-                        Electronic Mail
-                      </span>
-                      <p className="text-sm font-semibold text-plum-950 mt-1 truncate">
-                        {EMAIL_ADDRESS}
-                      </p>
-                      <p className="text-xs text-ink-muted mt-0.5">
-                        For formal correspondence, institutional invitations, and enquiries.
-                      </p>
-                    </div>
-                  </div>
-                </a>
-
-                {/* Physical Shala Address */}
-                <div className="p-5 rounded-xl bg-canvas-warm border border-gold-300/60 shadow-sm">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-plum-50 text-plum-900 flex items-center justify-center shrink-0 border border-plum-200">
-                      <MapPin className="w-5 h-5 text-gold-600" />
-                    </div>
-                    <div>
-                      <span className="text-xs uppercase font-mono tracking-wider text-gold-700 font-semibold">
-                        Institute Address
-                      </span>
-                      <p className="text-sm font-semibold text-plum-950 mt-1">
-                        Kalptaruu Yoga Vidhyalaya
-                      </p>
-                      <p className="text-xs text-ink-muted mt-1 leading-relaxed">
-                        {PHYSICAL_ADDRESS}
-                      </p>
-                      <div className="mt-3 flex items-center gap-2 text-[11px] text-gold-700 font-medium">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>Hours: {HOURS}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ContactCards contactData={contactData} layout="stacked" />
             </div>
 
             {/* Right Column: General Message & Enquiry Form (7 cols) */}
@@ -535,6 +475,26 @@ export const ContactPage: React.FC = () => {
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Interactive Google Map & Directions */}
+          <div className="mt-12 sm:mt-16 space-y-4">
+            <div>
+              <span className="text-xs uppercase tracking-widest-editorial text-gold-600 font-semibold block mb-1">
+                Sanctuary Location
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-editorial text-plum-900">
+                Interactive Map &amp; Directions
+              </h3>
+              <p className="text-xs sm:text-sm text-ink-muted mt-1 leading-relaxed">
+                Visit our learning ashram and clinical physiotherapy shala in Sector 89, Faridabad.
+              </p>
+            </div>
+
+            <GoogleMapEmbed
+              mapEmbedSrc={MAP_EMBED_SRC}
+              mapDirectUrl={MAP_DIRECT_URL}
+            />
           </div>
         </Container>
       </section>

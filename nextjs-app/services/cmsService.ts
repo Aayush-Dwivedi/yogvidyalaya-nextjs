@@ -8,6 +8,7 @@ import {
   CmsGalleryCategory,
   CmsGalleryImage,
   CmsVideo,
+  CmsVideoCategory,
   CmsHomepageCta,
   CmsCourse,
   CmsWorkshop,
@@ -296,6 +297,25 @@ export class CmsService {
 
   static async deleteVideo(id: string): Promise<void> {
     await apiClient.delete(`/videos/${id}`);
+  }
+
+  static async getVideoCategories(): Promise<CmsVideoCategory[]> {
+    const res = (await apiClient.get('/videos/categories')) as unknown as ApiResponse<CmsVideoCategory[]>;
+    return res.data;
+  }
+
+  static async createVideoCategory(data: Partial<CmsVideoCategory>): Promise<CmsVideoCategory> {
+    const res = (await apiClient.post('/videos/categories', data)) as unknown as ApiResponse<CmsVideoCategory>;
+    return res.data;
+  }
+
+  static async updateVideoCategory(id: string, data: Partial<CmsVideoCategory>): Promise<CmsVideoCategory> {
+    const res = (await apiClient.patch(`/videos/categories/${id}`, data)) as unknown as ApiResponse<CmsVideoCategory>;
+    return res.data;
+  }
+
+  static async deleteVideoCategory(id: string): Promise<void> {
+    await apiClient.delete(`/videos/categories/${id}`);
   }
 
   // ==========================================

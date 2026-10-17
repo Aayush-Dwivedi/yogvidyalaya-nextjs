@@ -34,9 +34,9 @@ export const AdminFounderCMS: React.FC = () => {
     quote: 'The photographs featured here reflect my professional and institutional experience.',
     message: 'The photographs featured here reflect my professional and institutional experience.',
     image: {
-      url: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=800&q=80',
-      path: 'founder/shuchi-mohan.jpg',
-      bucket: 'kalptaru-media',
+      url: '',
+      path: '',
+      bucket: '',
       alt: 'Mrs. Shuchi Mohan',
     },
     qualifications: [
@@ -169,8 +169,7 @@ export const AdminFounderCMS: React.FC = () => {
           .replace(/^-+|-+$/g, '') || 'shuchi-mohan';
 
       const photoUrl =
-        (typeof founder.image === 'string' ? founder.image : founder.image?.url) ||
-        'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=800&q=80';
+        (typeof founder.image === 'string' ? founder.image : founder.image?.url) || '';
       const photoPath =
         (typeof founder.image === 'object' && founder.image?.path?.trim()) ||
         'founders/acharya-ramanath.jpg';

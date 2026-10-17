@@ -362,5 +362,74 @@
   }
 }
 
+/* ─── Animated Kalptaru Emblem Loader ───────────────────────────────────── */
+@keyframes emblemOrbitSweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes emblemOrbitSweepReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes emblemPulseBreath {
+  0%, 100% {
+    transform: scale(0.985);
+    filter: drop-shadow(0 0 14px rgba(218, 165, 59, 0.35));
+  }
+  50% {
+    transform: scale(1.025);
+    filter: drop-shadow(0 0 28px rgba(218, 165, 59, 0.7));
+  }
+}
+
+@keyframes emblemSparkleDrift {
+  0%, 100% {
+    transform: translate(0, 0) rotate(var(--speck-rot, 35deg)) scale(0.85);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translate(var(--speck-dx, 4px), var(--speck-dy, -8px)) rotate(calc(var(--speck-rot, 35deg) + 8deg)) scale(1.15);
+    opacity: 0.95;
+  }
+}
+
+.animate-emblem-orbit {
+  animation: emblemOrbitSweep 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.animate-emblem-orbit-slow {
+  animation: emblemOrbitSweep 3.6s linear infinite;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.animate-emblem-orbit-reverse {
+  animation: emblemOrbitSweepReverse 4.8s linear infinite;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.animate-emblem-breath {
+  animation: emblemPulseBreath 3.2s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+.animate-speck-drift {
+  animation: emblemSparkleDrift 3.5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
 
 

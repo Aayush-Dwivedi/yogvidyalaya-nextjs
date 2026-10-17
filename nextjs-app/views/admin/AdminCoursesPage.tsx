@@ -83,11 +83,9 @@ export const AdminCoursesPage: React.FC = () => {
         ...course,
         image: course.coverImage || course.image,
         benefits: course.benefits && course.benefits.length > 0 ? course.benefits : course.features || [],
-        curriculum: course.curriculum && course.curriculum.length > 0 ? course.curriculum : [
-          { moduleNumber: 1, title: 'Foundational Asana & Alignment', topics: ['Tadasana & Spinal Axial Extension', 'Surya Namaskar Dynamic Series'] }
-        ],
+        curriculum: course.curriculum || [],
         capacity: course.capacity || { total: 30, enrolled: 0 },
-        price: course.price || { amount: 14500, currency: 'INR', displayPrice: '₹14,500' },
+        price: course.price || { amount: 0, currency: 'INR', displayPrice: '' },
         instructor: course.instructor || { name: 'Mrs. Shuchi Mohan', title: 'Physiotherapist & Therapeutic Yoga Consultant' },
       });
     } else {
@@ -96,30 +94,28 @@ export const AdminCoursesPage: React.FC = () => {
         slug: '',
         description: '',
         shortDescription: '',
-        duration: '120 Hours',
+        duration: '',
         level: 'all-levels',
         mode: 'in-person',
         status: 'published',
         featured: false,
         order: courses.length + 1,
         capacity: { total: 30, enrolled: 0 },
-        price: { amount: 14500, currency: 'INR', isFree: false, displayPrice: '₹14,500' },
-        benefits: ['Traditional yogic practices', 'Qualified instructors', 'Mind, body & spirit'],
-        curriculum: [
-          { moduleNumber: 1, title: 'Foundations & Alignment', description: 'Traditional yogasana principles and alignment', topics: ['Surya Namaskar', 'Standing Postures', 'Breathing Practices'] },
-        ],
+        price: { amount: 0, currency: 'INR', isFree: false, displayPrice: '' },
+        benefits: [],
+        curriculum: [],
         instructor: {
           name: 'Mrs. Shuchi Mohan',
           title: 'Founder & Lead Instructor',
           bio: 'Physiotherapist & Therapeutic Yoga Consultant with institutional experience at MDNIY and NCERT.',
         },
         certification: 'Affiliated by Indian Yoga Association',
-        eligibility: 'Open to earnest sadhakas of all backgrounds seeking authentic sadhana.',
-        schedule: 'Monday – Saturday, 6:00 AM – 8:30 AM & 4:30 PM – 7:00 PM',
+        eligibility: '',
+        schedule: '',
         seo: {
           metaTitle: '',
           metaDescription: '',
-          keywords: ['yoga teacher training', 'classical hatha yoga', '200 hour ttc'],
+          keywords: ['yoga teacher training', 'classical hatha yoga'],
         },
       });
     }
@@ -254,9 +250,9 @@ export const AdminCoursesPage: React.FC = () => {
 
       // Ensure coverImage exists
       const cover = editingCourse.coverImage || editingCourse.image || {
-        url: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=800&q=80',
-        path: 'courses/default-course.jpg',
-        bucket: 'kalptaru-media',
+        url: '',
+        path: '',
+        bucket: '',
         alt: editingCourse.title,
       };
 

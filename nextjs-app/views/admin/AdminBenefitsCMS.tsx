@@ -20,6 +20,13 @@ import {
   ShieldCheck,
   Zap,
   Sun,
+  Eye,
+  Flame,
+  Moon,
+  Flower2,
+  Feather,
+  Compass,
+  Wind,
 } from 'lucide-react';
 
 const COMMON_ICONS = [
@@ -30,6 +37,13 @@ const COMMON_ICONS = [
   { name: 'Sparkles', icon: Sparkles, label: 'Spiritual Awakening' },
   { name: 'Zap', icon: Zap, label: 'Kundalini Energy' },
   { name: 'Sun', icon: Sun, label: 'Daily Sadhana' },
+  { name: 'Eye', icon: Eye, label: 'Conscious Vision' },
+  { name: 'Flame', icon: Flame, label: 'Inner Fire & Tapas' },
+  { name: 'Moon', icon: Moon, label: 'Chandra / Cooling' },
+  { name: 'Flower2', icon: Flower2, label: 'Lotus Blossoming' },
+  { name: 'Feather', icon: Feather, label: 'Lightness of Being' },
+  { name: 'Compass', icon: Compass, label: 'Dharmic Alignment' },
+  { name: 'Wind', icon: Wind, label: 'Prana / Breath' },
 ];
 
 export const AdminBenefitsCMS: React.FC = () => {
@@ -170,21 +184,40 @@ export const AdminBenefitsCMS: React.FC = () => {
   };
 
   const renderIcon = (iconName?: string) => {
-    switch (iconName) {
-      case 'Heart':
-        return <Heart className="w-4 h-4 text-rose-400" />;
-      case 'Brain':
-        return <Brain className="w-4 h-4 text-sky-400" />;
-      case 'Activity':
-        return <Activity className="w-4 h-4 text-emerald-400" />;
-      case 'ShieldCheck':
-        return <ShieldCheck className="w-4 h-4 text-teal-400" />;
-      case 'Zap':
-        return <Zap className="w-4 h-4 text-amber-400" />;
-      case 'Sun':
-        return <Sun className="w-4 h-4 text-gold-400" />;
+    const key = (iconName || '').toLowerCase().trim();
+    switch (key) {
+      case 'heart':
+        return <Heart className="w-4 h-4 text-rose-500" />;
+      case 'brain':
+        return <Brain className="w-4 h-4 text-sky-500" />;
+      case 'activity':
+        return <Activity className="w-4 h-4 text-emerald-500" />;
+      case 'shieldcheck':
+      case 'shield':
+        return <ShieldCheck className="w-4 h-4 text-teal-500" />;
+      case 'zap':
+        return <Zap className="w-4 h-4 text-amber-500" />;
+      case 'sun':
+        return <Sun className="w-4 h-4 text-amber-500" />;
+      case 'eye':
+        return <Eye className="w-4 h-4 text-indigo-500" />;
+      case 'flame':
+        return <Flame className="w-4 h-4 text-orange-500" />;
+      case 'moon':
+        return <Moon className="w-4 h-4 text-purple-500" />;
+      case 'flower2':
+      case 'flower':
+      case 'lotus':
+        return <Flower2 className="w-4 h-4 text-pink-500" />;
+      case 'feather':
+        return <Feather className="w-4 h-4 text-cyan-500" />;
+      case 'compass':
+        return <Compass className="w-4 h-4 text-blue-500" />;
+      case 'wind':
+        return <Wind className="w-4 h-4 text-teal-500" />;
+      case 'sparkles':
       default:
-        return <Sparkles className="w-4 h-4 text-gold-400" />;
+        return <Sparkles className="w-4 h-4 text-gold-500" />;
     }
   };
 
@@ -478,7 +511,8 @@ export const AdminBenefitsCMS: React.FC = () => {
             <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
               {COMMON_ICONS.map((item) => {
                 const IconComponent = item.icon;
-                const isSelected = editingBenefit?.icon === item.name;
+                const isSelected =
+                  editingBenefit?.icon?.toLowerCase().trim() === item.name.toLowerCase().trim();
                 return (
                   <button
                     key={item.name}

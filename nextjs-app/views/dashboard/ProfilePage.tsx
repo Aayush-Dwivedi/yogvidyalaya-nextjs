@@ -290,7 +290,7 @@ export const ProfilePage: React.FC = () => {
               </span>
               <input
                 disabled
-                value={user?.email || 'student@kalptaruyog.org'}
+                value={user?.email || ''}
                 className="w-full bg-surface-subtle text-ink-muted font-sans text-sm rounded-[2px] border border-border py-2.5 px-3.5 pl-9 cursor-not-allowed"
               />
               <span className="absolute right-3">
@@ -300,7 +300,7 @@ export const ProfilePage: React.FC = () => {
               </span>
             </div>
             <p className="text-[11px] text-ink-faint">
-              Account email cannot be modified directly. Contact administrative shala.
+              Account email cannot be modified directly. Contact the institute reception.
             </p>
           </div>
 

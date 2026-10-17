@@ -56,7 +56,7 @@ export const AdminHomepageCMS: React.FC = () => {
     primaryCtaText: 'Browse Courses',
     primaryCtaUrl: '/programs/courses',
     secondaryCtaText: 'Get in Touch',
-    secondaryCtaUrl: '/contact/enquiry',
+    secondaryCtaUrl: '/contact',
   });
   const [courses, setCourses] = useState<CmsCourse[]>([]);
   const [workshops, setWorkshops] = useState<CmsWorkshop[]>([]);
@@ -114,28 +114,6 @@ export const AdminHomepageCMS: React.FC = () => {
   // HERO SLIDE ACTIONS
   // ==========================================
 
-  const GOLDEN_PRESETS = [
-    {
-      name: 'Mountain Sunset',
-      desc: 'Sunset mountain pavilion meditation (Mockup match)',
-      url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85',
-    },
-    {
-      name: 'Beach Sunset',
-      desc: 'Golden hour sunset silhouette on beach',
-      url: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1400&q=85',
-    },
-    {
-      name: 'Golden Sunlight',
-      desc: 'Tranquil outdoor nature yoga asana',
-      url: 'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?auto=format&fit=crop&w=1400&q=85',
-    },
-    {
-      name: 'Morning Radiance',
-      desc: 'Pranayama in tranquil morning golden glow',
-      url: 'https://images.unsplash.com/photo-1510894347713-fc3ed6fdf539?auto=format&fit=crop&w=1400&q=85',
-    },
-  ];
 
   const handleOpenSlideModal = (slide?: CmsHeroSlide) => {
     if (slide) {
@@ -164,10 +142,10 @@ export const AdminHomepageCMS: React.FC = () => {
         order: slides.length + 1,
         active: true,
         image: {
-          url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85',
-          path: 'media/hero.jpg',
-          bucket: 'kalptaru-media',
-          alt: 'Kalptaruu Yoga Vidhyalaya',
+          url: '',
+          path: '',
+          bucket: '',
+          alt: '',
         },
       });
     }
@@ -299,82 +277,6 @@ export const AdminHomepageCMS: React.FC = () => {
     }
   };
 
-  const handleSeedDefaultSlides = async () => {
-    try {
-      setSaving(true);
-      const defaults = [
-        {
-          heading: 'Kalptaruu Yoga Vidhyalaya',
-          subheading: 'Traditional Yoga & Wellness',
-          description:
-            'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
-          quote: 'Affiliated by Indian Yoga Association',
-          ctaText: 'Explore Courses',
-          ctaUrl: '/programs/courses',
-          secondaryCtaText: 'Contact Us',
-          secondaryCtaUrl: '/contact',
-          order: 1,
-          active: true,
-          image: {
-            url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85',
-            path: 'presets/mountain-sunset.jpg',
-            bucket: 'presets',
-          },
-        },
-        {
-          heading: 'Kalptaruu Yoga Vidhyalaya',
-          subheading: 'Traditional Yoga & Wellness',
-          description:
-            'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
-          quote: 'Affiliated by Indian Yoga Association',
-          ctaText: 'Explore Courses',
-          ctaUrl: '/programs/courses',
-          secondaryCtaText: 'Contact Us',
-          secondaryCtaUrl: '/contact',
-          order: 2,
-          active: true,
-          image: {
-            url: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1400&q=85',
-            path: 'presets/beach-sunset.jpg',
-            bucket: 'presets',
-          },
-        },
-        {
-          heading: 'Kalptaruu Yoga Vidhyalaya',
-          subheading: 'Traditional Yoga & Wellness',
-          description:
-            'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
-          quote: 'Affiliated by Indian Yoga Association',
-          ctaText: 'Explore Courses',
-          ctaUrl: '/programs/courses',
-          secondaryCtaText: 'Contact Us',
-          secondaryCtaUrl: '/contact',
-          order: 3,
-          active: true,
-          image: {
-            url: 'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?auto=format&fit=crop&w=1400&q=85',
-            path: 'presets/golden-sunlight.jpg',
-            bucket: 'presets',
-          },
-        },
-      ];
-
-      for (const s of defaults) {
-        await CmsService.createHeroSlide(s as any);
-      }
-      showToast('Loaded 3 default golden hero slides successfully!');
-      await loadData();
-
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('kalptaru-cms-updated'));
-        window.dispatchEvent(new Event('storage'));
-      }
-    } catch (err: any) {
-      showToast(err.message || 'Failed to populate default slides', 'error');
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const handleToggleSlideActive = async (slide: CmsHeroSlide) => {
     const slideId = slide._id || slide.id;
@@ -442,7 +344,7 @@ export const AdminHomepageCMS: React.FC = () => {
       const payload = {
         ...homepageCta,
         primaryCtaUrl: homepageCta.primaryCtaUrl || '/programs/courses',
-        secondaryCtaUrl: homepageCta.secondaryCtaUrl || '/contact/enquiry',
+        secondaryCtaUrl: homepageCta.secondaryCtaUrl || '/contact',
       };
       await CmsService.updateHomepageCta(payload);
       showToast('Homepage CTA updated successfully! Public website reflects new CTA.');
@@ -661,16 +563,6 @@ export const AdminHomepageCMS: React.FC = () => {
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <button
-                type="button"
-                onClick={handleSeedDefaultSlides}
-                disabled={saving}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors border border-gold-400/30 shadow-soft"
-                title="Seed 3 curated golden sunset slides into database"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Restore Golden Presets</span>
-              </button>
-              <button
                 onClick={() => handleOpenSlideModal()}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-sans font-bold bg-gold-500 hover:bg-gold-400 text-plum-950 transition-colors shadow-soft"
               >
@@ -687,21 +579,13 @@ export const AdminHomepageCMS: React.FC = () => {
                 <div>
                   <p className="text-sm text-ink-muted font-sans font-medium">No hero slides found in database.</p>
                   <p className="text-xs text-ink-faint font-sans mt-0.5">
-                    You can add a custom slide or instantly load the 3 golden sunset defaults.
+                    Create custom hero slides to feature on the public homepage.
                   </p>
                 </div>
                 <div className="flex items-center justify-center gap-3 pt-2">
                   <button
-                    onClick={handleSeedDefaultSlides}
-                    disabled={saving}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-sans font-bold bg-gold-500 hover:bg-gold-400 text-plum-950 shadow-soft"
-                  >
-                    <Sun className="w-3.5 h-3.5" />
-                    <span>Load 3 Golden Sunset Slides</span>
-                  </button>
-                  <button
                     onClick={() => handleOpenSlideModal()}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-sans font-semibold bg-canvas text-ink hover:text-plum-900 border border-border"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-sans font-bold bg-gold-500 hover:bg-gold-400 text-plum-950 shadow-soft"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Create Custom Slide</span>
@@ -1381,51 +1265,12 @@ export const AdminHomepageCMS: React.FC = () => {
                 </div>
               </div>
 
-              {/* Right Column: 3 Photo Methods */}
+              {/* Right Column: Photo Methods */}
               <div className="md:col-span-7 space-y-4">
-                {/* Method 1: Curated Golden Sunset Presets */}
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-plum-900 uppercase tracking-wider block">
-                    Option A: Recommended Golden Sunset Presets (1-Click)
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {GOLDEN_PRESETS.map((preset, idx) => {
-                      const isSelected = editingSlide?.image?.url === preset.url;
-                      return (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => handleImageUrlChange(preset.url)}
-                          className={`flex items-center gap-2 p-2 rounded-lg border text-left transition-all ${
-                            isSelected
-                              ? 'bg-plum-900 text-gold-200 border-gold-400 ring-2 ring-gold-400/30 shadow-soft'
-                              : 'bg-white hover:bg-gold-50/50 text-ink border-border hover:border-gold-300 shadow-xs'
-                          }`}
-                        >
-                          <img
-                            src={preset.url}
-                            alt={preset.name}
-                            className="w-9 h-9 rounded-full object-cover border border-gold-400/60 shrink-0"
-                          />
-                          <div className="min-w-0 flex-1">
-                            <div className="text-[11px] font-bold truncate leading-tight">
-                              {preset.name}
-                            </div>
-                            <div className="text-[9px] opacity-70 truncate font-sans">
-                              {preset.desc}
-                            </div>
-                          </div>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-gold-400 shrink-0" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Method 2: Direct Image URL */}
+                {/* Method 1: Direct Image URL */}
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold text-plum-900 uppercase tracking-wider block">
-                    Option B: Direct Photo URL (WebP, JPG, CDN)
+                    Option A: Direct Photo URL (WebP, JPG, CDN)
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-muted">
@@ -1435,16 +1280,16 @@ export const AdminHomepageCMS: React.FC = () => {
                       type="url"
                       value={editingSlide?.image?.url || ''}
                       onChange={(e) => handleImageUrlChange(e.target.value)}
-                      placeholder="https://images.unsplash.com/... or your image URL"
+                      placeholder="https://... or paste your image URL"
                       className="w-full bg-white border border-border rounded-lg pl-9 pr-3 py-2 text-xs text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs font-mono"
                     />
                   </div>
                 </div>
 
-                {/* Method 3: File Upload */}
+                {/* Method 2: File Upload */}
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold text-plum-900 uppercase tracking-wider block">
-                    Option C: Upload from Computer
+                    Option B: Upload from Computer
                   </label>
                   <div className="flex items-center gap-2">
                     <label className="inline-flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-canvas border border-border rounded-lg text-xs font-medium text-plum-900 cursor-pointer shadow-xs transition-colors">

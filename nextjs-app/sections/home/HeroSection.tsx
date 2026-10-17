@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { HERO_SLIDES, HERO_METRICS } from '../../services/homeData';
+import { HERO_METRICS } from '../../services/homeData';
 import { CmsService } from '../../services/cmsService';
 import { CmsHeroSlide } from '../../types/cms';
 import { HeroSlide } from '../../types/home';
 import { cn } from '../../utils/cn';
+import { KalptaruTree } from '../../components/Motifs';
+import { isOptimizedUrl } from '../../utils/imageUtils';
 
 export interface NormalizedHeroSlide {
   id: string;
@@ -26,14 +28,31 @@ export interface HeroSectionProps {
   slides?: (HeroSlide | CmsHeroSlide)[];
 }
 
+const DEFAULT_BRAND_SLIDE: NormalizedHeroSlide = {
+  id: 'brand-slide-1',
+  image: '',
+  title: 'Kalptaruu Yoga Vidhyalaya',
+  subtitle: 'Traditional Yoga & Wellness',
+  description:
+    'Learn yoga the right way. We teach traditional practices combined with physiotherapy knowledge to help you stay healthy and active.',
+  quote: 'Affiliated by Indian Yoga Association',
+  ctaText: 'Explore Courses',
+  ctaUrl: '/courses',
+  secondaryCtaText: 'Contact Us',
+  secondaryCtaUrl: '/contact',
+};
+
 const normalizeSlides = (rawSlides: (HeroSlide | CmsHeroSlide)[]): NormalizedHeroSlide[] => {
+  if (!rawSlides || rawSlides.length === 0) {
+    return [DEFAULT_BRAND_SLIDE];
+  }
+
   return rawSlides.map((s: any, idx: number) => {
     const rawImage = s.image;
     const imageUrl =
       (typeof rawImage === 'string' ? rawImage : rawImage?.url) ||
       s.imageUrl ||
-      HERO_SLIDES[idx % HERO_SLIDES.length]?.image ||
-      'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85';
+      '';
 
     return {
       id: s._id || s.id || `slide-${idx}`,
@@ -68,7 +87,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
         }
       } catch {}
     }
-    return normalizeSlides(HERO_SLIDES);
+    return [DEFAULT_BRAND_SLIDE];
   });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadedIndices, setLoadedIndices] = useState<number[]>([0]);
@@ -152,7 +171,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
   }, []);
 
 
-  const currentSlide = slides[currentIndex] || slides[0] || normalizeSlides(HERO_SLIDES)[0];
+  const currentSlide = slides[currentIndex] || slides[0] || DEFAULT_BRAND_SLIDE;
 
   return (
     <section
@@ -172,8 +191,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#1A0719]/80 via-[#1A0719]/35 to-transparent pointer-events-none" />
 
       {/* ─── HERO CONTENT GRID (FULL-SCREEN UTILIZATION ALIGNED WITH NAVBAR) ─── */}
-      <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-12 xl:px-16 py-4 sm:py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-14 items-center">
+      <div className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 xl:gap-14 items-center">
           
           {/* ── LEFT COLUMN: Narrative & Metrics ── */}
           <div className="lg:col-span-7 xl:col-span-7 space-y-4 sm:space-y-5 lg:space-y-6">
@@ -192,7 +211,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
                   {currentSlide.quote}
                 </span>
               )}
-              <h1 className="text-4xl sm:text-5xl lg:text-5.5xl xl:text-6xl 2xl:text-7xl font-editorial font-normal leading-[1.08] tracking-tight drop-shadow-sm text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-[#FFF5DB] to-gold-300">
+              <h1 className="text-4xl sm:text-5xl lg:text-[42px] xl:text-6xl 2xl:text-7xl font-editorial font-normal leading-[1.08] tracking-tight drop-shadow-sm text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-[#FFF5DB] to-gold-300">
                 {currentSlide.title}
               </h1>
             </div>
@@ -228,14 +247,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
             </div>
 
             {/* Bottom Metrics Bar with Golden Highlights and Dividers */}
-            <div className="pt-4 sm:pt-6 lg:pt-8 flex flex-wrap sm:flex-nowrap items-center gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
+            <div className="pt-4 sm:pt-6 lg:pt-8 flex flex-wrap sm:flex-nowrap items-center gap-6 sm:gap-8 lg:gap-8 xl:gap-12">
               {HERO_METRICS.map((metric, i) => (
                 <React.Fragment key={i}>
                   {i > 0 && (
                     <div className="hidden sm:block h-9 sm:h-11 w-[1px] bg-gold-400/30 shrink-0" />
                   )}
                   <div className="space-y-0.5 shrink-0">
-                    <div className="text-3xl sm:text-3.5xl lg:text-4xl xl:text-4.5xl font-editorial font-normal tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-gold-200 to-gold-300">
+                    <div className="text-3xl sm:text-4xl lg:text-[32px] xl:text-4.5xl font-editorial font-normal tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-100 via-gold-200 to-gold-300">
                       {metric.value}
                     </div>
                     <div className="text-xs sm:text-sm font-sans text-gold-200/90 font-medium whitespace-nowrap">
@@ -250,11 +269,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
 
           {/* ── RIGHT COLUMN: Circular Sacred Frame Slideshow ── */}
           <div className="lg:col-span-5 xl:col-span-5 flex items-center justify-center lg:justify-end relative">
-            <div className="relative w-[290px] h-[290px] sm:w-[370px] sm:h-[370px] lg:w-[420px] lg:h-[420px] xl:w-[470px] xl:h-[470px] 2xl:w-[500px] 2xl:h-[500px]">
+            <div className="relative w-[280px] sm:w-[350px] lg:w-[330px] xl:w-[450px] 2xl:w-[490px] aspect-square shrink-0">
               
               {/* ── CELESTIAL ORBIT RINGS & ROTATING SATELLITES (MAIN CIRCLE ROTATION - NO PETALS) ── */}
               <svg
-                className="absolute -inset-[12%] sm:-inset-[14%] w-[124%] sm:w-[128%] h-[124%] sm:h-[128%] pointer-events-none z-10 animate-orbit-rotate"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[128%] h-[128%] aspect-square pointer-events-none z-10 animate-orbit-rotate"
                 viewBox="0 0 600 600"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -314,7 +333,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
               </svg>
 
               {/* ── CIRCULAR IMAGE WINDOW (Remains still and clearly oriented) ── */}
-              <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-gold-400/60 shadow-[0_0_60px_rgba(218,165,59,0.30)] bg-[#1A0719] z-10">
+              <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-gold-400/60 shadow-[0_0_60px_rgba(218,165,59,0.30)] bg-[#1A0719] z-10 aspect-square">
                 {slides.map((s, idx) => {
                   const isCurrent = idx === currentIndex;
                   const shouldRender = isCurrent || loadedIndices.includes(idx);
@@ -328,17 +347,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
                       )}
                     >
                       {shouldRender && (
-                        <Image
-                          src={s.image}
-                          alt={s.title || 'Kalptaruu Yoga Vidhyalaya'}
-                          fill
-                          priority={idx === 0}
-                          loading={idx === 0 ? 'eager' : 'lazy'}
-                          fetchPriority={idx === 0 ? 'high' : 'auto'}
-                          sizes="(max-width: 640px) 290px, (max-width: 1024px) 370px, (max-width: 1280px) 420px, (max-width: 1536px) 470px, 500px"
-                          quality={85}
-                          className="object-cover object-center transform scale-100"
-                        />
+                        s.image ? (
+                          <Image
+                            src={s.image}
+                            alt={s.title || 'Kalptaruu Yoga Vidhyalaya'}
+                            fill
+                            priority={idx === 0}
+                            loading={idx === 0 ? 'eager' : 'lazy'}
+                            fetchPriority={idx === 0 ? 'high' : 'auto'}
+                            sizes="(max-width: 640px) 280px, (max-width: 1024px) 350px, (max-width: 1280px) 330px, (max-width: 1536px) 450px, 490px"
+                            quality={85}
+                            className="object-cover object-center transform scale-100"
+                            unoptimized={!isOptimizedUrl(s.image)}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-gradient-to-br from-plum-950 via-[#2A0725] to-[#1A0719] text-gold-400">
+                            <KalptaruTree size={120} />
+                          </div>
+                        )
                       )}
                     </div>
                   );
@@ -347,22 +373,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
                 {/* Soft Radial Vignette Overlay inside the circle */}
                 <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,transparent_60%,rgba(26,7,25,0.45)_95%)] pointer-events-none z-15" />
 
-                {/* ── PAGINATION DOTS (Inside circle bottom) ── */}
-                <div className="absolute bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
-                  {slides.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSelectSlide(idx)}
-                      aria-label={`Go to slide ${idx + 1}`}
-                      className={cn(
-                        'transition-all duration-300 rounded-full cursor-pointer',
-                        idx === currentIndex
-                          ? 'w-3 h-3 bg-gold-400 ring-2 ring-gold-400/50 shadow-[0_0_8px_rgba(218,165,59,0.8)]'
-                          : 'w-2 h-2 bg-white/40 hover:bg-white/70'
-                      )}
-                    />
-                  ))}
-                </div>
+                {/* ── PAGINATION DOTS (Inside circle bottom - only if multiple slides) ── */}
+                {slides.length > 1 && (
+                  <div className="absolute bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
+                    {slides.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleSelectSlide(idx)}
+                        aria-label={`Go to slide ${idx + 1}`}
+                        className={cn(
+                          'transition-all duration-300 rounded-full cursor-pointer',
+                          idx === currentIndex
+                            ? 'w-3 h-3 bg-gold-400 ring-2 ring-gold-400/50 shadow-[0_0_8px_rgba(218,165,59,0.8)]'
+                            : 'w-2 h-2 bg-white/40 hover:bg-white/70'
+                        )}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
 
             </div>

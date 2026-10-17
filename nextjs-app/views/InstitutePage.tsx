@@ -8,6 +8,8 @@ import { AuricBackground } from '../components/AuricBackground';
 import { LotusMotif, CornerFlourish, KalptaruTree } from '../components/Motifs';
 import { CmsService } from '../services/cmsService';
 import { isOptimizedUrl } from '../utils/imageUtils';
+import { getMapEmbedUrl, getMapDirectUrl } from '../utils/mapUtils';
+import { ContactCards, GoogleMapEmbed } from '../components/contact';
 import {
   Award,
   Sparkles,
@@ -34,33 +36,8 @@ export interface InstitutePageProps {
 }
 
 export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData, initialFounder }) => {
-  const [institute, setInstitute] = useState<any>(() => {
-    if (initialData) return initialData;
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('kalptaru_cached_institute');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed && parsed.name) return parsed;
-        }
-      } catch {}
-    }
-    return null;
-  });
-
-  const [founder, setFounder] = useState<any>(() => {
-    if (initialFounder) return initialFounder;
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('kalptaru_cached_founder');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed && (parsed.name || parsed.image)) return parsed;
-        }
-      } catch {}
-    }
-    return null;
-  });
+  const [institute, setInstitute] = useState<any>(initialData || null);
+  const [founder, setFounder] = useState<any>(initialFounder || null);
 
   const loadData = async () => {
     try {
@@ -153,8 +130,7 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData, initi
     'To stand as a globally revered sanctuary of traditional yogic learning and sadhana, bridging Vedic heritage with contemporary wellbeing.';
 
   const storyCover =
-    institute?.branding?.coverImage?.url ||
-    'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1200&q=85';
+    institute?.branding?.coverImage?.url || null;
 
   const pillars =
     institute?.pillars && institute.pillars.length > 0
@@ -192,22 +168,16 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData, initi
     mapUrl: institute?.contact?.address?.mapUrl || '',
   };
 
-  const configuredMapUrl = (institute?.contact?.address?.mapUrl || '').trim();
-  const mapEmbedSrc =
-    configuredMapUrl.includes('output=embed') || configuredMapUrl.includes('/embed')
-      ? configuredMapUrl
-      : `https://maps.google.com/maps?q=${encodeURIComponent(
-          contact.address || 'Piyush Heights, Sector 89, Faridabad'
-        )}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  const normalMapUrl = (
+    institute?.contact?.address?.mapUrl ||
+    (institute?.contact?.address as any)?.mapDirectUrl ||
+    (institute?.contact?.address as any)?.mapEmbedUrl ||
+    ''
+  ).trim();
 
-  const mapDirectUrl =
-    configuredMapUrl &&
-    !configuredMapUrl.includes('output=embed') &&
-    configuredMapUrl !== 'https://maps.google.com'
-      ? configuredMapUrl
-      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-          contact.address || 'Piyush Heights, Sector 89, Faridabad'
-        )}`;
+  // Interactive map embed source derived from normal URL (Address is plain text only, never auto-geocoded)
+  const mapEmbedSrc = getMapEmbedUrl(normalMapUrl);
+  const mapDirectUrl = getMapDirectUrl(normalMapUrl);
 
   const campusPhotos =
     institute?.images && institute.images.length > 0 ? institute.images : null;
@@ -316,16 +286,22 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData, initi
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             {/* Left Column: Visual Collage */}
             <div className="lg:col-span-6 space-y-4 relative">
-              <div className="relative rounded-2xl overflow-hidden border-2 border-gold-400/40 shadow-modal h-[380px] sm:h-[450px]">
-                <Image
-                  src={storyCover}
-                  alt={`${name} Learning Sanctuary`}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 600px"
-                  className="object-cover"
-                  loading="lazy"
-                  unoptimized={!isOptimizedUrl(storyCover)}
-                />
+              <div className="relative rounded-2xl overflow-hidden border-2 border-gold-400/40 shadow-modal h-[380px] sm:h-[450px] bg-plum-950 flex items-center justify-center">
+                {storyCover ? (
+                  <Image
+                    src={storyCover}
+                    alt={`${name} Learning Sanctuary`}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 600px"
+                    className="object-cover"
+                    loading="lazy"
+                    unoptimized={!isOptimizedUrl(storyCover)}
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-8 text-gold-400/80 bg-gradient-to-br from-plum-950 via-[#2A0725] to-[#1A0719]">
+                    <KalptaruTree size={120} />
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-plum-950/80 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute bottom-6 left-6 right-6 text-white space-y-1">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-gold-300 bg-plum-950/80 px-2.5 py-1 rounded">
@@ -543,7 +519,7 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData, initi
                 osteoarthritis, sciatica, PCOD/PCOS, and postural restoration led by senior physiotherapists.
               </p>
               <Link
-                href="/contact/enquiry"
+                href="/contact"
                 className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-plum-900 hover:text-gold-700 pt-1"
               >
                 <span>Book Clinical Consultation</span>
@@ -612,21 +588,24 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData, initi
 
         <Container size="wide" className="relative z-10">
           <div className="max-w-4xl mx-auto rounded-3xl bg-[#1A0719]/90 border border-gold-400/40 p-8 sm:p-12 shadow-modal flex flex-col md:flex-row items-center gap-8 sm:gap-10">
-            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden border-2 border-gold-400/60 shrink-0 shadow-card relative">
-              <Image
-                src={
-                  (typeof founder?.image === 'string' ? founder.image : founder?.image?.url) ||
-                  'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80'
-                }
-                alt={`${founder?.name || 'Mrs. Shuchi Mohan'} - Founder`}
-                fill
-                sizes="176px"
-                className="object-cover"
-                loading="lazy"
-                unoptimized={!isOptimizedUrl(
-                  typeof founder?.image === 'string' ? founder.image : founder?.image?.url
-                )}
-              />
+            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden border-2 border-gold-400/60 shrink-0 shadow-card relative bg-plum-950 flex items-center justify-center">
+              {((typeof founder?.image === 'string' ? founder.image : founder?.image?.url)) ? (
+                <Image
+                  src={typeof founder?.image === 'string' ? founder.image : founder?.image?.url}
+                  alt={`${founder?.name || 'Mrs. Shuchi Mohan'} - Founder`}
+                  fill
+                  sizes="176px"
+                  className="object-cover"
+                  loading="lazy"
+                  unoptimized={!isOptimizedUrl(
+                    typeof founder?.image === 'string' ? founder.image : founder?.image?.url
+                  )}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gold-400 p-6">
+                  <LotusMotif size={56} />
+                </div>
+              )}
             </div>
 
             <div className="space-y-3 text-center md:text-left">
@@ -673,76 +652,17 @@ export const InstitutePage: React.FC<InstitutePageProps> = ({ initialData, initi
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-canvas-warm border border-gold-300/40">
-                <MapPin className="w-5 h-5 text-gold-700 shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <div className="text-xs font-mono uppercase tracking-wider text-plum-900 font-bold">
-                    Address
-                  </div>
-                  <p className="text-xs sm:text-sm text-ink-muted leading-snug">
-                    {contact.address}
-                  </p>
-                </div>
-              </div>
+            {/* Contact Details from Contact Page as it is */}
+            <ContactCards
+              contactData={institute?.contact || contact}
+              layout="grid"
+            />
 
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-canvas-warm border border-gold-300/40">
-                <Phone className="w-5 h-5 text-gold-700 shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <div className="text-xs font-mono uppercase tracking-wider text-plum-900 font-bold">
-                    Helpline
-                  </div>
-                  <p className="text-xs sm:text-sm text-ink-muted leading-snug">
-                    {contact.phone}
-                    <br />
-                    {contact.hours}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-canvas-warm border border-gold-300/40">
-                <Mail className="w-5 h-5 text-gold-700 shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <div className="text-xs font-mono uppercase tracking-wider text-plum-900 font-bold">
-                    Admissions
-                  </div>
-                  <p className="text-xs sm:text-sm text-ink-muted leading-snug break-all">
-                    {contact.email}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Embedded Google Map */}
-            <div className="overflow-hidden rounded-2xl border border-gold-300/60 shadow-sm bg-canvas-warm">
-              <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 bg-plum-950 text-white text-xs border-b border-gold-500/30">
-                <div className="flex items-center gap-2.5">
-                  <MapPin className="w-4 h-4 text-gold-400 shrink-0" />
-                  <span className="font-semibold font-mono tracking-wider text-gold-300 uppercase text-[11px] sm:text-xs">
-                    Kalptaruu Yoga Vidhyalaya — Interactive Map
-                  </span>
-                </div>
-                <a
-                  href={mapDirectUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gold-500/20 hover:bg-gold-500/30 text-gold-300 hover:text-gold-200 transition-colors text-xs font-medium border border-gold-400/30"
-                >
-                  <span>Open in Google Maps</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-              <div className="relative w-full h-[360px] sm:h-[420px] bg-canvas">
-                <iframe
-                  title="Kalptaruu Yoga Vidhyalaya Location"
-                  src={mapEmbedSrc}
-                  className="w-full h-full border-0"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  allowFullScreen
-                />
-              </div>
-            </div>
+            {/* Interactive Google Map with fallback & CMS support */}
+            <GoogleMapEmbed
+              mapEmbedSrc={mapEmbedSrc}
+              mapDirectUrl={mapDirectUrl}
+            />
           </div>
         </Container>
       </section>

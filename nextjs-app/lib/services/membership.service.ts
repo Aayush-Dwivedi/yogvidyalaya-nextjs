@@ -73,6 +73,17 @@ export class MembershipService {
     }
     data.slug = slug;
 
+    // Auto-calculate discount percentage if originalAmount is provided
+    if (data.price) {
+      const amt = Number(data.price.amount) || 0;
+      const orig = data.price.originalAmount ? Number(data.price.originalAmount) : undefined;
+      if (orig && orig > amt) {
+        data.price.discountPercentage = Math.round(((orig - amt) / orig) * 100);
+      } else {
+        data.price.discountPercentage = 0;
+      }
+    }
+
     return await MembershipPlan.create(data);
   }
 
@@ -85,6 +96,17 @@ export class MembershipService {
       const existing = await MembershipPlan.findOne({ slug: data.slug, _id: { $ne: id } });
       if (existing) {
         throw AppError.conflict(`Slug '${data.slug}' is already in use.`);
+      }
+    }
+
+    // Auto-calculate discount percentage if price is being updated
+    if (data.price) {
+      const amt = Number(data.price.amount) || 0;
+      const orig = data.price.originalAmount ? Number(data.price.originalAmount) : undefined;
+      if (orig && orig > amt) {
+        data.price.discountPercentage = Math.round(((orig - amt) / orig) * 100);
+      } else if (orig !== undefined) {
+        data.price.discountPercentage = 0;
       }
     }
 

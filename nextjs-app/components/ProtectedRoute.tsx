@@ -46,10 +46,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             <ShieldAlert className="w-6 h-6" />
           </div>
           <h2 className="font-editorial text-2xl text-plum-900 font-bold">
-            Administrative Access Restricted
+            Access Restricted
           </h2>
           <p className="text-xs text-ink-muted leading-relaxed">
-            Your authenticated session (<strong className="text-plum-900">{user.email}</strong>, role: <span className="font-mono uppercase text-gold-700">{user.role}</span>) does not possess administrative clearance to access this area.
+            Your authenticated session (<strong className="text-plum-900">{user.email}</strong>) does not have permission to access this area.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
             <Link

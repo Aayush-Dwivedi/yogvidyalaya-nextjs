@@ -83,9 +83,9 @@ export const AdminTrainersPage: React.FC = () => {
         featured: true,
         order: trainers.length + 1,
         image: {
-          url: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80',
-          path: 'trainers/profile.jpg',
-          alt: 'Trainer Portrait',
+          url: '',
+          path: '',
+          alt: '',
         },
       });
     }
@@ -177,8 +177,7 @@ export const AdminTrainersPage: React.FC = () => {
 
       // Clean image
       const photoUrl =
-        (typeof editingTrainer.image === 'string' ? editingTrainer.image : editingTrainer.image?.url) ||
-        'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=400&q=80';
+        (typeof editingTrainer.image === 'string' ? editingTrainer.image : editingTrainer.image?.url) || '';
       const photoPath =
         (typeof editingTrainer.image === 'object' && editingTrainer.image?.path?.trim()) ||
         'trainers/profile.jpg';
@@ -382,8 +381,7 @@ export const AdminTrainersPage: React.FC = () => {
           {trainers.map((t) => {
             const id = (t._id || t.id) as string;
             const photoUrl =
-              (typeof t.image === 'string' ? t.image : t.image?.url) ||
-              'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=400&q=80';
+              (typeof t.image === 'string' ? t.image : t.image?.url) || '';
 
             return (
               <div
@@ -392,12 +390,19 @@ export const AdminTrainersPage: React.FC = () => {
               >
                 <div>
                   {/* Card Header Media */}
-                  <div className="relative aspect-[4/3] bg-plum-950 overflow-hidden">
-                    <img
-                      src={photoUrl}
-                      alt={t.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 filter brightness-95"
-                    />
+                  <div className="relative aspect-[4/3] bg-plum-950 overflow-hidden flex items-center justify-center">
+                    {photoUrl ? (
+                      <img
+                        src={photoUrl}
+                        alt={t.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 filter brightness-95"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-gold-400/60 p-4">
+                        <Users className="w-10 h-10 mb-2 opacity-60" />
+                        <span className="text-[11px] font-mono tracking-wider uppercase text-gold-300/80">No Portrait</span>
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-plum-950/80 via-transparent to-transparent pointer-events-none" />
 
                     <div className="absolute top-3 left-3 flex items-center gap-1.5">
@@ -609,17 +614,22 @@ export const AdminTrainersPage: React.FC = () => {
               </label>
 
               <div className="flex flex-col sm:flex-row items-center gap-4">
-                <div className="w-20 h-20 rounded-xl bg-plum-950 border border-gold-400 overflow-hidden shrink-0">
-                  <img
-                    src={
-                      (typeof editingTrainer.image === 'string'
-                        ? editingTrainer.image
-                        : editingTrainer.image?.url) ||
-                      'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=200&q=80'
-                    }
-                    alt={editingTrainer.name || 'Preview'}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-20 h-20 rounded-xl bg-plum-950 border border-gold-400 overflow-hidden shrink-0 flex items-center justify-center">
+                  {(typeof editingTrainer.image === 'string'
+                    ? editingTrainer.image
+                    : editingTrainer.image?.url) ? (
+                    <img
+                      src={
+                        (typeof editingTrainer.image === 'string'
+                          ? editingTrainer.image
+                          : editingTrainer.image?.url)
+                      }
+                      alt={editingTrainer.name || 'Preview'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Users className="w-8 h-8 text-gold-400/50" />
+                  )}
                 </div>
 
                 <div className="flex-1 space-y-2 w-full">
@@ -640,7 +650,7 @@ export const AdminTrainersPage: React.FC = () => {
                         },
                       })
                     }
-                    placeholder="https://images.unsplash.com/... or paste image URL"
+                    placeholder="https://... or paste image URL"
                     className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 font-mono"
                   />
 

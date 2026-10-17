@@ -8,3 +8,4 @@ export * from './GallerySection';
 export * from './VideosSection';
 export * from './TestimonialsSection';
 export * from './FinalCtaSection';
+export * from './EnquirySection';

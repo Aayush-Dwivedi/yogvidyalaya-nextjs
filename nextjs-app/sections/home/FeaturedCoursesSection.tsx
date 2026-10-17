@@ -6,11 +6,11 @@ import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Badge } from '../../components/Badge';
 import { LinkButton } from '../../components/LinkButton';
-import { FEATURED_COURSES } from '../../services/homeData';
+import { CmsCourse } from '../../types/cms';
 import { FeaturedCourse } from '../../types/home';
 import { CmsService } from '../../services/cmsService';
-import { CmsCourse } from '../../types/cms';
 import { isOptimizedUrl } from '../../utils/imageUtils';
+import { KalptaruTree } from '../../components/Motifs';
 
 export interface FeaturedCoursesSectionProps {
   courses?: (FeaturedCourse | CmsCourse)[];
@@ -38,8 +38,7 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
           setCourses(featured.length > 0 ? featured : liveCourses.slice(0, 3));
         }
       } catch (err) {
-        console.warn('Falling back to static featured courses:', err);
-        setCourses(FEATURED_COURSES);
+        setCourses([]);
       }
     };
 
@@ -58,7 +57,9 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
     };
   }, [propCourses]);
 
-  const displayCourses = courses && courses.length > 0 ? courses : FEATURED_COURSES;
+  if (!courses || courses.length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-20 sm:py-28 bg-canvas relative overflow-hidden border-b border-border/70">
@@ -77,13 +78,13 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
 
         {/* Dynamic Courses Editorial Layout */}
         <div className="space-y-8">
-          {displayCourses.map((c: any, index) => {
+          {courses.map((c: any, index) => {
             const courseId = c._id || c.id || `course-${index}`;
             const coverUrl =
               c.coverImage?.url ||
               c.image?.url ||
               (typeof c.image === 'string' ? c.image : null) ||
-              'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=800&q=80';
+              '';
 
             const highlights =
               c.curriculumHighlights ||
@@ -105,16 +106,22 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
               >
                 <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
                   {/* Image Column (4 cols) */}
-                  <div className="lg:col-span-4 relative aspect-[16/10] lg:aspect-auto overflow-hidden bg-surface-subtle">
-                    <Image
-                      src={coverUrl}
-                      alt={c.title}
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 420px"
-                      className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                      loading="lazy"
-                      unoptimized={!isOptimizedUrl(coverUrl)}
-                    />
+                  <div className="lg:col-span-4 relative aspect-[16/10] lg:aspect-auto overflow-hidden bg-plum-950 flex items-center justify-center">
+                    {coverUrl ? (
+                      <Image
+                        src={coverUrl}
+                        alt={c.title}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 400px"
+                        className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                        loading="lazy"
+                        unoptimized={!isOptimizedUrl(coverUrl)}
+                      />
+                    ) : (
+                      <div className="w-full h-full min-h-[220px] flex items-center justify-center p-8 text-gold-400">
+                        <KalptaruTree size={56} />
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-plum-950/60 via-transparent to-transparent lg:hidden" />
 
                     {index === 0 && (
@@ -182,7 +189,7 @@ export const FeaturedCoursesSection: React.FC<FeaturedCoursesSectionProps> = ({
                           Syllabus Details
                         </LinkButton>
                         <LinkButton
-                          to={`/contact/enquiry?program=${encodeURIComponent(c.title)}`}
+                          to={`/contact?program=${encodeURIComponent(c.title)}&type=course`}
                           variant="primary"
                           size="sm"
                           className="w-full sm:w-auto text-center"

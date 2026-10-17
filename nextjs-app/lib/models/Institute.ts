@@ -23,6 +23,8 @@ export interface IInstituteContact {
     postalCode: string;
     country: string;
     mapUrl?: string;
+    mapEmbedUrl?: string;
+    mapDirectUrl?: string;
   };
   hours?: string;
 }
@@ -150,6 +152,8 @@ const InstituteSchema = new Schema<IInstitute>(
         postalCode: { type: String, default: '' },
         country: { type: String, default: 'India' },
         mapUrl: { type: String, default: '' },
+        mapEmbedUrl: { type: String, default: '' },
+        mapDirectUrl: { type: String, default: '' },
       },
       hours: { type: String, default: 'Mon - Sat: 06:00 AM - 08:00 PM' },
     },
@@ -189,7 +193,7 @@ const InstituteSchema = new Schema<IInstitute>(
       primaryCtaText: { type: String, default: 'Browse Courses' },
       primaryCtaUrl: { type: String, default: '/programs/courses' },
       secondaryCtaText: { type: String, default: 'Get in Touch' },
-      secondaryCtaUrl: { type: String, default: '/contact/enquiry' },
+      secondaryCtaUrl: { type: String, default: '/contact' },
     },
   },
   {

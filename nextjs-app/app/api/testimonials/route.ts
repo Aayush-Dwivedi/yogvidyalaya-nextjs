@@ -58,6 +58,10 @@ export async function POST(request: NextRequest) {
       return ApiResponse.badRequest('Name and quote are required');
     }
 
+    if (typeof body.quote === 'string' && body.quote.length > 500) {
+      return ApiResponse.badRequest('Testimonial quote cannot exceed 500 characters');
+    }
+
     const count = await Testimonial.countDocuments();
     const created = await Testimonial.create({
       ...body,
