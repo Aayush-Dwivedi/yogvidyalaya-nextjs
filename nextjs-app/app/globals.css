@@ -431,5 +431,22 @@
   will-change: transform, opacity;
 }
 
+/* ─── Loading State Blurred Background Utilities ─────────────────────────────── */
+.loading-backdrop-blur {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: radial-gradient(circle at center, rgba(38, 8, 36, 0.72) 0%, rgba(26, 7, 25, 0.82) 55%, rgba(18, 3, 17, 0.90) 100%);
+  will-change: backdrop-filter;
+}
+
+.loading-content-blur {
+  filter: blur(8px);
+  opacity: 0.5;
+  transition: filter 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  pointer-events: none;
+  user-select: none;
+  will-change: filter, opacity;
+}
+
 
 
