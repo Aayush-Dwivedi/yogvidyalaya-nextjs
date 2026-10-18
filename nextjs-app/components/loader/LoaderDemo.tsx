@@ -226,8 +226,62 @@ export const LoaderDemo: React.FC = () => {
 
           {/* Live Stage Column (7 cols) */}
           <div className="lg:col-span-7 bg-plum-950/90 rounded-2xl border border-gold-500/30 p-8 min-h-[420px] flex flex-col items-center justify-center relative overflow-hidden">
-            {isLoading || isTimeout ? (
+            {/* Background Content — smoothly blurred during loading state */}
+            <div
+              className={`w-full flex flex-col items-center justify-center transition-all duration-300 ease-in-out ${
+                isLoading || isTimeout
+                  ? 'blur-md opacity-30 pointer-events-none select-none scale-[0.98]'
+                  : 'blur-none opacity-100'
+              }`}
+            >
+              {isSuccess ? (
+                <div className="text-center space-y-4 max-w-md mx-auto animate-in zoom-in-95 duration-300">
+                  <div className="w-16 h-16 rounded-full bg-emerald-950/80 border border-emerald-400 text-emerald-300 mx-auto flex items-center justify-center shadow-soft">
+                    <CheckCircle2 className="w-8 h-8" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <h4 className="text-xl font-editorial font-bold text-white">
+                      Data Loaded Successfully
+                    </h4>
+                    <p className="text-xs text-ivory/80 font-sans leading-relaxed">
+                      {data}
+                    </p>
+                    <p className="text-[11px] font-mono text-gold-400/80 pt-1">
+                      Total animation time: {elapsedSeconds.toFixed(1)}s (enforced min {minDurationSec}s)
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={reset}
+                    className="px-5 py-2 rounded-full bg-plum-900 hover:bg-plum-800 text-gold-300 border border-gold-400/40 text-xs font-medium transition-all cursor-pointer"
+                  >
+                    Reset Demo
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center space-y-3 max-w-sm mx-auto">
+                  <div className="w-20 h-20 rounded-full border border-gold-400/30 p-1 mx-auto flex items-center justify-center bg-plum-900/60 shadow-soft">
+                    <img
+                      src="/kalptaru-logo.webp"
+                      alt="Logo preview"
+                      className="w-full h-full rounded-full object-cover opacity-80"
+                    />
+                  </div>
+                  <h4 className="text-lg font-editorial text-gold-200">
+                    Ready to Preview
+                  </h4>
+                  <p className="text-xs text-ivory/70 leading-relaxed font-sans">
+                    Click any simulation button on the left to see the emblem animate with the sweeping golden arc and floating particles while the background is blurred.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Loading Animation Overlay — razor-sharp and unblurred */}
+            {(isLoading || isTimeout) && (
               <KalptaruLoader
+                overlay
                 message="Harmonizing breath & consciousness..."
                 subMessage="Kalptaruu Yoga Vidhyalaya"
                 size={140}
@@ -238,47 +292,6 @@ export const LoaderDemo: React.FC = () => {
                 elapsedSeconds={elapsedSeconds}
                 minDurationSeconds={minDurationSec}
               />
-            ) : isSuccess ? (
-              <div className="text-center space-y-4 max-w-md mx-auto animate-in zoom-in-95 duration-300">
-                <div className="w-16 h-16 rounded-full bg-emerald-950/80 border border-emerald-400 text-emerald-300 mx-auto flex items-center justify-center shadow-soft">
-                  <CheckCircle2 className="w-8 h-8" />
-                </div>
-                <div className="space-y-1.5">
-                  <h4 className="text-xl font-editorial font-bold text-white">
-                    Data Loaded Successfully
-                  </h4>
-                  <p className="text-xs text-ivory/80 font-sans leading-relaxed">
-                    {data}
-                  </p>
-                  <p className="text-[11px] font-mono text-gold-400/80 pt-1">
-                    Total animation time: {elapsedSeconds.toFixed(1)}s (enforced min {minDurationSec}s)
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={reset}
-                  className="px-5 py-2 rounded-full bg-plum-900 hover:bg-plum-800 text-gold-300 border border-gold-400/40 text-xs font-medium transition-all"
-                >
-                  Reset Demo
-                </button>
-              </div>
-            ) : (
-              <div className="text-center space-y-3 max-w-sm mx-auto">
-                <div className="w-20 h-20 rounded-full border border-gold-400/30 p-1 mx-auto flex items-center justify-center bg-plum-900/60 shadow-soft">
-                  <img
-                    src="/kalptaru-logo.webp"
-                    alt="Logo preview"
-                    className="w-full h-full rounded-full object-cover opacity-80"
-                  />
-                </div>
-                <h4 className="text-lg font-editorial text-gold-200">
-                  Ready to Preview
-                </h4>
-                <p className="text-xs text-ivory/70 leading-relaxed font-sans">
-                  Click any simulation button on the left to see the emblem animate with the sweeping golden arc and floating particles.
-                </p>
-              </div>
             )}
           </div>
         </div>

@@ -24,6 +24,18 @@ export interface KalptaruLoaderProps {
   fullScreen?: boolean;
 
   /**
+   * If true, renders as an absolute overlay within a relative parent container with backdrop blur.
+   * Default: false
+   */
+  overlay?: boolean;
+
+  /**
+   * Whether to wrap inline loader with a frosted glass blurred backdrop card.
+   * Default: false
+   */
+  blurBackground?: boolean;
+
+  /**
    * Diameter in pixels of the central emblem.
    * Default: 140
    */
@@ -70,6 +82,8 @@ export const KalptaruLoader: React.FC<KalptaruLoaderProps> = ({
   message = 'Harmonizing breath & consciousness...',
   subMessage = 'Kalptaruu Yoga Vidhyalaya',
   fullScreen = false,
+  overlay = false,
+  blurBackground = false,
   size = 140,
   isTimeout = false,
   timeoutMessage = 'The request took longer than expected and timed out.',
@@ -296,19 +310,51 @@ export const KalptaruLoader: React.FC<KalptaruLoaderProps> = ({
     </div>
   );
 
-  // If full-screen requested, wrap in an atmospheric dark plum fixed backdrop
+  // ─── 1. FULL-SCREEN BLURRED OVERLAY ───
+  // The underlying page remains visible and is heavily blurred (16px), while the loader is razor-sharp
   if (fullScreen) {
     return (
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#170617]/95 backdrop-blur-md transition-all duration-300 animate-in fade-in"
+        className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden transition-all duration-300 animate-in fade-in select-none"
         style={{
-          background:
-            'radial-gradient(circle at center, #260824 0%, #1A0719 55%, #120311 100%)',
+          WebkitBackdropFilter: 'blur(16px)',
+          backdropFilter: 'blur(16px)',
+          backgroundColor: 'rgba(26, 7, 25, 0.40)',
         }}
       >
-        {/* Subtle Decorative Star/Mandala Arcs in background */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold-500/10 via-transparent to-transparent pointer-events-none" />
-        {content}
+        <div className="relative z-10">{content}</div>
+      </div>
+    );
+  }
+
+  // ─── 2. RELATIVE / IN-CONTAINER BLURRED OVERLAY ───
+  // Overlays a parent container with blurred background, keeping the loader sharp
+  if (overlay) {
+    return (
+      <div
+        className="absolute inset-0 z-30 flex items-center justify-center overflow-hidden transition-all duration-300 animate-in fade-in select-none rounded-[inherit]"
+        style={{
+          WebkitBackdropFilter: 'blur(12px)',
+          backdropFilter: 'blur(12px)',
+          backgroundColor: 'rgba(26, 7, 25, 0.40)',
+        }}
+      >
+        <div className="relative z-10">{content}</div>
+      </div>
+    );
+  }
+
+  // ─── 3. INLINE FROSTED GLASS CARD MODE ───
+  if (blurBackground) {
+    return (
+      <div
+        className="relative flex items-center justify-center overflow-hidden rounded-3xl p-8 sm:p-12 backdrop-blur-md bg-plum-950/40 border border-gold-500/20 shadow-card transition-all duration-300"
+        style={{
+          WebkitBackdropFilter: 'blur(12px)',
+          backdropFilter: 'blur(12px)',
+        }}
+      >
+        <div className="relative z-10">{content}</div>
       </div>
     );
   }

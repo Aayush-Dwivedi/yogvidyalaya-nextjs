@@ -10,6 +10,8 @@ export interface LoadingStateProps {
   variant?: 'emblem' | 'tree' | 'spinner' | 'minimal';
   size?: number;
   fullScreen?: boolean;
+  overlay?: boolean;
+  blurBackground?: boolean;
   isTimeout?: boolean;
   timeoutMessage?: string;
   onRetry?: () => void;
@@ -25,6 +27,8 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
   variant = 'emblem',
   size = 130,
   fullScreen = false,
+  overlay = false,
+  blurBackground = false,
   isTimeout = false,
   timeoutMessage,
   onRetry,
@@ -41,6 +45,8 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
         subMessage={subMessage}
         size={size}
         fullScreen={fullScreen}
+        overlay={overlay}
+        blurBackground={blurBackground}
         isTimeout={isTimeout}
         timeoutMessage={timeoutMessage}
         onRetry={onRetry}
@@ -52,7 +58,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
     );
   }
 
-  return (
+  const innerContent = (
     <div
       className={cn(
         'flex flex-col items-center justify-center py-12 px-4 text-center',
@@ -99,6 +105,52 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
       </p>
     </div>
   );
+
+  if (fullScreen) {
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden transition-all duration-300 animate-in fade-in select-none"
+        style={{
+          WebkitBackdropFilter: 'blur(16px)',
+          backdropFilter: 'blur(16px)',
+          backgroundColor: 'rgba(26, 7, 25, 0.40)',
+        }}
+      >
+        <div className="relative z-10">{innerContent}</div>
+      </div>
+    );
+  }
+
+  if (overlay) {
+    return (
+      <div
+        className="absolute inset-0 z-30 flex items-center justify-center overflow-hidden transition-all duration-300 animate-in fade-in select-none rounded-[inherit]"
+        style={{
+          WebkitBackdropFilter: 'blur(12px)',
+          backdropFilter: 'blur(12px)',
+          backgroundColor: 'rgba(26, 7, 25, 0.40)',
+        }}
+      >
+        <div className="relative z-10">{innerContent}</div>
+      </div>
+    );
+  }
+
+  if (blurBackground) {
+    return (
+      <div
+        className="relative flex items-center justify-center overflow-hidden rounded-3xl p-6 backdrop-blur-md bg-plum-950/40 border border-gold-500/20 shadow-card transition-all duration-300"
+        style={{
+          WebkitBackdropFilter: 'blur(12px)',
+          backdropFilter: 'blur(12px)',
+        }}
+      >
+        <div className="relative z-10">{innerContent}</div>
+      </div>
+    );
+  }
+
+  return innerContent;
 };
 
 /**

@@ -13,6 +13,7 @@ export * from './Textarea';
 export * from './Modal';
 export * from './Toast';
 export * from './LoadingState';
+export * from './LoadingOverlay';
 export * from './EmptyState';
 export * from './Motifs';
 export * from './KalptaruLogo';
