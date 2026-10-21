@@ -23,7 +23,15 @@ import {
   Filter,
   Image as ImageIcon,
   Flame,
+  Sparkles,
 } from 'lucide-react';
+import { generateSlug } from '@/lib/utils/slugify';
+import {
+  calculateTimeDuration,
+  time12ToTime24,
+  time24ToTime12,
+  addMinutesToTime,
+} from '@/lib/utils/timeSchedule';
 
 export const AdminWorkshopsPage: React.FC = () => {
   const [workshops, setWorkshops] = useState<CmsWorkshop[]>([]);
@@ -41,6 +49,7 @@ export const AdminWorkshopsPage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'basics' | 'location' | 'instructor' | 'seo'>('basics');
   const [editingWorkshop, setEditingWorkshop] = useState<Partial<CmsWorkshop> | null>(null);
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [workshopToDelete, setWorkshopToDelete] = useState<CmsWorkshop | null>(null);
 
@@ -71,6 +80,7 @@ export const AdminWorkshopsPage: React.FC = () => {
   const handleOpenModal = (workshop?: CmsWorkshop) => {
     setActiveTab('basics');
     if (workshop) {
+      setIsSlugManuallyEdited(true);
       setEditingWorkshop({
         ...workshop,
         image: workshop.coverImage || workshop.image,
@@ -80,7 +90,8 @@ export const AdminWorkshopsPage: React.FC = () => {
           ? new Date(workshop.registrationDeadline).toISOString().slice(0, 10)
           : '',
         startTime: workshop.startTime || '09:00 AM',
-        endTime: workshop.endTime || '05:00 PM',
+        endTime: workshop.endTime || '11:00 AM',
+        duration: workshop.duration || '2 Hours',
         capacity: workshop.capacity || { total: 25, booked: 0 },
         price: workshop.price || { amount: 3500, currency: 'INR', displayPrice: '₹3,500' },
         location: workshop.location || {
@@ -94,6 +105,7 @@ export const AdminWorkshopsPage: React.FC = () => {
         },
       });
     } else {
+      setIsSlugManuallyEdited(false);
       const defaultDate = new Date();
       defaultDate.setDate(defaultDate.getDate() + 14);
 
@@ -107,8 +119,8 @@ export const AdminWorkshopsPage: React.FC = () => {
         shortDescription: '',
         date: defaultDate.toISOString().slice(0, 10),
         startTime: '09:00 AM',
-        endTime: '05:00 PM',
-        duration: '1 Hr',
+        endTime: '11:00 AM',
+        duration: '2 Hours',
         mode: 'in-person',
         location: {
           venue: 'Kalptaruu Yoga Vidhyalaya',
@@ -160,8 +172,8 @@ export const AdminWorkshopsPage: React.FC = () => {
 
   const handleSaveWorkshop = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingWorkshop?.title || !editingWorkshop.description || !editingWorkshop.date || !editingWorkshop.duration) {
-      showToast('Title, description, date, and duration are required.', 'error');
+    if (!editingWorkshop?.title || !editingWorkshop.description || !editingWorkshop.date) {
+      showToast('Title, description, and event date are required.', 'error');
       return;
     }
 
@@ -169,15 +181,33 @@ export const AdminWorkshopsPage: React.FC = () => {
       setSaving(true);
       const workshopId = editingWorkshop._id || editingWorkshop.id;
 
+      const title = editingWorkshop.title.trim();
+      const slug = editingWorkshop.slug?.trim() || generateSlug(title);
+      const duration = editingWorkshop.duration?.trim() || '2 Hours';
+
       const cover = editingWorkshop.coverImage || editingWorkshop.image || {
         url: '',
         path: '',
         bucket: '',
-        alt: editingWorkshop.title,
+        alt: title,
       };
 
       const payload: Partial<CmsWorkshop> = {
         ...editingWorkshop,
+        title,
+        slug,
+        duration,
+        location: editingWorkshop.location?.venue ? editingWorkshop.location : {
+          venue: 'Kalptaruu Yoga Vidhyalaya',
+          city: 'Faridabad',
+          address: 'N114 Piyush Heights, Sector 89, Faridabad – 121002',
+        },
+        instructor: editingWorkshop.instructor?.name ? editingWorkshop.instructor : {
+          name: 'Mrs. Shuchi Mohan',
+          title: 'Physiotherapist & Therapeutic Yoga Consultant',
+        },
+        capacity: editingWorkshop.capacity || { total: 25, booked: 0 },
+        price: editingWorkshop.price || { amount: 0, currency: 'INR', isFree: true, displayPrice: 'Free' },
         coverImage: cover,
         image: cover,
         shortDescription: editingWorkshop.shortDescription || editingWorkshop.description.slice(0, 160).trim(),
@@ -572,79 +602,31 @@ export const AdminWorkshopsPage: React.FC = () => {
           setEditingWorkshop(null);
         }}
         title={editingWorkshop?._id || editingWorkshop?.id ? `Edit Workshop: ${editingWorkshop?.title}` : 'Create New Workshop'}
-        size="lg"
+        size="xl"
       >
-        <form onSubmit={handleSaveWorkshop} className="space-y-5 font-sans text-xs sm:text-sm">
-          {/* Tabs */}
-          <div className="flex border-b border-border gap-4 text-xs font-sans">
-            <button
-              type="button"
-              onClick={() => setActiveTab('basics')}
-              className={`pb-2 font-medium border-b-2 transition-colors ${
-                activeTab === 'basics'
-                  ? 'border-gold-500 text-plum-900 font-semibold'
-                  : 'border-transparent text-ink-muted hover:text-ink'
-              }`}
-            >
-              1. Title, Timing & Logistics
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('location')}
-              className={`pb-2 font-medium border-b-2 transition-colors ${
-                activeTab === 'location'
-                  ? 'border-gold-500 text-plum-900 font-semibold'
-                  : 'border-transparent text-ink-muted hover:text-ink'
-              }`}
-            >
-              2. Venue & Occupancy
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('instructor')}
-              className={`pb-2 font-medium border-b-2 transition-colors ${
-                activeTab === 'instructor'
-                  ? 'border-gold-500 text-plum-900 font-semibold'
-                  : 'border-transparent text-ink-muted hover:text-ink'
-              }`}
-            >
-              3. Instructor & Cover Media
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('seo')}
-              className={`pb-2 font-medium border-b-2 transition-colors ${
-                activeTab === 'seo'
-                  ? 'border-gold-500 text-plum-900 font-semibold'
-                  : 'border-transparent text-ink-muted hover:text-ink'
-              }`}
-            >
-              4. SEO & Metadata
-            </button>
-          </div>
+        <form onSubmit={handleSaveWorkshop} className="space-y-6 font-sans text-xs sm:text-sm">
+          {/* SECTION 1: Title & Schedule */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-sans text-plum-900 font-bold uppercase tracking-wider pb-2 border-b border-border">
+              1. Title &amp; Schedule
+            </h3>
 
-          {/* TAB 1: Basics & Timing */}
-          {activeTab === 'basics' && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                    Workshop Title *
-                  </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                  Workshop Title *
+                </label>
                   <input
                     type="text"
                     required
                     value={editingWorkshop?.title || ''}
                     onChange={(e) => {
                       const title = e.target.value;
-                      const slug = title
-                        .toLowerCase()
-                        .replace(/[^\w\s-]/g, '')
-                        .replace(/\s+/g, '-');
+                      const generated = generateSlug(title);
                       setEditingWorkshop((prev) => ({
                         ...prev,
                         title,
-                        slug: prev?.slug && prev.slug !== '' ? prev.slug : slug,
+                        slug: isSlugManuallyEdited ? (prev?.slug || '') : generated,
                       }));
                     }}
                     placeholder="e.g. Kumbhaka & Pranayama Intensive"
@@ -653,13 +635,33 @@ export const AdminWorkshopsPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                    URL Slug
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider">
+                      URL Slug
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSlugManuallyEdited(false);
+                        setEditingWorkshop((prev) => ({
+                          ...prev,
+                          slug: generateSlug(prev?.title || ''),
+                        }));
+                      }}
+                      className="text-[11px] text-gold-700 hover:text-gold-900 flex items-center gap-1 font-medium"
+                      title="Generate slug from title"
+                    >
+                      <RefreshCw className="w-2.5 h-2.5" />
+                      Auto-generate
+                    </button>
+                  </div>
                   <input
                     type="text"
                     value={editingWorkshop?.slug || ''}
-                    onChange={(e) => setEditingWorkshop({ ...editingWorkshop, slug: e.target.value })}
+                    onChange={(e) => {
+                      setIsSlugManuallyEdited(true);
+                      setEditingWorkshop({ ...editingWorkshop, slug: e.target.value });
+                    }}
                     placeholder="e.g. pranayama-intensive"
                     className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 font-mono text-xs shadow-xs"
                   />
@@ -671,7 +673,7 @@ export const AdminWorkshopsPage: React.FC = () => {
                   Comprehensive Description *
                 </label>
                 <textarea
-                  rows={4}
+                  rows={3}
                   required
                   value={editingWorkshop?.description || ''}
                   onChange={(e) => setEditingWorkshop({ ...editingWorkshop, description: e.target.value })}
@@ -680,76 +682,271 @@ export const AdminWorkshopsPage: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                  Short Description
-                </label>
-                <input
-                  type="text"
-                  value={editingWorkshop?.shortDescription || ''}
-                  onChange={(e) => setEditingWorkshop({ ...editingWorkshop, shortDescription: e.target.value })}
-                  placeholder="One sentence summary for catalog preview..."
-                  className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 text-xs shadow-xs"
-                />
+              {/* Schedule & Timing Card */}
+              <div className="bg-canvas border border-border rounded-xl p-4 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-gold-600" />
+                    <span className="text-xs font-semibold text-plum-900 uppercase tracking-wider">
+                      Schedule &amp; Timing
+                    </span>
+                  </div>
+
+                  {/* Schedule Type Switcher */}
+                  <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-border text-xs">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const start = editingWorkshop?.startTime && editingWorkshop.startTime !== 'Flexible'
+                          ? editingWorkshop.startTime
+                          : '09:00 AM';
+                        const end = editingWorkshop?.endTime && editingWorkshop.endTime !== 'Flexible'
+                          ? editingWorkshop.endTime
+                          : '11:00 AM';
+                        const dur = calculateTimeDuration(start, end) || '2 Hours';
+                        setEditingWorkshop((prev) => ({
+                          ...prev,
+                          startTime: start,
+                          endTime: end,
+                          duration: dur,
+                        }));
+                      }}
+                      className={`px-2.5 py-1 rounded transition-colors ${
+                        editingWorkshop?.startTime !== 'Flexible' && !editingWorkshop?.duration?.toLowerCase().includes('flexible')
+                          ? 'bg-plum-900 text-gold-300 font-semibold shadow-xs'
+                          : 'text-ink-muted hover:text-ink'
+                      }`}
+                    >
+                      Fixed Time Schedule
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingWorkshop((prev) => ({
+                          ...prev,
+                          startTime: 'Flexible',
+                          endTime: 'Flexible',
+                          duration: 'Flexible Schedule',
+                        }));
+                      }}
+                      className={`px-2.5 py-1 rounded transition-colors ${
+                        editingWorkshop?.startTime === 'Flexible' || editingWorkshop?.duration?.toLowerCase().includes('flexible')
+                          ? 'bg-plum-900 text-gold-300 font-semibold shadow-xs'
+                          : 'text-ink-muted hover:text-ink'
+                      }`}
+                    >
+                      Flexible Schedule
+                    </button>
+                  </div>
+                </div>
+
+                {/* If Fixed Time Schedule */}
+                {editingWorkshop?.startTime !== 'Flexible' && !editingWorkshop?.duration?.toLowerCase().includes('flexible') ? (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                          Event Date *
+                        </label>
+                        <input
+                          type="date"
+                          required
+                          value={editingWorkshop?.date || ''}
+                          onChange={(e) => setEditingWorkshop({ ...editingWorkshop, date: e.target.value })}
+                          className="w-full bg-white border border-border rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                          Start Time *
+                        </label>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="time"
+                            value={time12ToTime24(editingWorkshop?.startTime || '09:00 AM')}
+                            onChange={(e) => {
+                              const time12 = time24ToTime12(e.target.value);
+                              const end12 = editingWorkshop?.endTime || '11:00 AM';
+                              const newDuration = calculateTimeDuration(time12, end12) || editingWorkshop?.duration || '2 Hours';
+                              setEditingWorkshop({
+                                ...editingWorkshop,
+                                startTime: time12,
+                                duration: newDuration,
+                              });
+                            }}
+                            className="bg-white border border-border rounded-lg px-2.5 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs flex-1"
+                          />
+                          <span className="text-[11px] font-mono text-gold-800 bg-gold-50 border border-gold-200/80 px-2 py-1.5 rounded-lg whitespace-nowrap">
+                            {editingWorkshop?.startTime || '09:00 AM'}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                          End Time *
+                        </label>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="time"
+                            value={time12ToTime24(editingWorkshop?.endTime || '11:00 AM')}
+                            onChange={(e) => {
+                              const end12 = time24ToTime12(e.target.value);
+                              const start12 = editingWorkshop?.startTime || '09:00 AM';
+                              const newDuration = calculateTimeDuration(start12, end12) || '2 Hours';
+                              setEditingWorkshop({
+                                ...editingWorkshop,
+                                endTime: end12,
+                                duration: newDuration,
+                              });
+                            }}
+                            className="bg-white border border-border rounded-lg px-2.5 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs flex-1"
+                          />
+                          <span className="text-[11px] font-mono text-gold-800 bg-gold-50 border border-gold-200/80 px-2 py-1.5 rounded-lg whitespace-nowrap">
+                            {editingWorkshop?.endTime || '11:00 AM'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Duration Sync & Quick Duration Adjuster */}
+                    <div className="pt-2 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[11px] font-semibold text-plum-900 uppercase tracking-wider">
+                          Duration:
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={editingWorkshop?.duration ?? ''}
+                          onChange={(e) => setEditingWorkshop({ ...editingWorkshop, duration: e.target.value })}
+                          placeholder="e.g. 2 Hours"
+                          className="bg-white border border-border rounded-md px-2.5 py-1 text-xs text-ink font-semibold w-28 focus:outline-none focus:border-gold-500 shadow-xs"
+                        />
+                      </div>
+
+                      {/* Quick Duration Buttons (Auto-calculate End Time) */}
+                      <div className="flex items-center gap-1 flex-wrap">
+                        <span className="text-[11px] text-ink-muted mr-1">Presets:</span>
+                        {[
+                          { label: '1 Hr', mins: 60, text: '1 Hour' },
+                          { label: '1.5 Hr', mins: 90, text: '1.5 Hours' },
+                          { label: '2 Hr', mins: 120, text: '2 Hours' },
+                          { label: '3 Hr', mins: 180, text: '3 Hours' },
+                          { label: 'Half Day (4h)', mins: 240, text: '4 Hours' },
+                          { label: 'Full Day (8h)', mins: 480, text: '8 Hours' },
+                        ].map((chip) => (
+                          <button
+                            key={chip.label}
+                            type="button"
+                            onClick={() => {
+                              const start = editingWorkshop?.startTime || '09:00 AM';
+                              const newEnd = addMinutesToTime(start, chip.mins);
+                              setEditingWorkshop({
+                                ...editingWorkshop,
+                                endTime: newEnd,
+                                duration: chip.text,
+                              });
+                            }}
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium border transition-colors ${
+                              editingWorkshop?.duration === chip.text
+                                ? 'bg-plum-900 text-gold-300 border-plum-900'
+                                : 'bg-white text-ink-muted border-border hover:border-gold-500 hover:text-plum-900'
+                            }`}
+                          >
+                            {chip.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* If Flexible Schedule */
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                        Presets:
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          'Flexible Schedule',
+                          'Morning & Evening Batches',
+                          'Weekend Immersion (2 Days)',
+                          '3-Day Intensive Retreat',
+                          'Self-Paced / Open Enrollment',
+                        ].map((preset) => (
+                          <button
+                            key={preset}
+                            type="button"
+                            onClick={() =>
+                              setEditingWorkshop({
+                                ...editingWorkshop,
+                                startTime: 'Flexible',
+                                endTime: 'Flexible',
+                                duration: preset,
+                              })
+                            }
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                              editingWorkshop?.duration === preset
+                                ? 'bg-plum-900 text-gold-300 border-plum-900 shadow-xs'
+                                : 'bg-white text-ink border-border hover:border-gold-500 hover:bg-gold-50/50'
+                            }`}
+                          >
+                            {preset}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                      <div>
+                        <label className="block text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                          Custom Duration / Schedule Text *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={editingWorkshop?.duration ?? ''}
+                          onChange={(e) => setEditingWorkshop({ ...editingWorkshop, duration: e.target.value })}
+                          placeholder="e.g. 2 Days / Weekend Batches"
+                          className="w-full bg-white border border-border rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 shadow-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                          Tentative / Start Date *
+                        </label>
+                        <input
+                          type="date"
+                          required
+                          value={editingWorkshop?.date || ''}
+                          onChange={(e) => setEditingWorkshop({ ...editingWorkshop, date: e.target.value })}
+                          className="w-full bg-white border border-border rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Dates & Timing */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-border">
+              {/* Delivery Mode & Registration Deadline */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                    Event Date *
+                    Delivery Mode
                   </label>
-                  <input
-                    type="date"
-                    required
-                    value={editingWorkshop?.date || ''}
-                    onChange={(e) => setEditingWorkshop({ ...editingWorkshop, date: e.target.value })}
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                    Start Time *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={editingWorkshop?.startTime || '09:00 AM'}
-                    onChange={(e) => setEditingWorkshop({ ...editingWorkshop, startTime: e.target.value })}
-                    placeholder="e.g. 09:00 AM"
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 font-mono shadow-xs"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                    End Time *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={editingWorkshop?.endTime || '05:00 PM'}
-                    onChange={(e) => setEditingWorkshop({ ...editingWorkshop, endTime: e.target.value })}
-                    placeholder="e.g. 05:00 PM"
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 font-mono shadow-xs"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                    Duration *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={editingWorkshop?.duration || ''}
-                    onChange={(e) => setEditingWorkshop({ ...editingWorkshop, duration: e.target.value })}
-                    placeholder="e.g. 2 Days / 16 Hours"
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
-                  />
+                  <select
+                    value={editingWorkshop?.mode || 'in-person'}
+                    onChange={(e) => setEditingWorkshop({ ...editingWorkshop, mode: e.target.value as any })}
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs"
+                  >
+                    <option value="in-person">In-Person (Kalptaruu Shala)</option>
+                    <option value="residential">Residential (Gurukula Immersion)</option>
+                    <option value="online">Online Live Streaming</option>
+                    <option value="hybrid">Hybrid (Both Offline & Online)</option>
+                  </select>
                 </div>
 
                 <div>
@@ -762,24 +959,8 @@ export const AdminWorkshopsPage: React.FC = () => {
                     onChange={(e) =>
                       setEditingWorkshop({ ...editingWorkshop, registrationDeadline: e.target.value })
                     }
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 font-mono shadow-xs"
                   />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                    Delivery Mode
-                  </label>
-                  <select
-                    value={editingWorkshop?.mode || 'in-person'}
-                    onChange={(e) => setEditingWorkshop({ ...editingWorkshop, mode: e.target.value as any })}
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink focus:outline-none focus:border-gold-500 shadow-xs"
-                  >
-                    <option value="in-person">In-Person</option>
-                    <option value="residential">Residential</option>
-                    <option value="online">Online Live Streaming</option>
-                    <option value="hybrid">Hybrid</option>
-                  </select>
                 </div>
               </div>
 
@@ -816,11 +997,12 @@ export const AdminWorkshopsPage: React.FC = () => {
                 </label>
               </div>
             </div>
-          )}
 
-          {/* TAB 2: Venue, Location & Capacity */}
-          {activeTab === 'location' && (
-            <div className="space-y-4">
+          {/* SECTION 2: Venue, Location & Capacity */}
+          <div className="space-y-4 pt-4 border-t border-border">
+            <h3 className="text-xs font-sans text-plum-900 font-bold uppercase tracking-wider pb-2 border-b border-border">
+              2. Venue &amp; Pricing
+            </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
@@ -960,11 +1142,12 @@ export const AdminWorkshopsPage: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
 
-          {/* TAB 3: Instructor & Media */}
-          {activeTab === 'instructor' && (
-            <div className="space-y-4">
+          {/* SECTION 3: Instructor & Media */}
+          <div className="space-y-4 pt-4 border-t border-border">
+            <h3 className="text-xs font-sans text-plum-900 font-bold uppercase tracking-wider pb-2 border-b border-border">
+              3. Instructor &amp; Media
+            </h3>
               {/* Cover Image Upload */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center p-4 bg-canvas border border-border rounded-xl shadow-xs">
                 <div>
@@ -1066,11 +1249,12 @@ export const AdminWorkshopsPage: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
 
-          {/* TAB 4: SEO */}
-          {activeTab === 'seo' && (
-            <div className="space-y-4">
+          {/* SECTION 4: SEO & Metadata */}
+          <div className="space-y-4 pt-4 border-t border-border">
+            <h3 className="text-xs font-sans text-plum-900 font-bold uppercase tracking-wider pb-2 border-b border-border">
+              4. SEO &amp; Metadata
+            </h3>
               <div>
                 <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                   Meta Title
@@ -1107,10 +1291,9 @@ export const AdminWorkshopsPage: React.FC = () => {
                 />
               </div>
             </div>
-          )}
 
           {/* Footer Actions */}
-          <div className="flex justify-between items-center pt-4 border-t border-border">
+          <div className="flex justify-end items-center gap-3 pt-4 border-t border-border">
             <button
               type="button"
               onClick={() => {

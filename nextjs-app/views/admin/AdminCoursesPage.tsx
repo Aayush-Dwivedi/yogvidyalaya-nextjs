@@ -22,7 +22,15 @@ import {
   Users,
   Search,
   Filter,
+  Clock,
 } from 'lucide-react';
+import { generateSlug } from '@/lib/utils/slugify';
+import {
+  calculateTimeDuration,
+  time12ToTime24,
+  time24ToTime12,
+  addMinutesToTime,
+} from '@/lib/utils/timeSchedule';
 
 export const AdminCoursesPage: React.FC = () => {
   const [courses, setCourses] = useState<CmsCourse[]>([]);
@@ -40,8 +48,8 @@ export const AdminCoursesPage: React.FC = () => {
 
   // Modal States
   const [modalOpen, setModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'basics' | 'curriculum' | 'instructor' | 'seo'>('basics');
   const [editingCourse, setEditingCourse] = useState<Partial<CmsCourse> | null>(null);
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState<CmsCourse | null>(null);
 
@@ -77,11 +85,13 @@ export const AdminCoursesPage: React.FC = () => {
   };
 
   const handleOpenModal = (course?: CmsCourse) => {
-    setActiveTab('basics');
     if (course) {
+      setIsSlugManuallyEdited(true);
       setEditingCourse({
         ...course,
         image: course.coverImage || course.image,
+        duration: course.duration || '200 Hours / 4 Weeks',
+        schedule: course.schedule || 'Mon – Fri: 06:30 AM – 08:00 AM (1.5 Hours / Day)',
         benefits: course.benefits && course.benefits.length > 0 ? course.benefits : course.features || [],
         curriculum: course.curriculum || [],
         capacity: course.capacity || { total: 30, enrolled: 0 },
@@ -89,19 +99,21 @@ export const AdminCoursesPage: React.FC = () => {
         instructor: course.instructor || { name: 'Mrs. Shuchi Mohan', title: 'Physiotherapist & Therapeutic Yoga Consultant' },
       });
     } else {
+      setIsSlugManuallyEdited(false);
       setEditingCourse({
         title: '',
         slug: '',
         description: '',
         shortDescription: '',
-        duration: '',
+        duration: '200 Hours / 4 Weeks',
+        schedule: 'Mon – Fri: 06:30 AM – 08:00 AM (1.5 Hours / Day)',
         level: 'all-levels',
         mode: 'in-person',
         status: 'published',
         featured: false,
         order: courses.length + 1,
         capacity: { total: 30, enrolled: 0 },
-        price: { amount: 0, currency: 'INR', isFree: false, displayPrice: '' },
+        price: { amount: 24999, currency: 'INR', isFree: false, displayPrice: '₹24,999' },
         benefits: [],
         curriculum: [],
         instructor: {
@@ -111,7 +123,6 @@ export const AdminCoursesPage: React.FC = () => {
         },
         certification: 'Affiliated by Indian Yoga Association',
         eligibility: '',
-        schedule: '',
         seo: {
           metaTitle: '',
           metaDescription: '',
@@ -239,8 +250,8 @@ export const AdminCoursesPage: React.FC = () => {
 
   const handleSaveCourse = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingCourse?.title || !editingCourse.description || !editingCourse.duration) {
-      showToast('Title, description, and duration are required.', 'error');
+    if (!editingCourse?.title || !editingCourse.description) {
+      showToast('Course title and description are required.', 'error');
       return;
     }
 
@@ -248,19 +259,33 @@ export const AdminCoursesPage: React.FC = () => {
       setSaving(true);
       const courseId = editingCourse._id || editingCourse.id;
 
+      const title = editingCourse.title.trim();
+      const slug = editingCourse.slug?.trim() || generateSlug(title);
+      const duration = editingCourse.duration?.trim() || 'Flexible / Self-Paced';
+
       // Ensure coverImage exists
       const cover = editingCourse.coverImage || editingCourse.image || {
         url: '',
         path: '',
         bucket: '',
-        alt: editingCourse.title,
+        alt: title,
       };
 
       const payload: Partial<CmsCourse> = {
         ...editingCourse,
+        title,
+        slug,
+        duration,
+        instructor: editingCourse.instructor?.name ? editingCourse.instructor : {
+          name: 'Mrs. Shuchi Mohan',
+          title: 'Founder & Lead Instructor',
+          bio: 'Physiotherapist & Therapeutic Yoga Consultant with institutional experience at MDNIY and NCERT.',
+        },
+        capacity: editingCourse.capacity || { total: 30, enrolled: 0 },
+        price: editingCourse.price || { amount: 0, currency: 'INR', isFree: true, displayPrice: 'Free' },
         coverImage: cover,
         image: cover,
-        features: editingCourse.benefits,
+        features: editingCourse.benefits && editingCourse.benefits.length > 0 ? editingCourse.benefits : (editingCourse.features || []),
         shortDescription: editingCourse.shortDescription || editingCourse.description?.slice(0, 160).trim(),
       };
 
@@ -696,60 +721,14 @@ export const AdminCoursesPage: React.FC = () => {
           setEditingCourse(null);
         }}
         title={editingCourse?._id || editingCourse?.id ? `Edit Course: ${editingCourse?.title}` : 'Create New Course'}
-        size="lg"
+        size="xl"
       >
-        <form onSubmit={handleSaveCourse} className="space-y-5 font-sans text-xs sm:text-sm">
-          {/* Navigation Tabs */}
-          <div className="flex border-b border-border gap-4 text-xs font-sans">
-            <button
-              type="button"
-              onClick={() => setActiveTab('basics')}
-              className={`pb-2 font-semibold border-b-2 transition-colors ${
-                activeTab === 'basics'
-                  ? 'border-plum-900 text-plum-900'
-                  : 'border-transparent text-ink-muted hover:text-plum-900'
-              }`}
-            >
-              1. General &amp; Logistics
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('curriculum')}
-              className={`pb-2 font-semibold border-b-2 transition-colors ${
-                activeTab === 'curriculum'
-                  ? 'border-plum-900 text-plum-900'
-                  : 'border-transparent text-ink-muted hover:text-plum-900'
-              }`}
-            >
-              2. Curriculum &amp; Benefits
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('instructor')}
-              className={`pb-2 font-semibold border-b-2 transition-colors ${
-                activeTab === 'instructor'
-                  ? 'border-plum-900 text-plum-900'
-                  : 'border-transparent text-ink-muted hover:text-plum-900'
-              }`}
-            >
-              3. Instructor &amp; Media
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('seo')}
-              className={`pb-2 font-semibold border-b-2 transition-colors ${
-                activeTab === 'seo'
-                  ? 'border-plum-900 text-plum-900'
-                  : 'border-transparent text-ink-muted hover:text-plum-900'
-              }`}
-            >
-              4. SEO &amp; Metadata
-            </button>
-          </div>
-
-          {/* TAB 1: General & Logistics */}
-          {activeTab === 'basics' && (
-            <div className="space-y-4">
+        <form onSubmit={handleSaveCourse} className="space-y-6 font-sans text-xs sm:text-sm">
+          {/* SECTION 1: Course & Schedule */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-sans text-plum-900 font-bold uppercase tracking-wider pb-2 border-b border-border">
+              1. Course &amp; Schedule
+            </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
@@ -761,14 +740,11 @@ export const AdminCoursesPage: React.FC = () => {
                     value={editingCourse?.title || ''}
                     onChange={(e) => {
                       const title = e.target.value;
-                      const slug = title
-                        .toLowerCase()
-                        .replace(/[^\w\s-]/g, '')
-                        .replace(/\s+/g, '-');
+                      const generated = generateSlug(title);
                       setEditingCourse((prev) => ({
                         ...prev,
                         title,
-                        slug: prev?.slug && prev.slug !== '' ? prev.slug : slug,
+                        slug: isSlugManuallyEdited ? (prev?.slug || '') : generated,
                       }));
                     }}
                     placeholder="e.g. 200-Hour Yoga Teacher Training (TTC)"
@@ -777,13 +753,33 @@ export const AdminCoursesPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                    URL Slug
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider">
+                      URL Slug
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSlugManuallyEdited(false);
+                        setEditingCourse((prev) => ({
+                          ...prev,
+                          slug: generateSlug(prev?.title || ''),
+                        }));
+                      }}
+                      className="text-[11px] text-gold-700 hover:text-gold-900 flex items-center gap-1 font-medium"
+                      title="Re-sync slug from Course Title"
+                    >
+                      <RefreshCw className="w-2.5 h-2.5" />
+                      Auto-generate from title
+                    </button>
+                  </div>
                   <input
                     type="text"
                     value={editingCourse?.slug || ''}
-                    onChange={(e) => setEditingCourse({ ...editingCourse, slug: e.target.value })}
+                    onChange={(e) => {
+                      setIsSlugManuallyEdited(true);
+                      setEditingCourse({ ...editingCourse, slug: e.target.value });
+                    }}
                     placeholder="e.g. 200-hour-yoga-teacher-training"
                     className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs placeholder:text-ink-faint focus:outline-none focus:border-gold-500 font-mono shadow-xs"
                   />
@@ -795,7 +791,7 @@ export const AdminCoursesPage: React.FC = () => {
                   Full Course Description *
                 </label>
                 <textarea
-                  rows={4}
+                  rows={3}
                   required
                   value={editingCourse?.description || ''}
                   onChange={(e) => setEditingCourse({ ...editingCourse, description: e.target.value })}
@@ -804,34 +800,270 @@ export const AdminCoursesPage: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                  Short Description (Catalog cards)
-                </label>
-                <input
-                  type="text"
-                  value={editingCourse?.shortDescription || ''}
-                  onChange={(e) => setEditingCourse({ ...editingCourse, shortDescription: e.target.value })}
-                  placeholder="One sentence summary for public program cards..."
-                  className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
-                />
-              </div>
+              {/* Schedule & Duration Card */}
+              <div className="bg-canvas border border-border rounded-xl p-4 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-gold-600" />
+                    <span className="text-xs font-semibold text-plum-900 uppercase tracking-wider">
+                      Schedule &amp; Duration
+                    </span>
+                  </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                    Duration *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={editingCourse?.duration || ''}
-                    onChange={(e) => setEditingCourse({ ...editingCourse, duration: e.target.value })}
-                    placeholder="e.g. 200 Hours / 4 Weeks"
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-sm placeholder:text-ink-faint focus:outline-none focus:border-gold-500 shadow-xs"
-                  />
+                  {/* Schedule Switcher */}
+                  <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-border text-xs">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingCourse((prev) => ({
+                          ...prev,
+                          schedule: prev?.schedule && !prev.schedule.toLowerCase().includes('flexible')
+                            ? prev.schedule
+                            : 'Mon – Fri: 06:30 AM – 08:00 AM (1.5 Hours / Day)',
+                          duration: prev?.duration && !prev.duration.toLowerCase().includes('flexible')
+                            ? prev.duration
+                            : '200 Hours / 4 Weeks',
+                        }));
+                      }}
+                      className={`px-2.5 py-1 rounded transition-colors ${
+                        !editingCourse?.duration?.toLowerCase().includes('flexible') && !editingCourse?.schedule?.toLowerCase().includes('flexible')
+                          ? 'bg-plum-900 text-gold-300 font-semibold shadow-xs'
+                          : 'text-ink-muted hover:text-ink'
+                      }`}
+                    >
+                      Timed Batch Schedule
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingCourse((prev) => ({
+                          ...prev,
+                          duration: 'Flexible / Self-Paced',
+                          schedule: 'Flexible Timings (Recorded Sessions + Live Doubt Clearing)',
+                        }));
+                      }}
+                      className={`px-2.5 py-1 rounded transition-colors ${
+                        editingCourse?.duration?.toLowerCase().includes('flexible') || editingCourse?.schedule?.toLowerCase().includes('flexible')
+                          ? 'bg-plum-900 text-gold-300 font-semibold shadow-xs'
+                          : 'text-ink-muted hover:text-ink'
+                      }`}
+                    >
+                      Flexible / Self-Paced
+                    </button>
+                  </div>
                 </div>
 
+                {/* If Timed Batch Schedule */}
+                {!editingCourse?.duration?.toLowerCase().includes('flexible') && !editingCourse?.schedule?.toLowerCase().includes('flexible') ? (
+                  <div className="space-y-3">
+                    {/* Batch Days Selector */}
+                    <div>
+                      <label className="block text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                        Batch Days &amp; Timings:
+                      </label>
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {[
+                          { label: 'Mon – Fri', text: 'Mon – Fri' },
+                          { label: 'Mon – Sat', text: 'Mon – Sat' },
+                          { label: 'Weekends (Sat & Sun)', text: 'Sat & Sun' },
+                          { label: 'Alternate (Mon, Wed, Fri)', text: 'Mon, Wed, Fri' },
+                        ].map((item) => (
+                          <button
+                            key={item.label}
+                            type="button"
+                            onClick={() => {
+                              const currentSchedule = editingCourse?.schedule || '';
+                              const timePart = currentSchedule.includes(':')
+                                ? currentSchedule.split(':').slice(1).join(':').trim()
+                                : '06:30 AM – 08:00 AM (1.5 Hours / Day)';
+                              setEditingCourse({
+                                ...editingCourse,
+                                schedule: `${item.text}: ${timePart}`,
+                              });
+                            }}
+                            className={`px-2 py-1 rounded text-[11px] font-medium border transition-colors ${
+                              editingCourse?.schedule?.startsWith(item.text)
+                                ? 'bg-plum-900 text-gold-300 border-plum-900'
+                                : 'bg-white text-ink-muted border-border hover:border-gold-500'
+                            }`}
+                          >
+                            {item.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Daily Start and End Time Sync */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-white p-3 rounded-lg border border-border">
+                        <div>
+                          <label className="block text-[11px] font-medium text-ink-muted mb-1">
+                            Daily Session Start Time:
+                          </label>
+                          <input
+                            type="time"
+                            defaultValue="06:30"
+                            onChange={(e) => {
+                              const start12 = time24ToTime12(e.target.value);
+                              const end12 = '08:00 AM';
+                              const dailyDur = calculateTimeDuration(start12, end12) || '1.5 Hours';
+                              const prefix = editingCourse?.schedule?.split(':')[0] || 'Mon – Fri';
+                              setEditingCourse({
+                                ...editingCourse,
+                                schedule: `${prefix}: ${start12} – ${end12} (${dailyDur} / Day)`,
+                              });
+                            }}
+                            className="w-full bg-white border border-border rounded-lg px-2.5 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-medium text-ink-muted mb-1">
+                            Daily Session End Time:
+                          </label>
+                          <input
+                            type="time"
+                            defaultValue="08:00"
+                            onChange={(e) => {
+                              const end12 = time24ToTime12(e.target.value);
+                              const start12 = '06:30 AM';
+                              const dailyDur = calculateTimeDuration(start12, end12) || '1.5 Hours';
+                              const prefix = editingCourse?.schedule?.split(':')[0] || 'Mon – Fri';
+                              setEditingCourse({
+                                ...editingCourse,
+                                schedule: `${prefix}: ${start12} – ${end12} (${dailyDur} / Day)`,
+                              });
+                            }}
+                            className="w-full bg-white border border-border rounded-lg px-2.5 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 font-mono shadow-xs"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Batch Schedule Display */}
+                    <div>
+                      <label className="block text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                        Batch Schedule Preview *
+                      </label>
+                      <input
+                        type="text"
+                        value={editingCourse?.schedule ?? ''}
+                        onChange={(e) => setEditingCourse({ ...editingCourse, schedule: e.target.value })}
+                        placeholder="e.g. Mon – Fri: 06:30 AM – 08:00 AM"
+                        className="w-full bg-white border border-border rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 shadow-xs"
+                      />
+                    </div>
+
+                    {/* Course Duration Chips */}
+                    <div className="pt-2 border-t border-border space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider">
+                          Course Total Duration *
+                        </label>
+                        <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60 font-medium">
+                          Quick presets:
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          '1 Month (50 Hours)',
+                          '200 Hours / 4 Weeks',
+                          '300 Hours / 8 Weeks',
+                          '500 Hours / 6 Months',
+                          '3 Months Sadhana',
+                        ].map((dur) => (
+                          <button
+                            key={dur}
+                            type="button"
+                            onClick={() => setEditingCourse({ ...editingCourse, duration: dur })}
+                            className={`px-2.5 py-1 rounded text-[11px] font-medium border transition-colors ${
+                              editingCourse?.duration === dur
+                                ? 'bg-plum-900 text-gold-300 border-plum-900 shadow-xs'
+                                : 'bg-white text-ink-muted border-border hover:border-gold-500 hover:text-plum-900'
+                            }`}
+                          >
+                            {dur}
+                          </button>
+                        ))}
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        value={editingCourse?.duration ?? ''}
+                        onChange={(e) => setEditingCourse({ ...editingCourse, duration: e.target.value })}
+                        placeholder="e.g. 200 Hours / 4 Weeks"
+                        className="w-full bg-white border border-border rounded-lg px-3 py-1.5 text-xs text-ink font-semibold focus:outline-none focus:border-gold-500 shadow-xs mt-1"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  /* If Flexible / Self-Paced Schedule */
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                        Flexible Schedule Presets:
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { dur: 'Flexible / Self-Paced', sch: 'Flexible Timings (Recorded Sessions + Live Doubt Clearing)' },
+                          { dur: 'Flexible Weekend Batches', sch: 'Saturdays & Sundays Flexible (Morning & Evening)' },
+                          { dur: 'Personalized 1-on-1 Mentorship', sch: 'Customized schedule aligned with personal mentor' },
+                          { dur: '6 Months Open Access', sch: 'Self-Paced with weekly review check-ins' },
+                        ].map((item) => (
+                          <button
+                            key={item.dur}
+                            type="button"
+                            onClick={() =>
+                              setEditingCourse({
+                                ...editingCourse,
+                                duration: item.dur,
+                                schedule: item.sch,
+                              })
+                            }
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                              editingCourse?.duration === item.dur
+                                ? 'bg-plum-900 text-gold-300 border-plum-900 shadow-xs'
+                                : 'bg-white text-ink border-border hover:border-gold-500 hover:bg-gold-50/50'
+                            }`}
+                          >
+                            {item.dur}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                      <div>
+                        <label className="block text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                          Duration Description *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={editingCourse?.duration ?? ''}
+                          onChange={(e) => setEditingCourse({ ...editingCourse, duration: e.target.value })}
+                          placeholder="e.g. Flexible / Self-Paced"
+                          className="w-full bg-white border border-border rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 shadow-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
+                          Schedule Note
+                        </label>
+                        <input
+                          type="text"
+                          value={editingCourse?.schedule ?? ''}
+                          onChange={(e) => setEditingCourse({ ...editingCourse, schedule: e.target.value })}
+                          placeholder="e.g. Flexible Timings (Recorded Sessions + Live Doubt Clearing)"
+                          className="w-full bg-white border border-border rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-gold-500 shadow-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Delivery Mode & Level */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                     Level
@@ -839,7 +1071,7 @@ export const AdminCoursesPage: React.FC = () => {
                   <select
                     value={editingCourse?.level || 'all-levels'}
                     onChange={(e) => setEditingCourse({ ...editingCourse, level: e.target.value as any })}
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs"
                   >
                     <option value="beginner">Beginner</option>
                     <option value="intermediate">Intermediate</option>
@@ -855,9 +1087,9 @@ export const AdminCoursesPage: React.FC = () => {
                   <select
                     value={editingCourse?.mode || 'residential'}
                     onChange={(e) => setEditingCourse({ ...editingCourse, mode: e.target.value as any })}
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold-500 shadow-xs"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs"
                   >
-                    <option value="residential">Residential (Gurukula)</option>
+                    <option value="residential">Residential (Gurukula Immersion)</option>
                     <option value="in-person">In-Person (Daily Shala)</option>
                     <option value="online">Online Live Streaming</option>
                     <option value="hybrid">Hybrid</option>
@@ -888,7 +1120,7 @@ export const AdminCoursesPage: React.FC = () => {
                         },
                       });
                     }}
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink font-mono text-sm focus:outline-none focus:border-gold-500 shadow-xs"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink font-mono text-xs focus:outline-none focus:border-gold-500 shadow-xs"
                   />
                 </div>
 
@@ -909,44 +1141,7 @@ export const AdminCoursesPage: React.FC = () => {
                         },
                       })
                     }
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink font-mono text-sm focus:outline-none focus:border-gold-500 shadow-xs"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                    Enrolled Count
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={editingCourse?.capacity?.enrolled ?? 0}
-                    onChange={(e) =>
-                      setEditingCourse({
-                        ...editingCourse,
-                        capacity: {
-                          total: editingCourse?.capacity?.total || 30,
-                          enrolled: Number(e.target.value),
-                        },
-                      })
-                    }
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink font-mono text-sm focus:outline-none focus:border-gold-500 shadow-xs"
-                  />
-                </div>
-              </div>
-
-              {/* Schedule, Certification, Eligibility */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                    Batch Schedule
-                  </label>
-                  <input
-                    type="text"
-                    value={editingCourse?.schedule || ''}
-                    onChange={(e) => setEditingCourse({ ...editingCourse, schedule: e.target.value })}
-                    placeholder="e.g. Mon – Sat: 6:00 AM – 8:30 AM & 4:30 PM – 7:00 PM"
-                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs"
+                    className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink font-mono text-xs focus:outline-none focus:border-gold-500 shadow-xs"
                   />
                 </div>
 
@@ -962,19 +1157,6 @@ export const AdminCoursesPage: React.FC = () => {
                     className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
-                  Eligibility &amp; Prerequisites
-                </label>
-                <input
-                  type="text"
-                  value={editingCourse?.eligibility || ''}
-                  onChange={(e) => setEditingCourse({ ...editingCourse, eligibility: e.target.value })}
-                  placeholder="e.g. Open to sincere sadhakas with minimum 6 months regular practice."
-                  className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink text-xs focus:outline-none focus:border-gold-500 shadow-xs"
-                />
               </div>
 
               {/* Status & Featured Flags */}
@@ -1009,12 +1191,13 @@ export const AdminCoursesPage: React.FC = () => {
                   <span className="text-xs text-ink font-medium">Feature on Homepage Catalog</span>
                 </label>
               </div>
-            </div>
-          )}
+          </div>
 
-          {/* TAB 2: Curriculum & Benefits */}
-          {activeTab === 'curriculum' && (
-            <div className="space-y-6">
+          {/* SECTION 2: Curriculum & Benefits */}
+          <div className="space-y-6 pt-4 border-t border-border">
+            <h3 className="text-xs font-sans text-plum-900 font-bold uppercase tracking-wider pb-2 border-b border-border">
+              2. Curriculum &amp; Benefits
+            </h3>
               {/* Benefits Builder */}
               <div className="space-y-3">
                 <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider">
@@ -1199,12 +1382,13 @@ export const AdminCoursesPage: React.FC = () => {
                   </div>
                 )}
               </div>
-            </div>
-          )}
+          </div>
 
-          {/* TAB 3: Instructor & Media */}
-          {activeTab === 'instructor' && (
-            <div className="space-y-5">
+          {/* SECTION 3: Instructor & Media */}
+          <div className="space-y-5 pt-4 border-t border-border">
+            <h3 className="text-xs font-sans text-plum-900 font-bold uppercase tracking-wider pb-2 border-b border-border">
+              3. Instructor &amp; Media
+            </h3>
               {/* Cover Image Upload */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center p-4 bg-canvas border border-border rounded-xl shadow-xs">
                 <div>
@@ -1344,12 +1528,13 @@ export const AdminCoursesPage: React.FC = () => {
                   />
                 </div>
               </div>
-            </div>
-          )}
+          </div>
 
-          {/* TAB 4: SEO & Metadata */}
-          {activeTab === 'seo' && (
-            <div className="space-y-4">
+          {/* SECTION 4: SEO & Metadata */}
+          <div className="space-y-4 pt-4 border-t border-border">
+            <h3 className="text-xs font-sans text-plum-900 font-bold uppercase tracking-wider pb-2 border-b border-border">
+              4. SEO &amp; Metadata
+            </h3>
               <div>
                 <label className="block text-xs font-sans text-plum-900 font-semibold uppercase tracking-wider mb-1">
                   Meta Title
@@ -1406,11 +1591,10 @@ export const AdminCoursesPage: React.FC = () => {
                   className="w-full bg-white border border-border rounded-lg px-3 py-2 text-ink focus:outline-none focus:border-gold-500 text-xs font-mono shadow-xs"
                 />
               </div>
-            </div>
-          )}
+          </div>
 
           {/* Modal Footer Controls */}
-          <div className="flex justify-between items-center pt-4 border-t border-border">
+          <div className="flex justify-end items-center gap-2 pt-4 border-t border-border">
             <button
               type="button"
               onClick={() => {
@@ -1421,15 +1605,13 @@ export const AdminCoursesPage: React.FC = () => {
             >
               Cancel
             </button>
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                disabled={saving || uploadingImage}
-                className="px-6 py-2 rounded-lg text-xs font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft disabled:opacity-50"
-              >
-                {saving ? 'Saving Course...' : 'Save Course'}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={saving || uploadingImage}
+              className="px-6 py-2 rounded-lg text-xs font-sans font-semibold bg-plum-900 text-gold-300 hover:bg-plum-800 transition-colors shadow-soft disabled:opacity-50"
+            >
+              {saving ? 'Saving Course...' : 'Save Course'}
+            </button>
           </div>
         </form>
       </Modal>
