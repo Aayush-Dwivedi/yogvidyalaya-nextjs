@@ -7,6 +7,7 @@ import { CmsVideo, CmsVideoCategory } from '../../types/cms';
 import { Modal } from '../../components/Modal';
 import { LoadingState } from '../../components/LoadingState';
 import { Badge } from '../../components/Badge';
+import { extractYoutubeId as parseYoutubeId } from '../../lib/utils/youtube';
 import {
   Video as VideoIcon,
   Plus,
@@ -35,7 +36,7 @@ export const AdminVideosCMS: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingThumb, setUploadingThumb] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
 
   // Category filtering & management state
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -88,18 +89,18 @@ export const AdminVideosCMS: React.FC = () => {
     loadData();
   }, []);
 
-  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+  const showToast = (text: string, type: 'success' | 'error' | 'info' = 'success') => {
     setStatusMessage({ type, text });
-    setTimeout(() => {
-      setStatusMessage(null);
-    }, 4500);
+    if (type !== 'info') {
+      setTimeout(() => {
+        setStatusMessage(null);
+      }, 4500);
+    }
   };
 
-  // Helper to extract YouTube ID from standard URLs
+  // Helper to extract YouTube ID from standard, live, shorts, or share URLs
   const extractYoutubeId = (url: string): string => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : '';
+    return parseYoutubeId(url) || '';
   };
 
   const handleOpenModal = (video?: CmsVideo) => {
@@ -153,8 +154,19 @@ export const AdminVideosCMS: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file (PNG, JPG, WebP).', 'error');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Image size exceeds 5MB limit. Please choose a smaller file.', 'error');
+      return;
+    }
+
     try {
       setUploadingThumb(true);
+      showToast('Uploading custom thumbnail...', 'info');
       const res = await MediaService.uploadImage(file, 'videos', editingVideo?.title || file.name);
       setEditingVideo((prev) => ({
         ...prev,
@@ -167,7 +179,7 @@ export const AdminVideosCMS: React.FC = () => {
           alt: res.alt || file.name,
         },
       }));
-      showToast('Custom thumbnail uploaded successfully!');
+      showToast('Custom thumbnail uploaded successfully!', 'success');
     } catch (err: any) {
       console.error(err);
       showToast(err.message || 'Failed to upload thumbnail', 'error');
@@ -178,8 +190,18 @@ export const AdminVideosCMS: React.FC = () => {
 
   const handleSaveVideo = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingVideo?.youtubeUrl || !editingVideo.title) {
-      showToast('YouTube URL and video title are required.', 'error');
+    if (!editingVideo?.youtubeUrl?.trim()) {
+      showToast('YouTube URL is required.', 'error');
+      return;
+    }
+    if (!editingVideo?.title?.trim()) {
+      showToast('Video title is required.', 'error');
+      return;
+    }
+
+    const finalVideoId = editingVideo.youtubeVideoId || extractYoutubeId(editingVideo.youtubeUrl);
+    if (!finalVideoId) {
+      showToast('Please enter a valid YouTube URL (e.g., watch, live, or shorts format).', 'error');
       return;
     }
 
@@ -200,19 +222,22 @@ export const AdminVideosCMS: React.FC = () => {
 
     try {
       setSaving(true);
+      showToast(editingVideo._id || editingVideo.id ? 'Updating video details...' : 'Saving new video...', 'info');
       const videoId = editingVideo._id || editingVideo.id;
       const payload: Partial<CmsVideo> = {
         ...editingVideo,
+        title: editingVideo.title.trim(),
+        youtubeUrl: editingVideo.youtubeUrl.trim(),
         category: finalCategory,
-        youtubeVideoId: editingVideo.youtubeVideoId || extractYoutubeId(editingVideo.youtubeUrl),
+        youtubeVideoId: finalVideoId,
       };
 
       if (videoId) {
         await CmsService.updateVideo(videoId, payload);
-        showToast('Video details updated successfully!');
+        showToast('Video details updated successfully!', 'success');
       } else {
         await CmsService.createVideo(payload);
-        showToast('New video added to library successfully!');
+        showToast('New video added to library successfully!', 'success');
       }
 
       notifyVideosUpdated();
@@ -370,24 +395,29 @@ export const AdminVideosCMS: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Toast Notification */}
+      {/* Floating Toast Notification (Always on front of modals & content) */}
       {statusMessage && (
         <div
-          className={`flex items-center gap-3 p-4 rounded-xl border text-sm transition-all duration-300 shadow-modal ${
+          className={`fixed top-6 right-6 z-[9999] max-w-md w-[calc(100vw-3rem)] flex items-center gap-3 p-4 rounded-xl border text-sm transition-all duration-300 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-4 ${
             statusMessage.type === 'success'
-              ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-200'
-              : 'bg-rose-950/80 border-rose-500/40 text-rose-200'
+              ? 'bg-emerald-950/95 border-emerald-500/50 text-emerald-100 shadow-emerald-950/40'
+              : statusMessage.type === 'info'
+              ? 'bg-plum-950/95 border-gold-500/40 text-gold-200 shadow-plum-950/40'
+              : 'bg-rose-950/95 border-rose-500/50 text-rose-100 shadow-rose-950/40'
           }`}
+          role="alert"
         >
           {statusMessage.type === 'success' ? (
             <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          ) : statusMessage.type === 'info' ? (
+            <RefreshCw className="w-5 h-5 text-gold-400 animate-spin shrink-0" />
           ) : (
             <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
           )}
-          <span className="flex-1 font-sans">{statusMessage.text}</span>
+          <span className="flex-1 font-sans font-medium">{statusMessage.text}</span>
           <button
             onClick={() => setStatusMessage(null)}
-            className="text-xs opacity-70 hover:opacity-100 uppercase tracking-wider"
+            className="text-xs opacity-70 hover:opacity-100 uppercase tracking-wider px-2 py-1 hover:bg-white/10 rounded transition-colors"
           >
             Dismiss
           </button>
@@ -832,7 +862,7 @@ export const AdminVideosCMS: React.FC = () => {
               required
               value={editingVideo?.youtubeUrl || ''}
               onChange={(e) => handleUrlChange(e.target.value)}
-              placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+              placeholder="https://www.youtube.com/watch?v=... or https://www.youtube.com/live/..."
               className="w-full bg-white border border-border rounded-lg px-3.5 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:border-gold-500 font-mono shadow-xs"
             />
             {editingVideo?.youtubeVideoId && (

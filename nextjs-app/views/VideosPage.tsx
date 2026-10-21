@@ -14,6 +14,7 @@ import { CmsService } from '../services/cmsService';
 import { CmsVideo } from '../types/cms';
 import { useAuth } from '../context/AuthContext';
 import { isOptimizedUrl } from '../utils/imageUtils';
+import { extractYoutubeId } from '../lib/utils/youtube';
 import {
   Play,
   Search,
@@ -50,9 +51,7 @@ export interface VideosPageProps {
 
 const extractVideoId = (v: CmsVideo): string => {
   if (v.youtubeVideoId && v.youtubeVideoId.length === 11) return v.youtubeVideoId;
-  const rawUrl = v.youtubeUrl || '';
-  const match = rawUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
-  return match ? match[1] : '';
+  return extractYoutubeId(v.youtubeUrl || '') || '';
 };
 
 export const VideosPage: React.FC<VideosPageProps> = ({ initialVideos }) => {

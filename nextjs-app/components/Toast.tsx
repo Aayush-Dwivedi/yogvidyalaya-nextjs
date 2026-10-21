@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { CheckCircle2, AlertCircle, Info, Sparkles, X } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 export type ToastType = 'info' | 'success' | 'error' | 'gold';
@@ -14,8 +15,23 @@ export interface ToastItem {
   duration?: number;
 }
 
+export interface ToastOptions {
+  type?: ToastType;
+  title: string;
+  message?: string;
+  duration?: number;
+}
+
+interface ToastFn {
+  (options: ToastOptions): void;
+  success: (title: string, message?: string, duration?: number) => void;
+  error: (title: string, message?: string, duration?: number) => void;
+  info: (title: string, message?: string, duration?: number) => void;
+  gold: (title: string, message?: string, duration?: number) => void;
+}
+
 interface ToastContextValue {
-  toast: (options: Omit<ToastItem, 'id'>) => void;
+  toast: ToastFn;
   dismiss: (id: string) => void;
 }
 
@@ -28,8 +44,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  const toast = useCallback(
-    ({ type = 'gold', title, message, duration = 4500 }: Omit<ToastItem, 'id'>) => {
+  const showToast = useCallback(
+    ({ type = 'gold', title, message, duration = 4500 }: ToastOptions) => {
       const id = Math.random().toString(36).substring(2, 9);
       const newToast: ToastItem = { id, type, title, message, duration };
 
@@ -44,6 +60,17 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     [dismiss]
   );
 
+  const toast = Object.assign(showToast, {
+    success: (title: string, message?: string, duration?: number) =>
+      showToast({ type: 'success', title, message, duration }),
+    error: (title: string, message?: string, duration?: number) =>
+      showToast({ type: 'error', title, message, duration }),
+    info: (title: string, message?: string, duration?: number) =>
+      showToast({ type: 'info', title, message, duration }),
+    gold: (title: string, message?: string, duration?: number) =>
+      showToast({ type: 'gold', title, message, duration }),
+  });
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -56,7 +83,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       {mounted &&
         createPortal(
           <div
-            className="fixed bottom-5 right-5 z-50 flex flex-col space-y-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"
+            className="fixed top-5 right-5 z-[9999] flex flex-col space-y-2.5 max-w-sm sm:max-w-md w-full pointer-events-none px-4 sm:px-0"
             aria-live="polite"
           >
             {toasts.map((item) => (
@@ -78,39 +105,66 @@ export const useToast = () => {
 };
 
 const ToastCard: React.FC<{ item: ToastItem; onDismiss: () => void }> = ({ item, onDismiss }) => {
-  const typeStyles: Record<ToastType, string> = {
-    gold: 'border-l-4 border-l-gold-500 bg-surface border-y border-r border-gold-300/40 text-charcoal',
-    info: 'border-l-4 border-l-plum-800 bg-surface border-y border-r border-border text-charcoal',
-    success: 'border-l-4 border-l-emerald-600 bg-surface border-y border-r border-border text-charcoal',
-    error: 'border-l-4 border-l-rose-700 bg-surface border-y border-r border-rose-200 text-charcoal',
+  const typeConfig: Record<
+    ToastType,
+    { border: string; bg: string; icon: React.ReactNode; titleColor: string }
+  > = {
+    gold: {
+      border: 'border-gold-400/50 bg-amber-950/95 text-amber-100',
+      bg: 'shadow-gold-950/30',
+      icon: <Sparkles className="w-5 h-5 text-gold-400 shrink-0 mt-0.5" />,
+      titleColor: 'text-gold-200',
+    },
+    info: {
+      border: 'border-plum-500/40 bg-plum-950/95 text-plum-100',
+      bg: 'shadow-plum-950/30',
+      icon: <Info className="w-5 h-5 text-gold-300 shrink-0 mt-0.5" />,
+      titleColor: 'text-plum-100',
+    },
+    success: {
+      border: 'border-emerald-500/50 bg-emerald-950/95 text-emerald-100',
+      bg: 'shadow-emerald-950/40',
+      icon: <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />,
+      titleColor: 'text-emerald-200',
+    },
+    error: {
+      border: 'border-rose-500/50 bg-rose-950/95 text-rose-100',
+      bg: 'shadow-rose-950/40',
+      icon: <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />,
+      titleColor: 'text-rose-200',
+    },
   };
+
+  const current = typeConfig[item.type];
 
   return (
     <div
       className={cn(
-        'pointer-events-auto rounded-[2px] p-4 shadow-card animate-fade-in flex items-start justify-between gap-3',
-        typeStyles[item.type]
+        'pointer-events-auto rounded-xl p-4 shadow-2xl backdrop-blur-md border animate-in fade-in slide-in-from-top-3 flex items-start gap-3 transition-all duration-300',
+        current.border,
+        current.bg
       )}
       role="alert"
     >
-      <div className="space-y-0.5">
-        <h4 className="text-sm font-semibold tracking-wide text-plum-900 font-sans">
+      {current.icon}
+
+      <div className="flex-1 space-y-0.5">
+        <h4 className={cn('text-sm font-semibold tracking-wide font-sans', current.titleColor)}>
           {item.title}
         </h4>
         {item.message && (
-          <p className="text-xs text-ink-muted leading-relaxed font-sans">{item.message}</p>
+          <p className="text-xs text-white/80 leading-relaxed font-sans">{item.message}</p>
         )}
       </div>
 
       <button
         onClick={onDismiss}
-        className="text-ink-faint hover:text-plum-900 p-1 transition-colors"
+        className="text-white/60 hover:text-white p-1 rounded transition-colors -mr-1 -mt-1"
         aria-label="Dismiss notification"
       >
-        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <X className="w-4 h-4" />
       </button>
     </div>
   );
 };
+

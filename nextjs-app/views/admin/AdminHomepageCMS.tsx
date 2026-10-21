@@ -44,7 +44,7 @@ export const AdminHomepageCMS: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'hero' | 'cta' | 'courses' | 'workshops' | 'media'>('hero');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
 
   // Data states
   const [slides, setSlides] = useState<CmsHeroSlide[]>([]);
@@ -103,11 +103,13 @@ export const AdminHomepageCMS: React.FC = () => {
   }, []);
 
 
-  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+  const showToast = (text: string, type: 'success' | 'error' | 'info' = 'success') => {
     setStatusMessage({ type, text });
-    setTimeout(() => {
-      setStatusMessage(null);
-    }, 4500);
+    if (type !== 'info') {
+      setTimeout(() => {
+        setStatusMessage(null);
+      }, 4500);
+    }
   };
 
   // ==========================================
@@ -221,13 +223,24 @@ export const AdminHomepageCMS: React.FC = () => {
     const rawImage = editingSlide?.image;
     const imageUrl = (typeof rawImage === 'string' ? rawImage : rawImage?.url)?.trim();
 
-    if (!editingSlide?.heading || !editingSlide.description || !imageUrl) {
-      showToast('Heading, description, and an image are required.', 'error');
+    if (!editingSlide?.heading?.trim()) {
+      showToast('Slide Heading Required: Please enter a title/heading for this hero slide.', 'error');
+      return;
+    }
+
+    if (!editingSlide?.description?.trim()) {
+      showToast('Slide Description Required: Please provide a description for this hero slide.', 'error');
+      return;
+    }
+
+    if (!imageUrl) {
+      showToast('Hero Image Required: Please upload a photo or provide an image URL for this slide.', 'error');
       return;
     }
 
     try {
       setSaving(true);
+      showToast(editingSlide._id || editingSlide.id ? 'Updating hero slide...' : 'Saving new hero slide...', 'info');
       const slideId = editingSlide._id || editingSlide.id;
       const payload = {
         ...editingSlide,
@@ -417,24 +430,29 @@ export const AdminHomepageCMS: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Toast Notification */}
+      {/* Floating Toast Notification (Always on front of modals & uploads) */}
       {statusMessage && (
         <div
-          className={`flex items-center gap-3 p-4 rounded-xl border text-sm transition-all duration-300 shadow-modal ${
+          className={`fixed top-6 right-6 z-[9999] max-w-md w-[calc(100vw-3rem)] flex items-center gap-3 p-4 rounded-xl border text-sm transition-all duration-300 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-4 ${
             statusMessage.type === 'success'
-              ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-200'
-              : 'bg-rose-950/80 border-rose-500/40 text-rose-200'
+              ? 'bg-emerald-950/95 border-emerald-500/50 text-emerald-100 shadow-emerald-950/40'
+              : statusMessage.type === 'info'
+              ? 'bg-plum-950/95 border-gold-500/40 text-gold-200 shadow-plum-950/40'
+              : 'bg-rose-950/95 border-rose-500/50 text-rose-100 shadow-rose-950/40'
           }`}
+          role="alert"
         >
           {statusMessage.type === 'success' ? (
             <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          ) : statusMessage.type === 'info' ? (
+            <RefreshCw className="w-5 h-5 text-gold-400 animate-spin shrink-0" />
           ) : (
             <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
           )}
-          <span className="flex-1 font-sans">{statusMessage.text}</span>
+          <span className="flex-1 font-sans font-medium">{statusMessage.text}</span>
           <button
             onClick={() => setStatusMessage(null)}
-            className="text-xs opacity-70 hover:opacity-100 uppercase tracking-wider"
+            className="text-xs opacity-70 hover:opacity-100 uppercase tracking-wider px-2 py-1 hover:bg-white/10 rounded transition-colors"
           >
             Dismiss
           </button>
