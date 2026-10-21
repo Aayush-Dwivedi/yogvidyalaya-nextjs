@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
 
   images: {
     formats: ['image/avif', 'image/webp'],
+    qualities: [75, 85],
     remotePatterns: [
       // Allow Supabase Storage images (both raw object and transformed render endpoints)
       {

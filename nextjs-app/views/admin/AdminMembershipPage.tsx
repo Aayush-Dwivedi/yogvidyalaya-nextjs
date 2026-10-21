@@ -325,21 +325,28 @@ export const AdminMembershipPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Toast Notification */}
+      {/* Floating Toast Notification (Always on front of modals & uploads) */}
       {statusMessage && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-lg shadow-modal border text-sm font-medium animate-fade-in ${
+          className={`fixed top-6 right-6 z-[9999] max-w-md w-[calc(100vw-3rem)] flex items-center gap-3 p-4 rounded-xl border text-sm transition-all duration-300 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-4 ${
             statusMessage.type === 'success'
-              ? 'bg-emerald-950 text-emerald-100 border-emerald-800'
-              : 'bg-rose-950 text-rose-100 border-rose-800'
+              ? 'bg-emerald-950/95 border-emerald-500/50 text-emerald-100 shadow-emerald-950/40'
+              : 'bg-rose-950/95 border-rose-500/50 text-rose-100 shadow-rose-950/40'
           }`}
+          role="alert"
         >
           {statusMessage.type === 'success' ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
           )}
-          <span>{statusMessage.text}</span>
+          <span className="flex-1 font-sans font-medium">{statusMessage.text}</span>
+          <button
+            onClick={() => setStatusMessage(null)}
+            className="text-xs opacity-70 hover:opacity-100 uppercase tracking-wider px-2 py-1 hover:bg-white/10 rounded transition-colors"
+          >
+            Dismiss
+          </button>
         </div>
       )}
 

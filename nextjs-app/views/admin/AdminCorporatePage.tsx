@@ -30,7 +30,7 @@ export const AdminCorporatePage: React.FC = () => {
   const [programs, setPrograms] = useState<CmsCorporateProgram[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -67,11 +67,13 @@ export const AdminCorporatePage: React.FC = () => {
     loadData();
   }, []);
 
-  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+  const showToast = (text: string, type: 'success' | 'error' | 'info' = 'success') => {
     setStatusMessage({ type, text });
-    setTimeout(() => {
-      setStatusMessage(null);
-    }, 4500);
+    if (type !== 'info') {
+      setTimeout(() => {
+        setStatusMessage(null);
+      }, 4500);
+    }
   };
 
   const handleOpenModal = (program?: CmsCorporateProgram) => {
@@ -107,8 +109,18 @@ export const AdminCorporatePage: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file || !editingProgram) return;
 
+    if (!file.type.startsWith('image/')) {
+      showToast('Invalid File: Please upload an image file (PNG, JPG, WebP).', 'error');
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      showToast('File Too Large: Cover image must be smaller than 8MB.', 'error');
+      return;
+    }
+
     try {
       setUploadingImage(true);
+      showToast('Uploading cover image...', 'info');
       const uploaded = await MediaService.uploadImage(file, 'corporate');
       setEditingProgram((prev) => ({
         ...prev,
@@ -118,10 +130,10 @@ export const AdminCorporatePage: React.FC = () => {
           alt: `${prev?.title || 'Corporate Program'} Cover`,
         },
       }));
-      showToast('Cover image uploaded successfully!');
+      showToast('Cover image uploaded successfully!', 'success');
     } catch (err: any) {
       console.error('Image upload failed:', err);
-      showToast(err.message || 'Failed to upload image', 'error');
+      showToast('Upload Failed: ' + (err.message || 'Failed to upload image'), 'error');
     } finally {
       setUploadingImage(false);
     }
@@ -176,13 +188,20 @@ export const AdminCorporatePage: React.FC = () => {
     e.preventDefault();
     if (!editingProgram) return;
 
-    if (!editingProgram.title?.trim() || !editingProgram.shortDescription?.trim()) {
-      showToast('Title and short description are required.', 'error');
+    if (!editingProgram.title?.trim()) {
+      showToast('Program Title Required: Please enter the corporate program title.', 'error');
+      return;
+    }
+
+    if (!editingProgram.shortDescription?.trim()) {
+      showToast('Description Required: Please provide a short summary for this corporate program.', 'error');
       return;
     }
 
     try {
       setSaving(true);
+      const isEdit = Boolean(editingProgram._id || editingProgram.id);
+      showToast(isEdit ? 'Updating corporate program...' : 'Saving new corporate program...', 'info');
       const slug =
         editingProgram.slug?.trim() ||
         editingProgram.title
@@ -195,15 +214,14 @@ export const AdminCorporatePage: React.FC = () => {
         slug,
       };
 
-      const isEdit = Boolean(editingProgram._id || editingProgram.id);
       const id = (editingProgram._id || editingProgram.id) as string;
 
       if (isEdit) {
         await CmsService.updateCorporateProgram(id, payload);
-        showToast('Corporate program updated successfully!');
+        showToast('Corporate program updated successfully!', 'success');
       } else {
         await CmsService.createCorporateProgram(payload);
-        showToast('New corporate program created successfully!');
+        showToast('New corporate program created successfully!', 'success');
       }
 
       setModalOpen(false);
@@ -263,24 +281,29 @@ export const AdminCorporatePage: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12 font-sans">
-      {/* Toast Alert */}
+      {/* Floating Toast Notification (Always on front of modals & uploads) */}
       {statusMessage && (
         <div
-          className={`flex items-center gap-3 p-4 rounded-xl border text-sm transition-all duration-300 shadow-modal ${
+          className={`fixed top-6 right-6 z-[9999] max-w-md w-[calc(100vw-3rem)] flex items-center gap-3 p-4 rounded-xl border text-sm transition-all duration-300 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-4 ${
             statusMessage.type === 'success'
-              ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-200'
-              : 'bg-rose-950/80 border-rose-500/40 text-rose-200'
+              ? 'bg-emerald-950/95 border-emerald-500/50 text-emerald-100 shadow-emerald-950/40'
+              : statusMessage.type === 'info'
+              ? 'bg-plum-950/95 border-gold-500/40 text-gold-200 shadow-plum-950/40'
+              : 'bg-rose-950/95 border-rose-500/50 text-rose-100 shadow-rose-950/40'
           }`}
+          role="alert"
         >
           {statusMessage.type === 'success' ? (
             <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          ) : statusMessage.type === 'info' ? (
+            <RefreshCw className="w-5 h-5 text-gold-400 animate-spin shrink-0" />
           ) : (
             <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
           )}
-          <span className="flex-1 font-sans">{statusMessage.text}</span>
+          <span className="flex-1 font-sans font-medium">{statusMessage.text}</span>
           <button
             onClick={() => setStatusMessage(null)}
-            className="text-xs opacity-70 hover:opacity-100 uppercase tracking-wider"
+            className="text-xs opacity-70 hover:opacity-100 uppercase tracking-wider px-2 py-1 hover:bg-white/10 rounded transition-colors"
           >
             Dismiss
           </button>

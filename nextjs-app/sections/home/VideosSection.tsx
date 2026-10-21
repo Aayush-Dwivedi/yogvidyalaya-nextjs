@@ -11,6 +11,7 @@ import { VideoItem } from '../../types/home';
 import { CmsVideo } from '../../types/cms';
 import { CmsService } from '../../services/cmsService';
 import { isOptimizedUrl } from '../../utils/imageUtils';
+import { extractYoutubeId } from '../../lib/utils/youtube';
 
 export interface VideosSectionProps {
   videos?: (VideoItem | CmsVideo)[];
@@ -19,9 +20,7 @@ export interface VideosSectionProps {
 const extractVideoId = (v: any): string => {
   if (v.youtubeVideoId && v.youtubeVideoId.length === 11) return v.youtubeVideoId;
   if (v.youtubeId && v.youtubeId.length === 11) return v.youtubeId;
-  const rawUrl = v.youtubeUrl || v.url || '';
-  const match = rawUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
-  return match ? match[1] : '';
+  return extractYoutubeId(v.youtubeUrl || v.url || '') || '';
 };
 
 const normalizeVideos = (items: any[]): VideoItem[] => {

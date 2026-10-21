@@ -29,7 +29,7 @@ export const AdminTrainersPage: React.FC = () => {
   const [trainers, setTrainers] = useState<CmsFounder[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
 
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
@@ -57,11 +57,13 @@ export const AdminTrainersPage: React.FC = () => {
     loadTrainers();
   }, []);
 
-  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+  const showToast = (text: string, type: 'success' | 'error' | 'info' = 'success') => {
     setStatusMessage({ type, text });
-    setTimeout(() => {
-      setStatusMessage(null);
-    }, 4500);
+    if (type !== 'info') {
+      setTimeout(() => {
+        setStatusMessage(null);
+      }, 4500);
+    }
   };
 
 
@@ -98,8 +100,18 @@ export const AdminTrainersPage: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file || !editingTrainer) return;
 
+    if (!file.type.startsWith('image/')) {
+      showToast('Invalid File: Please select a valid photo file (PNG, JPG, WebP).', 'error');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('File Too Large: Trainer photo must be under 5MB.', 'error');
+      return;
+    }
+
     try {
       setUploadingImage(true);
+      showToast('Uploading trainer photo...', 'info');
       const res = await MediaService.uploadImage(file, 'trainers', editingTrainer.name || 'Trainer');
       setEditingTrainer({
         ...editingTrainer,
@@ -109,9 +121,9 @@ export const AdminTrainersPage: React.FC = () => {
           alt: editingTrainer.name || 'Trainer Photo',
         },
       });
-      showToast('Trainer photo uploaded successfully!');
+      showToast('Trainer photo uploaded successfully!', 'success');
     } catch (err: any) {
-      showToast(err.message || 'Failed to upload photo', 'error');
+      showToast('Upload Failed: ' + (err.message || 'Could not upload photo'), 'error');
     } finally {
       setUploadingImage(false);
     }
@@ -162,12 +174,20 @@ export const AdminTrainersPage: React.FC = () => {
     if (!editingTrainer) return;
 
     if (!editingTrainer.name?.trim()) {
-      showToast('Trainer name is required', 'error');
+      showToast('Trainer Name Required: Please enter the instructor’s full name.', 'error');
+      return;
+    }
+
+    const designation = editingTrainer.designation?.trim() || editingTrainer.title?.trim();
+    if (!designation) {
+      showToast('Designation Required: Please enter the trainer’s role or designation (e.g. Senior Yoga Acharya).', 'error');
       return;
     }
 
     try {
       setSaving(true);
+      const trainerId = (editingTrainer._id || editingTrainer.id) as string;
+      showToast(trainerId ? 'Updating trainer profile...' : 'Saving new trainer...', 'info');
       const rawSlug = editingTrainer.slug?.trim() || editingTrainer.name.trim();
       const slug =
         rawSlug
@@ -210,13 +230,12 @@ export const AdminTrainersPage: React.FC = () => {
         },
       };
 
-      const trainerId = (editingTrainer._id || editingTrainer.id) as string;
       if (trainerId) {
         await CmsService.updateFounder(trainerId, payload);
-        showToast('Trainer profile updated successfully!');
+        showToast('Trainer profile updated successfully!', 'success');
       } else {
         await CmsService.createFounder(payload);
-        showToast('New trainer created successfully!');
+        showToast('New trainer created successfully!', 'success');
       }
 
       setModalOpen(false);
@@ -296,25 +315,31 @@ export const AdminTrainersPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Toast Notification */}
+      {/* Floating Toast Notification (Always on front of modals & uploads) */}
       {statusMessage && (
         <div
-          className={`p-4 rounded-xl text-xs font-sans flex items-center justify-between border shadow-soft animate-in fade-in ${
+          className={`fixed top-6 right-6 z-[9999] max-w-md w-[calc(100vw-3rem)] flex items-center gap-3 p-4 rounded-xl border text-sm transition-all duration-300 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-4 ${
             statusMessage.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-              : 'bg-red-50 text-red-800 border-red-200'
+              ? 'bg-emerald-950/95 border-emerald-500/50 text-emerald-100 shadow-emerald-950/40'
+              : statusMessage.type === 'info'
+              ? 'bg-plum-950/95 border-gold-500/40 text-gold-200 shadow-plum-950/40'
+              : 'bg-rose-950/95 border-rose-500/50 text-rose-100 shadow-rose-950/40'
           }`}
+          role="alert"
         >
-          <div className="flex items-center gap-2">
-            {statusMessage.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            ) : (
-              <AlertCircle className="w-4 h-4 text-red-600" />
-            )}
-            <span className="font-medium">{statusMessage.text}</span>
-          </div>
-          <button onClick={() => setStatusMessage(null)} className="text-ink-muted hover:text-ink">
-            &times;
+          {statusMessage.type === 'success' ? (
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          ) : statusMessage.type === 'info' ? (
+            <RefreshCw className="w-5 h-5 text-gold-400 animate-spin shrink-0" />
+          ) : (
+            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+          )}
+          <span className="flex-1 font-sans font-medium">{statusMessage.text}</span>
+          <button
+            onClick={() => setStatusMessage(null)}
+            className="text-xs opacity-70 hover:opacity-100 uppercase tracking-wider px-2 py-1 hover:bg-white/10 rounded transition-colors"
+          >
+            Dismiss
           </button>
         </div>
       )}

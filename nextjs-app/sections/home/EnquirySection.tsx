@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Container } from '../../components/Container';
+import { useToast } from '../../components/Toast';
 import {
   Send,
   CheckCircle2,
@@ -31,6 +32,7 @@ export const EnquirySection: React.FC<EnquirySectionProps> = ({
   subtitle = 'Submit your inquiry directly to our database. Our senior yoga acharyas and admissions team review every submission and connect with you personally.',
   defaultInterest = 'general',
 }) => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -49,17 +51,23 @@ export const EnquirySection: React.FC<EnquirySectionProps> = ({
     setErrorMessage('');
 
     if (!formData.name.trim()) {
-      setErrorMessage('Please provide your full name.');
+      const msg = 'Please provide your full name so our admissions team knows who to address.';
+      setErrorMessage(msg);
+      toast.error('Full Name Required', msg);
       return;
     }
 
     if (!formData.email.trim() || !formData.email.includes('@')) {
-      setErrorMessage('Please enter a valid email address.');
+      const msg = 'Please enter a valid email address (e.g. name@example.com).';
+      setErrorMessage(msg);
+      toast.error('Valid Email Required', msg);
       return;
     }
 
     if (!formData.message.trim()) {
-      setErrorMessage('Please describe your query or area of interest.');
+      const msg = 'Please describe your query or program of interest before submitting.';
+      setErrorMessage(msg);
+      toast.error('Inquiry Details Missing', msg);
       return;
     }
 
@@ -77,6 +85,7 @@ export const EnquirySection: React.FC<EnquirySectionProps> = ({
       }
 
       setSubmitted(true);
+      toast.success('Inquiry Submitted!', 'Our admissions coordinators review the database continuously and will connect with you.');
       if (data.data?.id) {
         setEnquiryRefId(String(data.data.id).slice(-6).toUpperCase());
       }
@@ -89,9 +98,9 @@ export const EnquirySection: React.FC<EnquirySectionProps> = ({
       });
     } catch (err: unknown) {
       const errObj = err as { message?: string };
-      setErrorMessage(
-        errObj?.message || 'Could not connect to the database. Please verify your internet connection or call our reception.'
-      );
+      const msg = errObj?.message || 'Could not connect to the database. Please verify your connection.';
+      setErrorMessage(msg);
+      toast.error('Submission Failed', msg);
     } finally {
       setSubmitting(false);
     }
