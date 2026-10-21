@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1600" width="1600" height="1600" fill="none">
+  <g transform="rotate(0 800 800)">
+    <line x1="800" y1="422" x2="800" y2="438" stroke="#DAA53B" stroke-width="1" stroke-opacity="0.14" />
+    <line x1="800" y1="310" x2="800" y2="330" stroke="#DAA53B" stroke-width="1.2" stroke-opacity="0.22" />
+    <polygon points="800,314 804,320 800,326 796,320" fill="#DAA53B" fill-opacity="0.22" />
+    <line x1="800" y1="190" x2="800" y2="210" stroke="#DAA53B" stroke-width="1.4" stroke-opacity="0.32" />
+    <polygon points="800,193 805,200 800,207 795,200" fill="#DAA53B" fill-opacity="0.32" />
+    <line x1="800" y1="60" x2="800" y2="80" stroke="#DAA53B" stroke-width="1.6" stroke-opacity="0.45" />
+    <polygon points="800,62 806,70 800,78 794,70" fill="#DAA53B" fill-opacity="0.45" />
+  </g>
+  <g transform="rotate(45 800 800)">
+    <line x1="800" y1="422" x2="800" y2="438" stroke="#DAA53B" stroke-width="1" stroke-opacity="0.14" />
+    <line x1="800" y1="310" x2="800" y2="330" stroke="#DAA53B" stroke-width="1.2" stroke-opacity="0.22" />
+    <polygon points="800,314 804,320 800,326 796,320" fill="#DAA53B" fill-opacity="0.22" />
+    <line x1="800" y1="190" x2="800" y2="210" stroke="#DAA53B" stroke-width="1.4" stroke-opacity="0.32" />
+    <polygon points="800,193 805,200 800,207 795,200" fill="#DAA53B" fill-opacity="0.32" />
+    <line x1="800" y1="60" x2="800" y2="80" stroke="#DAA53B" stroke-width="1.6" stroke-opacity="0.45" />
+    <polygon points="800,62 806,70 800,78 794,70" fill="#DAA53B" fill-opacity="0.45" />
+  </g>
+  <g transform="rotate(90 800 800)">
+    <line x1="800" y1="422" x2="800" y2="438" stroke="#DAA53B" stroke-width="1" stroke-opacity="0.14" />
+    <line x1="800" y1="310" x2="800" y2="330" stroke="#DAA53B" stroke-width="1.2" stroke-opacity="0.22" />
+    <polygon points="800,314 804,320 800,326 796,320" fill="#DAA53B" fill-opacity="0.22" />
+    <line x1="800" y1="190" x2="800" y2="210" stroke="#DAA53B" stroke-width="1.4" stroke-opacity="0.32" />
+    <polygon points="800,193 805,200 800,207 795,200" fill="#DAA53B" fill-opacity="0.32" />
+    <line x1="800" y1="60" x2="800" y2="80" stroke="#DAA53B" stroke-width="1.6" stroke-opacity="0.45" />
+    <polygon points="800,62 806,70 800,78 794,70" fill="#DAA53B" fill-opacity="0.45" />
+  </g>
+  <g transform="rotate(135 800 800)">
+    <line x1="800" y1="422" x2="800" y2="438" stroke="#DAA53B" stroke-width="1" stroke-opacity="0.14" />
+    <line x1="800" y1="310" x2="800" y2="330" stroke="#DAA53B" stroke-width="1.2" stroke-opacity="0.22" />
+    <polygon points="800,314 804,320 800,326 796,320" fill="#DAA53B" fill-opacity="0.22" />
+    <line x1="800" y1="190" x2="800" y2="210" stroke="#DAA53B" stroke-width="1.4" stroke-opacity="0.32" />
+    <polygon points="800,193 805,200 800,207 795,200" fill="#DAA53B" fill-opacity="0.32" />
+    <line x1="800" y1="60" x2="800" y2="80" stroke="#DAA53B" stroke-width="1.6" stroke-opacity="0.45" />
+    <polygon points="800,62 806,70 800,78 794,70" fill="#DAA53B" fill-opacity="0.45" />
+  </g>
+  <g transform="rotate(180 800 800)">
+    <line x1="800" y1="422" x2="800" y2="438" stroke="#DAA53B" stroke-width="1" stroke-opacity="0.14" />
+    <line x1="800" y1="310" x2="800" y2="330" stroke="#DAA53B" stroke-width="1.2" stroke-opacity="0.22" />
+    <polygon points="800,314 804,320 800,326 796,320" fill="#DAA53B" fill-opacity="0.22" />
+    <line x1="800" y1="190" x2="800" y2="210" stroke="#DAA53B" stroke-width="1.4" stroke-opacity="0.32" />
+    <polygon points="800,193 805,200 800,207 795,200" fill="#DAA53B" fill-opacity="0.32" />
+    <line x1="800" y1="60" x2="800" y2="80" stroke="#DAA53B" stroke-width="1.6" stroke-opacity="0.45" />
+    <polygon points="800,62 806,70 800,78 794,70" fill="#DAA53B" fill-opacity="0.45" />
+  </g>
+  <g transform="rotate(225 800 800)">
+    <line x1="800" y1="422" x2="800" y2="438" stroke="#DAA53B" stroke-width="1" stroke-opacity="0.14" />
+    <line x1="800" y1="310" x2="800" y2="330" stroke="#DAA53B" stroke-width="1.2" stroke-opacity="0.22" />
+    <polygon points="800,314 804,320 800,326 796,320" fill="#DAA53B" fill-opacity="0.22" />
+    <line x1="800" y1="190" x2="800" y2="210" stroke="#DAA53B" stroke-width="1.4" stroke-opacity="0.32" />
+    <polygon points="800,193 805,200 800,207 795,200" fill="#DAA53B" fill-opacity="0.32" />
+    <line x1="800" y1="60" x2="800" y2="80" stroke="#DAA53B" stroke-width="1.6" stroke-opacity="0.45" />
+    <polygon points="800,62 806,70 800,78 794,70" fill="#DAA53B" fill-opacity="0.45" />
+  </g>
+  <g transform="rotate(270 800 800)">
+    <line x1="800" y1="422" x2="800" y2="438" stroke="#DAA53B" stroke-width="1" stroke-opacity="0.14" />
+    <line x1="800" y1="310" x2="800" y2="330" stroke="#DAA53B" stroke-width="1.2" stroke-opacity="0.22" />
+    <polygon points="800,314 804,320 800,326 796,320" fill="#DAA53B" fill-opacity="0.22" />
+    <line x1="800" y1="190" x2="800" y2="210" stroke="#DAA53B" stroke-width="1.4" stroke-opacity="0.32" />
+    <polygon points="800,193 805,200 800,207 795,200" fill="#DAA53B" fill-opacity="0.32" />
+    <line x1="800" y1="60" x2="800" y2="80" stroke="#DAA53B" stroke-width="1.6" stroke-opacity="0.45" />
+    <polygon points="800,62 806,70 800,78 794,70" fill="#DAA53B" fill-opacity="0.45" />
+  </g>
+  <g transform="rotate(315 800 800)">
+    <line x1="800" y1="422" x2="800" y2="438" stroke="#DAA53B" stroke-width="1" stroke-opacity="0.14" />
+    <line x1="800" y1="310" x2="800" y2="330" stroke="#DAA53B" stroke-width="1.2" stroke-opacity="0.22" />
+    <polygon points="800,314 804,320 800,326 796,320" fill="#DAA53B" fill-opacity="0.22" />
+    <line x1="800" y1="190" x2="800" y2="210" stroke="#DAA53B" stroke-width="1.4" stroke-opacity="0.32" />
+    <polygon points="800,193 805,200 800,207 795,200" fill="#DAA53B" fill-opacity="0.32" />
+    <line x1="800" y1="60" x2="800" y2="80" stroke="#DAA53B" stroke-width="1.6" stroke-opacity="0.45" />
+    <polygon points="800,62 806,70 800,78 794,70" fill="#DAA53B" fill-opacity="0.45" />
+  </g>
+</svg>

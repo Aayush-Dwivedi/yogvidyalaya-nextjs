@@ -269,7 +269,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides: propSlides }) 
 
           {/* ── RIGHT COLUMN: Circular Sacred Frame Slideshow ── */}
           <div className="lg:col-span-5 xl:col-span-5 flex items-center justify-center lg:justify-end relative">
-            <div className="relative w-[280px] sm:w-[350px] lg:w-[330px] xl:w-[450px] 2xl:w-[490px] aspect-square shrink-0">
+            <div className="relative w-[280px] sm:w-[350px] lg:w-[330px] xl:w-[450px] 2xl:w-[490px] aspect-square shrink-0 lg:-translate-x-8 xl:-translate-x-12 2xl:-translate-x-16">
               
               {/* ── CELESTIAL ORBIT RINGS & ROTATING SATELLITES (MAIN CIRCLE ROTATION - NO PETALS) ── */}
               <svg

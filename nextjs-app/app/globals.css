@@ -324,40 +324,36 @@
 /* Sacred Geometry & Gradient Breathing Animations */
 @keyframes sacredBreathing {
   0%, 100% {
-    transform: scale(1);
     opacity: 0.85;
   }
   50% {
-    transform: scale(1.025);
     opacity: 1;
   }
 }
 
 @keyframes sacredSpinSlow {
   from {
-    transform: rotate(0deg);
+    transform: rotateZ(0deg);
   }
   to {
-    transform: rotate(360deg);
+    transform: rotateZ(360deg);
   }
 }
 
 @keyframes sacredSpinReverse {
   from {
-    transform: rotate(360deg);
+    transform: rotateZ(360deg);
   }
   to {
-    transform: rotate(0deg);
+    transform: rotateZ(0deg);
   }
 }
 
 @keyframes auricGlowBreath {
   0%, 100% {
-    transform: scale(0.96);
     opacity: 0.75;
   }
   50% {
-    transform: scale(1.05);
     opacity: 1;
   }
 }
