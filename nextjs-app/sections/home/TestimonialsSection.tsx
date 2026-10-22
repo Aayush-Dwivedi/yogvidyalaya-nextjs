@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import { Container } from '../../components/Container';
 import { SectionHeader } from '../../components/SectionHeader';
 import { CmsTestimonial } from '../../types/cms';
 import { CmsService } from '../../services/cmsService';
-import { Star, Quote, ChevronLeft, ChevronRight, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
+import { Star, Quote, ChevronLeft, ChevronRight, MapPin, ChevronDown } from 'lucide-react';
 import { isOptimizedUrl } from '../../utils/imageUtils';
 
 export interface TestimonialsSectionProps {
@@ -15,9 +15,30 @@ export interface TestimonialsSectionProps {
 
 const TestimonialCard: React.FC<{ item: CmsTestimonial; idx: number }> = ({ item, idx }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const [contentHeight, setContentHeight] = useState<number | null>(null);
+
   const quoteText = item.quote || '';
   // Quotes longer than 150 characters or with 2+ newlines will be clamped and expandable
   const isLong = quoteText.length > 150 || (quoteText.match(/\n/g) || []).length >= 2;
+
+  useEffect(() => {
+    const updateHeight = () => {
+      if (textRef.current) {
+        setContentHeight(textRef.current.scrollHeight);
+      }
+    };
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, [quoteText]);
+
+  const toggleExpand = () => {
+    if (textRef.current) {
+      setContentHeight(textRef.current.scrollHeight);
+    }
+    setIsExpanded((prev) => !prev);
+  };
 
   return (
     <div
@@ -51,27 +72,53 @@ const TestimonialCard: React.FC<{ item: CmsTestimonial; idx: number }> = ({ item
           </span>
         )}
         <div className="relative">
-          <p
-            className={`text-sm sm:text-base text-ink font-editorial italic font-normal leading-relaxed break-words ${
-              !isExpanded ? 'line-clamp-4' : ''
-            }`}
-          >
-            "{quoteText}"
-          </p>
+          {!isLong ? (
+            <p className="text-sm sm:text-base text-ink font-editorial italic font-normal leading-relaxed break-words whitespace-pre-line">
+              "{quoteText}"
+            </p>
+          ) : (
+            <>
+              {/* Smooth Animated Container */}
+              <div
+                className="relative overflow-hidden transition-[max-height] duration-500 ease-in-out"
+                style={{
+                  maxHeight: isExpanded
+                    ? contentHeight
+                      ? `${contentHeight + 8}px`
+                      : '500px'
+                    : '92px',
+                }}
+              >
+                <p
+                  ref={textRef}
+                  className="text-sm sm:text-base text-ink font-editorial italic font-normal leading-relaxed break-words whitespace-pre-line"
+                >
+                  "{quoteText}"
+                </p>
 
-          {isLong && (
-            <button
-              type="button"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="mt-2.5 inline-flex items-center gap-1 text-xs font-sans font-semibold text-gold-700 hover:text-gold-900 transition-colors cursor-pointer group-hover:text-gold-800"
-            >
-              <span>{isExpanded ? 'Show less' : 'Read full review'}</span>
-              {isExpanded ? (
-                <ChevronUp className="w-3.5 h-3.5 text-gold-600" />
-              ) : (
-                <ChevronDown className="w-3.5 h-3.5 text-gold-600" />
-              )}
-            </button>
+                {/* Subtle fade-out gradient at the bottom when collapsed */}
+                <div
+                  className={`absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-surface to-transparent pointer-events-none transition-opacity duration-300 ${
+                    isExpanded ? 'opacity-0' : 'opacity-100'
+                  }`}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={toggleExpand}
+                className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-gold-700 hover:text-gold-900 transition-colors cursor-pointer group-hover:text-gold-800"
+              >
+                <span>{isExpanded ? 'Show less' : 'Read full review'}</span>
+                <span
+                  className={`transform transition-transform duration-300 ${
+                    isExpanded ? 'rotate-180' : 'rotate-0'
+                  }`}
+                >
+                  <ChevronDown className="w-3.5 h-3.5 text-gold-600" />
+                </span>
+              </button>
+            </>
           )}
         </div>
       </div>
