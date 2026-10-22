@@ -101,10 +101,10 @@ export const HomePage: React.FC<HomePageProps> = ({ initialHeroSlides, initialDa
       <AboutSection />
 
       {/* 3. Featured Upcoming Workshops */}
-      <FeaturedWorkshopsSection workshops={homeData?.featuredWorkshops} />
+      <FeaturedWorkshopsSection workshops={homeData?.featuredWorkshops ? homeData.featuredWorkshops.slice(0, 3) : undefined} />
 
       {/* 4. Featured Certified Courses */}
-      <FeaturedCoursesSection courses={homeData?.featuredCourses} />
+      <FeaturedCoursesSection courses={homeData?.featuredCourses ? homeData.featuredCourses.slice(0, 3) : undefined} />
 
       {/* 5. Why Yoga: Holistic Benefits & Scripture References */}
       <WhyYogaSection benefits={homeData?.benefits} />

@@ -20,6 +20,8 @@ import {
   Search,
   Filter,
   Sparkles,
+  ChevronDown,
+  CheckCircle2,
 } from 'lucide-react';
 
 export interface WorkshopsPageProps {
@@ -34,6 +36,14 @@ export const WorkshopsPage: React.FC<WorkshopsPageProps> = ({ initialWorkshops }
   const [selectedMode, setSelectedMode] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [upcomingOnly, setUpcomingOnly] = useState(false);
+  const [expandedWorkshops, setExpandedWorkshops] = useState<Record<string, boolean>>({});
+
+  const toggleExpand = (wsId: string) => {
+    setExpandedWorkshops((prev) => ({
+      ...prev,
+      [wsId]: !prev[wsId],
+    }));
+  };
 
 
   useEffect(() => {
@@ -213,9 +223,14 @@ export const WorkshopsPage: React.FC<WorkshopsPageProps> = ({ initialWorkshops }
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
               {filteredWorkshops.map((ws, idx) => {
-                const wsId = (ws._id || ws.id) as string;
+                const wsId =
+                  (typeof ws._id === 'string' && ws._id.trim() ? ws._id : null) ||
+                  (typeof ws.id === 'string' && ws.id.trim() ? ws.id : null) ||
+                  (typeof ws.slug === 'string' && ws.slug.trim() ? ws.slug : null) ||
+                  (ws._id && typeof ws._id.toString === 'function' && ws._id.toString() !== '[object Object]' ? ws._id.toString() : null) ||
+                  `workshop-${idx}`;
                 const coverUrl = ws.coverImage?.url || ws.image?.url;
                 const remainingSeats =
                   ws.capacity && ws.capacity.total
@@ -239,10 +254,14 @@ export const WorkshopsPage: React.FC<WorkshopsPageProps> = ({ initialWorkshops }
                     })
                   : null;
 
+                const isExpanded = Boolean(expandedWorkshops[wsId]);
+
                 return (
                   <article
                     key={wsId || idx}
-                    className="bg-surface border border-border rounded-[2px] overflow-hidden flex flex-col justify-between shadow-card hover:border-gold-500/70 transition-all duration-300 group hover:-translate-y-1"
+                    className={`bg-surface border rounded-[2px] overflow-hidden flex flex-col justify-between shadow-card transition-all duration-300 group hover:-translate-y-1 ${
+                      isExpanded ? 'border-gold-500 ring-1 ring-gold-500/30' : 'border-border hover:border-gold-500/70'
+                    }`}
                   >
                     {/* Card Top: Image Banner */}
                     <div>
@@ -290,7 +309,7 @@ export const WorkshopsPage: React.FC<WorkshopsPageProps> = ({ initialWorkshops }
 
                       {/* Card Content Body */}
                       <div className="p-6 sm:p-7 space-y-4">
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <div className="flex items-center justify-between text-[11px] text-ink-faint">
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3 text-gold-700" />
@@ -303,48 +322,118 @@ export const WorkshopsPage: React.FC<WorkshopsPageProps> = ({ initialWorkshops }
                             {ws.title}
                           </h3>
 
-                          <p className="text-xs text-ink-muted leading-relaxed font-sans line-clamp-3 font-light">
+                          {/* Short Description */}
+                          <p
+                            className={`text-xs text-ink-muted leading-relaxed font-sans font-light ${
+                              !isExpanded ? 'line-clamp-3' : ''
+                            }`}
+                          >
                             {ws.shortDescription || ws.description}
                           </p>
-                        </div>
 
-                        {/* Venue & Location */}
-                        <div className="pt-2 text-xs text-ink-muted space-y-1 border-t border-border/60">
-                          <div className="flex items-center gap-1.5 text-ink font-medium">
-                            <MapPin className="w-3.5 h-3.5 text-gold-700 shrink-0" />
-                            <span className="truncate">{ws.location?.venue || 'Tapovan Shala'}</span>
+                          {/* Expand / Collapse Button */}
+                          <div className="pt-1">
+                            <button
+                              type="button"
+                              onClick={() => toggleExpand(wsId)}
+                              className="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-700 hover:text-gold-600 transition-colors py-1 cursor-pointer"
+                            >
+                              <span>
+                                {isExpanded ? 'Collapse Workshop Details' : 'Expand Full Details'}
+                              </span>
+                              <span
+                                className={`transform transition-transform duration-300 ${
+                                  isExpanded ? 'rotate-180' : 'rotate-0'
+                                }`}
+                              >
+                                <ChevronDown className="w-4 h-4 text-gold-700" />
+                              </span>
+                            </button>
                           </div>
-                          {ws.location?.city && (
-                            <span className="text-[11px] text-ink-faint pl-5 block">
-                              {ws.location.city}
-                            </span>
-                          )}
-                        </div>
 
-                        {/* Instructor */}
-                        {ws.instructor?.name && (
-                          <div className="pt-2 text-[11px] text-ink-muted">
-                            <span className="font-semibold text-plum-900">Conducted by: </span>
-                            <span>{ws.instructor.name}</span>
-                          </div>
-                        )}
+                          {/* EXPANDED CONTENT ON CLICK (Smooth Animated Accordion) */}
+                          <div
+                            className={`grid transition-all duration-500 ease-in-out ${
+                              isExpanded
+                                ? 'grid-rows-[1fr] opacity-100 pt-3 border-t border-border/70'
+                                : 'grid-rows-[0fr] opacity-0 pt-0 border-t-0 pointer-events-none'
+                            }`}
+                          >
+                            <div className="overflow-hidden space-y-3.5">
+                              {/* Full Description if different */}
+                              {ws.description && ws.description !== ws.shortDescription && (
+                                <div className="text-xs text-ink-muted leading-relaxed font-sans whitespace-pre-line">
+                                  {ws.description}
+                                </div>
+                              )}
 
-                        {/* Registration Deadline & Capacity Pill */}
-                        <div className="pt-2 flex items-center justify-between text-[11px] bg-canvas-warm/70 p-2.5 rounded border border-border/80">
-                          {remainingSeats !== null ? (
-                            <div className="flex items-center gap-1.5 text-plum-900 font-medium">
-                              <Users className="w-3.5 h-3.5 text-gold-700" />
-                              <span>{remainingSeats} seats remaining</span>
+                              {/* Timing, Venue & Capacity Details */}
+                              <div className="space-y-2 bg-canvas-warm/70 border border-border/80 rounded p-3 text-xs">
+                                {(ws.time || (ws.startTime && ws.endTime)) && (
+                                  <div className="flex items-center gap-2 text-ink-muted">
+                                    <Clock className="w-3.5 h-3.5 text-gold-700 shrink-0" />
+                                    <span>{ws.time || `${ws.startTime} - ${ws.endTime}`}</span>
+                                  </div>
+                                )}
+
+                                <div className="flex items-start gap-2 text-ink-muted">
+                                  <MapPin className="w-3.5 h-3.5 text-gold-700 shrink-0 mt-0.5" />
+                                  <span>
+                                    {ws.location?.venue || 'Tapovan Shala'}
+                                    {ws.location?.city ? `, ${ws.location.city}` : ''}
+                                  </span>
+                                </div>
+
+                                {remainingSeats !== null && (
+                                  <div className="flex items-center gap-2 text-ink-muted">
+                                    <Users className="w-3.5 h-3.5 text-gold-700 shrink-0" />
+                                    <span>
+                                      Seats: {remainingSeats} {ws.capacity?.total ? `/ ${ws.capacity.total}` : ''} remaining
+                                    </span>
+                                  </div>
+                                )}
+
+                                {formattedDeadline && (
+                                  <div className="text-[10px] text-ink-faint pt-1 border-t border-border/50">
+                                    Registration Closes: {formattedDeadline}
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Instructor */}
+                              {ws.instructor?.name && (
+                                <div className="text-xs text-ink-muted pt-1">
+                                  <span className="font-semibold text-plum-900">Conducted by: </span>
+                                  <span>{ws.instructor.name}</span>
+                                  {ws.instructor.title && (
+                                    <span className="text-ink-faint text-[11px] block">
+                                      {ws.instructor.title}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Prerequisites if present */}
+                              {ws.prerequisites && ws.prerequisites.length > 0 && (
+                                <div className="space-y-1.5 pt-1">
+                                  <span className="text-[10px] uppercase font-mono text-gold-800 font-semibold tracking-wider block">
+                                    Prerequisites & Preparation
+                                  </span>
+                                  <div className="space-y-1">
+                                    {ws.prerequisites.map((req: string, rIdx: number) => (
+                                      <div
+                                        key={rIdx}
+                                        className="flex items-start gap-1.5 text-xs text-ink-muted"
+                                      >
+                                        <CheckCircle2 className="w-3 h-3 text-gold-600 shrink-0 mt-0.5" />
+                                        <span>{req}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          ) : (
-                            <span className="text-ink-muted">Open Capacity</span>
-                          )}
-
-                          {formattedDeadline && (
-                            <span className="text-[10px] text-ink-faint">
-                              Closes: {formattedDeadline}
-                            </span>
-                          )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -364,6 +453,13 @@ export const WorkshopsPage: React.FC<WorkshopsPageProps> = ({ initialWorkshops }
                       </div>
 
                       <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => toggleExpand(wsId)}
+                          className="px-3 py-1.5 border border-border hover:border-gold-500 rounded text-xs font-medium text-plum-900 transition-colors cursor-pointer bg-surface"
+                        >
+                          {isExpanded ? 'Less' : 'Details'}
+                        </button>
                         <LinkButton
                           to={`/contact?program=${encodeURIComponent(ws.title)}`}
                           variant="primary"

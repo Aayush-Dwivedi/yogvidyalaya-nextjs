@@ -27,11 +27,11 @@ export class HomeService {
       Course.find({ status: 'published', featured: true })
         .populate('instructor.founderRef')
         .sort({ order: 1, createdAt: -1 })
-        .limit(6),
+        .limit(3),
       Workshop.find({ status: 'published', featured: true })
         .populate('instructor.founderRef')
         .sort('date')
-        .limit(6),
+        .limit(3),
       Benefit.find({ status: 'published' }).sort({ order: 1 }).limit(8),
       GalleryImage.find({ status: 'published', featured: true })
         .populate('category', 'name slug')
@@ -51,7 +51,7 @@ export class HomeService {
       finalCourses = await Course.find({ status: 'published' })
         .populate('instructor.founderRef')
         .sort({ order: 1, createdAt: -1 })
-        .limit(4);
+        .limit(3);
     }
 
     let finalWorkshops = featuredWorkshops;
